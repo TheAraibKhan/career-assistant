@@ -1,0 +1,47 @@
+JOHN SMITH
+john.smith@email.com | (555) 123-4567 | LinkedIn.com/in/johnsmith | GitHub.com/johnsmith
+
+PROFESSIONAL SUMMARY
+Full-stack software engineer with 5+ years of experience building scalable web applications. Proficient in Python, JavaScript, React, and modern DevOps practices. Strong problem-solving skills and proven ability to lead cross-functional teams.
+
+TECHNICAL SKILLS
+Languages: Python, JavaScript, TypeScript, Java, C++
+Web Development: HTML, CSS, React, Vue.js, Angular, Node.js, Express, Django, Flask
+Data & Analytics: SQL, Pandas, NumPy, Tableau, Excel
+Cloud & DevOps: AWS, Azure, Docker, Kubernetes, Jenkins, Git
+ML & AI: TensorFlow, Scikit-learn, PyTorch
+Databases: PostgreSQL, MongoDB, Redis
+
+PROFESSIONAL EXPERIENCE
+
+Senior Software Engineer | Tech Company Inc. | Jan 2022 - Present
+- Led development of microservices architecture using Docker and Kubernetes
+- Implemented CI/CD pipelines with Jenkins and GitLab
+- Mentored junior developers in React and Node.js best practices
+- Improved application performance by 40% through database optimization with PostgreSQL
+
+Software Engineer | StartupXYZ | Jun 2019 - Dec 2021
+- Developed full-stack web applications using React and Django
+- Designed and implemented RESTful APIs handling 10k+ requests/day
+- Managed AWS infrastructure including EC2, S3, and Lambda
+- Collaborated with product team to implement agile development processes
+
+Junior Developer | Early Stage Startup | Jan 2018 - May 2019
+- Built web interfaces using HTML, CSS, and vanilla JavaScript
+- Developed backend services using Python and Flask
+- Worked with SQL databases and implemented data analytics using Pandas and Numpy
+- Participated in code reviews and pair programming sessions
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology, Graduation: May 2017
+
+CERTIFICATIONS
+- AWS Solutions Architect Associate
+- Certified Kubernetes Administrator (CKA)
+
+KEY ACHIEVEMENTS
+- Implemented machine learning model using TensorFlow and Keras for recommendation engine
+- Open-source contributor with 500+ GitHub stars
+- Leadership award for mentoring and team collaboration
+- Successfully migrated legacy monolithic application to microservices architecture reducing latency by 60%

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found - Career Assistant</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+        background: #f8f9fa;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .error-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        padding: 3rem;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .error-icon {
+        font-size: 64px;
+        margin-bottom: 1rem;
+      }
+
+      .error-code {
+        font-size: 48px;
+        font-weight: 700;
+        color: #ef4444;
+        margin-bottom: 0.5rem;
+      }
+
+      .error-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 0.5rem;
+      }
+
+      .error-message {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .error-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: block;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #5568d3;
+        transition: background-color 0.2s;
+      }
+
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #666;
+      }
+
+      .btn-secondary:hover {
+        background: #e5e7eb;
+      }
+
+      .error-footer {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+        font-size: 12px;
+        color: #999;
+      }
+
+      .error-footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .error-footer a:hover {
+        color: #5568d3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <div class="error-icon">⊘</div>
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-message">
+        The page you're looking for doesn't exist or has been moved. Let's get
+        you back on track.
+      </p>
+
+      <div class="error-actions">
+        <a
+          href="{{ url_for('index') if session.user_id else url_for('auth.login') }}"
+          class="btn btn-primary"
+        >
+          {% if session.user_id %} Go to Dashboard {% else %} Sign In {% endif
+          %}
+        </a>
+        <a
+          href="{{ url_for('user.home') if session.user_id else '/' }}"
+          class="btn btn-secondary"
+          >Go Home</a
+        >
+      </div>
+
+      <div class="error-footer">
+        <p>Need help? <a href="#">Contact Support</a></p>
+      </div>
+    </div>
+  </body>
+</html>

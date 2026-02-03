@@ -1,0 +1,23 @@
+
+MARIA GARCIA
+Data Scientist | maria.garcia@email.com | LinkedIn: linkedin.com/in/mariagarcia
+
+PROFESSIONAL SUMMARY
+Data scientist with 5 years of experience building ML models and analytics solutions.
+Skilled in Python, R, Tableau, and big data technologies. Strong background in statistical analysis and predictive modeling.
+
+TECHNICAL SKILLS
+Programming: Python, R, SQL, JavaScript
+ML Frameworks: TensorFlow, PyTorch, Scikit-learn, Keras
+Data Tools: Pandas, NumPy, Spark, Hadoop, Hive
+Databases: PostgreSQL, MySQL, MongoDB, Cassandra
+Visualization: Tableau, Power BI, Matplotlib, Seaborn
+Cloud: AWS, Google Cloud Platform
+
+WORK EXPERIENCE
+Machine Learning Engineer | DataCom Inc | Jan 2021 - Present
+- Developed recommendation engine using TensorFlow serving 2M+ users
+- Created NLP model for customer sentiment analysis improving response time by 40%
+- Managed Spark clusters processing 500GB+ daily data
+
+Master's Degree in Data Science | University of Technology | 2020

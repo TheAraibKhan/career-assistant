@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Career Progress - Career Assistant</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+        background: #f8f9fa;
+        color: #333;
+      }
+
+      .navbar {
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-brand {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2563eb;
+      }
+
+      .navbar-actions {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .navbar-actions a {
+        color: #666;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+
+      .navbar-actions a:hover {
+        color: #2563eb;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .header {
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .progress-card {
+        margin-bottom: 2rem;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .progress-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+      }
+
+      .progress-percent {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2563eb;
+      }
+
+      .progress-bar {
+        background: #e5e7eb;
+        border-radius: 4px;
+        height: 8px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .goal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .goal-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid #2563eb;
+      }
+
+      .goal-card.completed {
+        border-left-color: #10b981;
+      }
+
+      .goal-card.in-progress {
+        border-left-color: #f59e0b;
+      }
+
+      .goal-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: 0.5rem;
+      }
+
+      .goal-description {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .goal-meta {
+        font-size: 12px;
+        color: #999;
+        display: flex;
+        gap: 1rem;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+      }
+
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: #666;
+        font-weight: 600;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #2563eb;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      }
+
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #666;
+      }
+
+      .btn-secondary:hover {
+        background: #e5e7eb;
+      }
+
+      .milestone-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .milestone-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+      }
+
+      .milestone-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+        margin-top: 0.25rem;
+      }
+
+      .milestone-content h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+        margin-bottom: 0.25rem;
+      }
+
+      .milestone-content p {
+        font-size: 13px;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .progress-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .stat-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="navbar-brand">CareerAI</div>
+      <div class="navbar-actions">
+        <a
+          href="{{ url_for('resume.upload') }}"
+          style="color: #2563eb; text-decoration: none; font-weight: 500"
+          >Resume</a
+        >
+        <a href="{{ url_for('dashboard.index') }}">← Back</a>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <h1>Career Progress</h1>
+        <p>Track your development and readiness journey</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value">65%</div>
+          <div class="stat-label">Overall Readiness</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Skills Developed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Goals Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">45 days</div>
+          <div class="stat-label">Streak</div>
+        </div>
+      </div>
+
+      <!-- Career Readiness -->
+      <div class="section">
+        <h2 class="section-title">Career Readiness Trend</h2>
+
+        <div class="progress-card">
+          <div class="progress-header">
+            <div class="progress-label">Technical Skills</div>
+            <div class="progress-percent">72%</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 72%"></div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-header">
+            <div class="progress-label">Soft Skills</div>
+            <div class="progress-percent">68%</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 68%"></div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-header">
+            <div class="progress-label">Experience</div>
+            <div class="progress-percent">60%</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-header">
+            <div class="progress-label">Resume Quality</div>
+            <div class="progress-percent">85%</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 85%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Goals -->
+      <div class="section">
+        <h2 class="section-title">Active Goals</h2>
+
+        <div class="goal-grid">
+          <div class="goal-card in-progress">
+            <div class="goal-title">Master Python</div>
+            <div class="goal-description">
+              Complete advanced Python course and build 3 projects
+            </div>
+            <div class="goal-meta">
+              <span>50% Complete</span>
+              <span>Due: Mar 15</span>
+            </div>
+          </div>
+
+          <div class="goal-card in-progress">
+            <div class="goal-title">AWS Certification</div>
+            <div class="goal-description">
+              Pass AWS Solutions Architect exam
+            </div>
+            <div class="goal-meta">
+              <span>30% Complete</span>
+              <span>Due: Apr 30</span>
+            </div>
+          </div>
+
+          <div class="goal-card in-progress">
+            <div class="goal-title">Build Portfolio</div>
+            <div class="goal-description">
+              Create 5 impressive portfolio projects
+            </div>
+            <div class="goal-meta">
+              <span>60% Complete</span>
+              <span>Due: May 31</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Milestones -->
+      <div class="section">
+        <h2 class="section-title">Recent Milestones</h2>
+
+        <div class="milestone-list">
+          <div class="milestone-item">
+            <div class="milestone-icon">●</div>
+            <div class="milestone-content">
+              <h3>Completed React Course</h3>
+              <p>January 25, 2026 - Finished React.js certification</p>
+            </div>
+          </div>
+
+          <div class="milestone-item">
+            <div class="milestone-icon">●</div>
+            <div class="milestone-content">
+              <h3>Improved Resume Quality</h3>
+              <p>January 20, 2026 - Resume score improved from 72% to 85%</p>
+            </div>
+          </div>
+
+          <div class="milestone-item">
+            <div class="milestone-icon">●</div>
+            <div class="milestone-content">
+              <h3>30-Day Streak</h3>
+              <p>
+                January 15, 2026 - Maintained consistent learning for 30 days
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="section">
+        <h2 class="section-title">Next Steps</h2>
+
+        <p style="color: #666; margin-bottom: 1.5rem; font-size: 14px">
+          Based on your progress, here are recommended actions to accelerate
+          your career growth:
+        </p>
+
+        <div class="goal-grid">
+          <div class="goal-card">
+            <div class="goal-title">Network with Professionals</div>
+            <div class="goal-description">
+              Connect with 10 professionals in your target role this month
+            </div>
+          </div>
+
+          <div class="goal-card">
+            <div class="goal-title">Learn Data Science</div>
+            <div class="goal-description">
+              Add data analysis skills to complement your development expertise
+            </div>
+          </div>
+
+          <div class="goal-card">
+            <div class="goal-title">Practice Interviews</div>
+            <div class="goal-description">
+              Do 5 mock interviews with peers or mentors
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem">
+          <a href="{{ url_for('user.home') }}" class="btn btn-primary"
+            >Update Career Plan</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
