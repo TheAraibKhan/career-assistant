@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bullet Point Impact Scoring - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .comparison {
+        margin: 1.5rem 0;
+      }
+
+      .comparison-item {
+        margin-bottom: 1.5rem;
+      }
+
+      .comparison-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .weak-bullet {
+        padding: 1rem;
+        background: rgba(217, 119, 6, 0.05);
+        border-left: 4px solid var(--warning);
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .strong-bullet {
+        padding: 1rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .impact-score {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .score-bar {
+        flex: 1;
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .score-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 300ms ease;
+      }
+
+      .score-bar-fill.weak {
+        background: var(--warning);
+        width: 35%;
+      }
+
+      .score-bar-fill.strong {
+        background: var(--success);
+        width: 85%;
+      }
+
+      .score-text {
+        font-weight: 600;
+        min-width: 50px;
+        text-align: right;
+      }
+
+      .score-text.weak {
+        color: var(--warning);
+      }
+
+      .score-text.strong {
+        color: var(--success);
+      }
+
+      .solution-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .solution-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .solution-list strong {
+        color: var(--success);
+      }
+
+      .bullet-formula {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--primary);
+      }
+
+      .formula-part {
+        margin-bottom: 0.75rem;
+      }
+
+      .formula-part strong {
+        color: var(--primary);
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .analysis-section {
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Bullet Point Impact Scoring</h1>
+        <p>
+          Not all bullet points are created equal. We score each one for impact,
+          clarity, and relevance.
+        </p>
+        <span class="status-badge">Average score improvement: 47%</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">52%</div>
+          <div class="stat-label">Weak bullet points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3.2</div>
+          <div class="stat-label">Impact score per bullet</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">47%</div>
+          <div class="stat-label">Avg improvement</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>The Problem: Weak Bullet Points</h2>
+        <p>
+          "Responsible for managing projects." "Contributed to team success."
+          "Helped with various tasks." If you've written bullets like these,
+          you're not alone—and you're hurting your chances.
+        </p>
+        <p>Weak bullets:</p>
+        <ul
+          style="
+            margin-top: 1rem;
+            margin-left: 2rem;
+            color: var(--text-secondary);
+          "
+        >
+          <li>Don't show clear impact</li>
+          <li>Are vague and generic</li>
+          <li>Don't explain WHY this matters</li>
+          <li>Waste recruiter time</li>
+          <li>Blend in with competitors' resumes</li>
+        </ul>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+          "
+        >
+          See the Difference:
+        </h3>
+
+        <div class="comparison">
+          <div class="comparison-item">
+            <div class="comparison-label">❌ Weak (2.1/10)</div>
+            <div class="weak-bullet">
+              Managed social media accounts for the company
+            </div>
+            <div class="impact-score">
+              <div class="score-bar">
+                <div class="score-bar-fill weak"></div>
+              </div>
+              <div class="score-text weak">2.1/10</div>
+            </div>
+          </div>
+
+          <div class="comparison-item">
+            <div class="comparison-label">✓ Strong (8.6/10)</div>
+            <div class="strong-bullet">
+              Grew Instagram followers from 12K to 68K (+467%) in 6 months by
+              developing weekly content strategy, increasing engagement rate
+              from 2% to 8%, and driving 340 sales directly from social links
+            </div>
+            <div class="impact-score">
+              <div class="score-bar">
+                <div class="score-bar-fill strong"></div>
+              </div>
+              <div class="score-text strong">8.6/10</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison">
+          <div class="comparison-item">
+            <div class="comparison-label">❌ Weak (3.4/10)</div>
+            <div class="weak-bullet">
+              Worked with sales team on customer projects
+            </div>
+            <div class="impact-score">
+              <div class="score-bar">
+                <div class="score-bar-fill weak"></div>
+              </div>
+              <div class="score-text weak">3.4/10</div>
+            </div>
+          </div>
+
+          <div class="comparison-item">
+            <div class="comparison-label">✓ Strong (7.9/10)</div>
+            <div class="strong-bullet">
+              Partnered with VP of Sales to close 8 enterprise deals ($2.3M ARR)
+              by designing custom product demos and negotiating contract terms
+              within 30 days
+            </div>
+            <div class="impact-score">
+              <div class="score-bar">
+                <div class="score-bar-fill strong"></div>
+              </div>
+              <div class="score-text strong">7.9/10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>The Bullet Point Impact Formula</h2>
+        <div class="bullet-formula">
+          <div class="formula-part">
+            <strong>Action Verb</strong> (delivered, grew, designed, built) +
+            <strong>What You Did</strong> (the work) +
+            <strong>Measurable Result</strong> (the impact) +
+            <strong>Context</strong> (scope/business value)
+          </div>
+          <hr
+            style="
+              margin: 1rem 0;
+              border: none;
+              border-top: 1px solid var(--border);
+            "
+          />
+          <div class="formula-part" style="margin-bottom: 0">
+            <strong>Example:</strong> "Designed and launched mobile app that
+            reduced checkout time by 64% (from 3.2min to 1.1min), increasing
+            conversion rate by 28% and generating $1.2M in additional revenue"
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Why This Matters</h2>
+        <p>
+          Your bullets are your main sales pitch. Recruiters scan them to
+          answer: "Did this person achieve results?" Weak bullets force them to
+          infer impact—and they usually infer the worst.
+        </p>
+        <p>
+          <strong>Strong bullets make your resume undeniable.</strong> They
+          show, don't tell. They prove value.
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2>How to Score Higher</h2>
+        <ul class="solution-list">
+          <li>
+            <strong>Start with strong action verbs</strong> - "Achieved,"
+            "Delivered," "Transformed," not "Helped" or "Assisted"
+          </li>
+          <li>
+            <strong>Include at least one metric</strong> - Percentage growth,
+            revenue, time saved, customers won
+          </li>
+          <li>
+            <strong>Explain the business impact</strong> - Why does this result
+            matter?
+          </li>
+          <li>
+            <strong>Use the job description</strong> - Mirror language where you
+            have matching accomplishments
+          </li>
+          <li>
+            <strong>Keep to 1-2 lines</strong> - Concise > detailed for resume
+            bullets
+          </li>
+          <li>
+            <strong>Remove generic language</strong> - "Team player,"
+            "self-starter," "detail-oriented" add zero value on a resume
+          </li>
+        </ul>
+      </div>
+
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">Impact Score</div>
+            <div class="analysis-card-value" id="impactScore">--</div>
+            <div class="analysis-card-description">Overall bullet quality</div>
+            <div class="analysis-badge" id="impactStatus">Not scanned yet</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Weak Bullets</div>
+            <div class="analysis-card-value" id="weakBullets">--</div>
+            <div class="analysis-card-description">Needing improvement</div>
+            <div class="analysis-badge warning" id="weakStatus">
+              Review details
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Strong Bullets</div>
+            <div class="analysis-card-value" id="strongBullets">--</div>
+            <div class="analysis-card-description">Well-crafted impact</div>
+            <div class="analysis-badge" id="strongStatus">Excellent</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Potential Gain</div>
+            <div class="analysis-card-value" id="improvementCount">--</div>
+            <div class="analysis-card-description">Expected improvement %</div>
+            <div class="analysis-badge" id="improvementStatus">Achievable</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Get Your Bullet Point Scores</h3>
+        <p>
+          Upload your resume and see which bullets are strong and which ones
+          need work. We'll score each one and suggest improvements.
+        </p>
+        <a href="/resume" class="btn">Upload & Analyze</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // User Analysis Section
+      function initializeAnalysis() {
+        const analysisData = {
+          impactScore: localStorage.getItem("impactScore") || null,
+          weakBullets: localStorage.getItem("weakBullets") || null,
+          strongBullets: localStorage.getItem("strongBullets") || null,
+          improvementCount: localStorage.getItem("improvementCount") || null,
+        };
+
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.impactScore) {
+            document.getElementById("impactScore").textContent =
+              analysisData.impactScore + "%";
+            const impactStatus = document.getElementById("impactStatus");
+            const score = parseInt(analysisData.impactScore);
+            if (score >= 75) {
+              impactStatus.textContent = "Strong";
+              impactStatus.className = "analysis-badge";
+            } else if (score >= 50) {
+              impactStatus.textContent = "Moderate";
+              impactStatus.className = "analysis-badge warning";
+            } else {
+              impactStatus.textContent = "Needs work";
+              impactStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.weakBullets) {
+            document.getElementById("weakBullets").textContent =
+              analysisData.weakBullets;
+          }
+
+          if (analysisData.strongBullets) {
+            document.getElementById("strongBullets").textContent =
+              analysisData.strongBullets;
+          }
+
+          if (analysisData.improvementCount) {
+            document.getElementById("improvementCount").textContent =
+              analysisData.improvementCount + "%";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recruiter's Perspective - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .timeline {
+        list-style: none;
+        margin: 1.5rem 0;
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary);
+      }
+
+      .timeline li {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .timeline li::before {
+        content: "";
+        position: absolute;
+        left: -2.75rem;
+        top: 0.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--primary);
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px var(--primary);
+      }
+
+      .timeline-time {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+      }
+
+      .timeline-content {
+        color: var(--text-secondary);
+      }
+
+      .insight-box {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        background: rgba(217, 119, 6, 0.05);
+        border-left: 4px solid var(--warning);
+        border-radius: 0.5rem;
+      }
+
+      .insight-box strong {
+        color: var(--warning);
+      }
+
+      .solution-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .solution-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .solution-list strong {
+        color: var(--success);
+      }
+
+      .red-flags {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .red-flags li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(217, 119, 6, 0.05);
+        border-left: 4px solid var(--danger);
+        border-radius: 0.5rem;
+      }
+
+      .red-flags strong {
+        color: var(--danger);
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .analysis-section {
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Recruiter's Perspective: The 6-Second Screen</h1>
+        <p>
+          See your resume through a recruiter's eyes. In 6 seconds, what stands
+          out—and what gets missed?
+        </p>
+        <span class="status-badge">Average recruiter review: 6 seconds</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">6 sec</div>
+          <div class="stat-label">Average review time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">40%</div>
+          <div class="stat-label">Rejected in first screen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Seconds to grab attention</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>The Harsh Reality</h2>
+        <p>
+          Recruiters are human. They're also overworked. When a job posting gets
+          200 applications, they spend 6 seconds per resume deciding: "Possible
+          fit" or "No." This isn't malice—it's triage.
+        </p>
+        <p>In those 6 seconds, they scan (not read) looking for:</p>
+        <ul style="margin-top: 1rem; color: var(--text-secondary)">
+          <li>Name, title, years of experience</li>
+          <li>Obvious red flags or yellow flags</li>
+          <li>Keywords matching the job</li>
+          <li>Recent, relevant experience</li>
+          <li>Any reason to say "no"</li>
+        </ul>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          "
+        >
+          What Happens in 6 Seconds:
+        </h3>
+        <ul class="timeline">
+          <li>
+            <span class="timeline-time">0-1 sec</span>
+            <div class="timeline-content">
+              <strong>Scan header</strong> - Name, title, location
+            </div>
+          </li>
+          <li>
+            <span class="timeline-time">1-3 sec</span>
+            <div class="timeline-content">
+              <strong>Check experience</strong> - Most recent role, company
+              names, tenure
+            </div>
+          </li>
+          <li>
+            <span class="timeline-time">3-5 sec</span>
+            <div class="timeline-content">
+              <strong>Look for keywords</strong> - Do I see "Python," "Google,"
+              or other job requirements?
+            </div>
+          </li>
+          <li>
+            <span class="timeline-time">5-6 sec</span>
+            <div class="timeline-content">
+              <strong>Make decision</strong> - Yes, maybe, or reject pile
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Red Flags That Kill Your Resume Instantly</h2>
+        <ul class="red-flags">
+          <li>
+            <strong>Resume is 3+ pages</strong> - Recruiters assume you can't be
+            concise
+          </li>
+          <li>
+            <strong>Vague job titles</strong> - "Team Member," "Associate"
+            without context
+          </li>
+          <li>
+            <strong>No metrics or results</strong> - Generic descriptions signal
+            weak impact
+          </li>
+          <li>
+            <strong>Outdated design or formatting</strong> - Looks
+            unprofessional or uses outdated software
+          </li>
+          <li>
+            <strong>Missing job keywords</strong> - Doesn't match job
+            description language
+          </li>
+          <li>
+            <strong>Employment gaps without explanation</strong> - Raises
+            questions
+          </li>
+          <li>
+            <strong>Typos or grammatical errors</strong> - Signals carelessness
+          </li>
+        </ul>
+
+        <div class="insight-box">
+          <strong>💡 Pro Tip:</strong> Your resume is a marketing document, not
+          a biography. Every word should answer "Why are you great for this
+          job?"
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>How to Win the 6-Second Screen</h2>
+        <ul class="solution-list">
+          <li>
+            <strong>Lead with your best fit</strong> - Put most relevant
+            experience first
+          </li>
+          <li>
+            <strong>Use the job description as a cheat sheet</strong> - Mirror
+            language where honest
+          </li>
+          <li>
+            <strong>Make metrics visible</strong> - "Increased revenue 40%"
+            beats "managed initiatives"
+          </li>
+          <li>
+            <strong>Master the headline</strong> - Job title + years experience
+            + key specialty
+          </li>
+          <li>
+            <strong>Cut ruthlessly</strong> - Keep to 1 page if possible, max 2
+            pages
+          </li>
+          <li>
+            <strong>Bold important keywords</strong> - Makes scanning easier for
+            recruiter eyes
+          </li>
+          <li>
+            <strong>Test with a friend</strong> - Can they tell you your fit in
+            6 seconds?
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>The Transformation</h2>
+        <p>
+          <strong>Before:</strong> "Responsible for managing team projects and
+          contributing to company goals"
+        </p>
+        <p style="margin-top: 1rem">
+          <strong>After:</strong> "Led cross-functional team of 5 to deliver Q3
+          project 2 weeks early, saving $50K in costs"
+        </p>
+        <p style="margin-top: 1rem; color: var(--text-muted)">
+          Same person, different framing. The second one survives the 6-second
+          screen.
+        </p>
+      </div>
+
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">Recruiter Score</div>
+            <div class="analysis-card-value" id="recruiterScore">--</div>
+            <div class="analysis-card-description">6-second impact</div>
+            <div class="analysis-badge" id="recruiterStatus">
+              Not scanned yet
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Six-Second Test</div>
+            <div class="analysis-card-value" id="sixSecondImpact">--</div>
+            <div class="analysis-card-description">Quick scan results</div>
+            <div class="analysis-badge warning" id="sixSecondStatus">
+              Evaluate
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Pass Threshold</div>
+            <div class="analysis-card-value" id="passThreshold">--</div>
+            <div class="analysis-card-description">Moves to next round</div>
+            <div class="analysis-badge" id="passStatus">Checking</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Quality Score</div>
+            <div class="analysis-card-value" id="resumeQuality">--</div>
+            <div class="analysis-card-description">Overall presentation</div>
+            <div class="analysis-badge" id="qualityStatus">Assessing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Optimize Your Resume for Recruiters</h3>
+        <p>
+          Get instant feedback on how your resume performs in the recruiter's
+          6-second scan.
+        </p>
+        <a href="/resume" class="btn">Upload & Analyze</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // User Analysis Section
+      function initializeAnalysis() {
+        const analysisData = {
+          recruiterScore: localStorage.getItem("recruiterScore") || null,
+          sixSecondImpact: localStorage.getItem("sixSecondImpact") || null,
+          passThreshold: localStorage.getItem("passThreshold") || null,
+          resumeQuality: localStorage.getItem("resumeQuality") || null,
+        };
+
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.recruiterScore) {
+            document.getElementById("recruiterScore").textContent =
+              analysisData.recruiterScore + "%";
+            const recruiterStatus = document.getElementById("recruiterStatus");
+            const score = parseInt(analysisData.recruiterScore);
+            if (score >= 80) {
+              recruiterStatus.textContent = "Outstanding";
+              recruiterStatus.className = "analysis-badge";
+            } else if (score >= 60) {
+              recruiterStatus.textContent = "Good";
+              recruiterStatus.className = "analysis-badge warning";
+            } else {
+              recruiterStatus.textContent = "Needs work";
+              recruiterStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.sixSecondImpact) {
+            document.getElementById("sixSecondImpact").textContent =
+              analysisData.sixSecondImpact;
+          }
+
+          if (analysisData.passThreshold) {
+            document.getElementById("passThreshold").textContent =
+              analysisData.passThreshold + "%";
+          }
+
+          if (analysisData.resumeQuality) {
+            document.getElementById("resumeQuality").textContent =
+              analysisData.resumeQuality + "%";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

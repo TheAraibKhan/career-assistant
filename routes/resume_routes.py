@@ -22,6 +22,12 @@ def upload():
     error = None
     result = None
     
+    # Check if coming from analysis results page
+    show_results = request.args.get('results') == 'true'
+    if show_results and 'analysis_result' in session:
+        result = session.pop('analysis_result')
+        return render_template('resume/upload.html', error=error, result=result)
+    
     if request.method == 'POST':
         if 'resume' not in request.files:
             error = 'No file selected'
@@ -99,12 +105,26 @@ def upload():
                                         'file_size': validation.get('file_size', 0)
                                     }
                                 )
+                            
+                            # Store result in session and redirect to analysis page
+                            session['analysis_result'] = result
+                            return redirect(url_for('resume.analysis_results'))
                         else:
                             error = parse_result.get('error', 'Could not parse resume')
                     except Exception as e:
                         error = 'Error processing file. Please try again.'
     
     return render_template('resume/upload.html', error=error, result=result)
+
+
+@resume_bp.route('/analysis-results', methods=['GET'])
+def analysis_results():
+    """Display detailed analysis results page."""
+    if 'analysis_result' not in session:
+        return redirect(url_for('resume.upload'))
+    
+    result = session.get('analysis_result', {})
+    return render_template('resume/analysis_results.html', result=result)
 
 
 @resume_bp.route('/api/extract', methods=['POST'])

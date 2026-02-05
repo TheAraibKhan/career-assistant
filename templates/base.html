@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Career Assistant{% endblock %}</title>
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      /* NAVBAR */
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .navbar-logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .navbar-logo:hover {
+        color: var(--primary-dark);
+      }
+
+      .navbar-nav {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .navbar-nav a {
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        transition: all 150ms ease;
+      }
+
+      .navbar-nav a:hover {
+        color: var(--primary);
+        background: var(--bg-secondary);
+      }
+
+      .navbar-nav a.active {
+        color: var(--primary);
+      }
+
+      .navbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 150ms ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-tertiary);
+      }
+
+      .navbar-user-menu {
+        position: relative;
+      }
+
+      .navbar-user-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .navbar-user-btn:hover {
+        color: var(--primary);
+      }
+
+      .navbar-user-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        min-width: 150px;
+        display: none;
+        flex-direction: column;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-user-dropdown.show {
+        display: flex;
+      }
+
+      .navbar-user-dropdown a {
+        padding: 0.75rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .navbar-user-dropdown a:last-child {
+        border-bottom: none;
+      }
+
+      .navbar-user-dropdown a:hover {
+        background: var(--bg-secondary);
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: stretch;
+        }
+
+        .navbar-nav {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .navbar-actions {
+          width: 100%;
+        }
+      }
+
+      /* MAIN CONTENT */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .content {
+        min-height: calc(100vh - 200px);
+      }
+
+      /* FOOTER */
+      .footer {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        padding: 2rem;
+        margin-top: 4rem;
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      /* ALERTS */
+      .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .alert-success {
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border: 1px solid var(--success);
+      }
+
+      .alert-error {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <a href="/" class="navbar-logo">🎯 CareerOS</a>
+
+        {% if current_user.is_authenticated %}
+        <!-- LOGGED IN NAVBAR -->
+        <div class="navbar-nav">
+          <a
+            href="/dashboard"
+            class="{% if request.path == '/dashboard' %}active{% endif %}"
+            >Dashboard</a
+          >
+          <a
+            href="/resume/upload"
+            class="{% if '/resume' in request.path %}active{% endif %}"
+            >Resume Analysis</a
+          >
+          <a
+            href="/career-roadmap"
+            class="{% if 'roadmap' in request.path %}active{% endif %}"
+            >Career Roadmap</a
+          >
+          <a
+            href="/skill-gap"
+            class="{% if 'skill-gap' in request.path %}active{% endif %}"
+            >Skill Gap</a
+          >
+          <a
+            href="/reports"
+            class="{% if 'reports' in request.path %}active{% endif %}"
+            >Reports</a
+          >
+          <a
+            href="/contact"
+            class="{% if request.path == '/contact' %}active{% endif %}"
+            >Contact</a
+          >
+        </div>
+        {% else %}
+        <!-- LOGGED OUT NAVBAR -->
+        <div class="navbar-nav">
+          <a href="/" class="{% if request.path == '/' %}active{% endif %}"
+            >Home</a
+          >
+          <a href="/#how-it-works">How It Works</a>
+          <a href="/#features">Features</a>
+          <a
+            href="/contact"
+            class="{% if request.path == '/contact' %}active{% endif %}"
+            >Contact</a
+          >
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="navbar-actions">
+        {% if current_user.is_authenticated %}
+        <!-- USER MENU -->
+        <div class="navbar-user-menu">
+          <button class="navbar-user-btn" onclick="toggleUserMenu()">
+            👤 {{ current_user.name or 'Profile' }}
+            <span style="font-size: 0.75rem">▼</span>
+          </button>
+          <div class="navbar-user-dropdown" id="userDropdown">
+            <a href="/user/profile">My Profile</a>
+            <a href="/user/data">My Resume History</a>
+            <a href="/user/settings">Settings</a>
+            <a href="/auth/logout">Logout</a>
+          </div>
+        </div>
+        {% else %}
+        <a href="/auth/login" class="btn btn-secondary">Sign In</a>
+        <a href="/resume/upload" class="btn btn-primary">Analyze Free</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- ALERTS -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div
+      class="alert alert-{{ category if category != 'message' else 'success' }}"
+    >
+      {{ message }}
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div class="container">{% block content %}{% endblock %}</div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>
+        &copy; 2026 CareerOS. Your AI-powered career assistant. All rights
+        reserved.
+      </p>
+    </footer>
+
+    <script>
+      function toggleUserMenu() {
+        const dropdown = document.getElementById("userDropdown");
+        dropdown.classList.toggle("show");
+
+        // Close when clicking outside
+        document.addEventListener("click", function (event) {
+          if (!event.target.closest(".navbar-user-menu")) {
+            dropdown.classList.remove("show");
+          }
+        });
+      }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

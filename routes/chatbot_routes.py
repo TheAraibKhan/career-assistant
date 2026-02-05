@@ -2,19 +2,47 @@
 AI Chatbot routes with SaaS-integrated free API.
 """
 
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
 from services.ai_chatbot_service import CareerChatbot
 from services.saas_service import check_usage_limit, increment_usage
 from database.models import track_chatbot_analytics
+from services.auth_service import get_user_by_id
 from functools import wraps
 import uuid
 import json
 
-chatbot_bp = Blueprint('chatbot', __name__, url_prefix='/api/chat')
+chatbot_bp = Blueprint('chatbot', __name__, url_prefix='/chatbot')
 
 
 def login_required(f):
     """Decorator to require login for chatbot."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
+@chatbot_bp.route('/', methods=['GET'])
+@login_required
+def index():
+    """Display chatbot interface."""
+    user_id = session.get('user_id')
+    user = get_user_by_id(user_id)
+    
+    if not user:
+        return redirect(url_for('auth.login'))
+    
+    return render_template('chatbot/index.html', user=user)
+
+
+# API routes
+api_bp = Blueprint('chatbot_api', __name__, url_prefix='/api/chat')
+
+
+def api_login_required(f):
+    """Decorator to require login for chatbot API."""
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
@@ -23,8 +51,8 @@ def login_required(f):
     return decorated
 
 
-@chatbot_bp.route('/message', methods=['POST'])
-@login_required
+@api_bp.route('/message', methods=['POST'])
+@api_login_required
 def chat_message():
     """Handle chatbot messages with SaaS usage limits."""
     try:
@@ -81,7 +109,7 @@ def chat_message():
         return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
 
 
-@chatbot_bp.route('/history', methods=['GET'])
+@api_bp.route('/history', methods=['GET'])
 @login_required
 def chat_history():
     """Get chat history."""
@@ -105,7 +133,7 @@ def chat_history():
     return jsonify({'messages': messages})
 
 
-@chatbot_bp.route('/start', methods=['POST'])
+@api_bp.route('/start', methods=['POST'])
 @login_required
 def start_session():
     """Start new chat session."""
@@ -121,7 +149,7 @@ def start_session():
     })
 
 
-@chatbot_bp.route('/context', methods=['POST'])
+@api_bp.route('/context', methods=['POST'])
 @login_required
 def update_context():
     """Update chatbot context with user data."""
@@ -140,7 +168,7 @@ def update_context():
     return jsonify({'success': True, 'context': context})
 
 
-@chatbot_bp.route('/greeting', methods=['GET'])
+@api_bp.route('/greeting', methods=['GET'])
 def greeting():
     """Get greeting message without requiring login."""
     greeting_messages = [

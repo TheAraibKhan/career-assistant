@@ -330,8 +330,8 @@
       <div class="navbar-brand">CareerAI</div>
       <div class="navbar-actions">
         <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
-        <a href="{{ url_for('dashboard.analysis') }}">Analysis</a>
-        <a href="{{ url_for('chatbot.greeting') }}">Chat</a>
+        <a href="{{ url_for('dashboard.analysis_history') }}">Analysis</a>
+        <a href="/chatbot/">Chat</a>
         {% if session.user_id %}
         <a href="{{ url_for('auth.logout') }}" style="color: #dc2626">Logout</a>
         {% endif %}
@@ -391,7 +391,7 @@
             <div class="score-bar">
               <div
                 class="score-fill"
-                style="width: {{ (result.quality_score or 0)|int }}%"
+                style="width: {% if result.quality_score %}{{ result.quality_score }}{% else %}0{% endif %}%"
               ></div>
             </div>
           </div>
@@ -401,7 +401,7 @@
             <div class="score-bar">
               <div
                 class="score-fill"
-                style="width: {{ (result.ats_score or 0)|int }}%"
+                style="width: {% if result.ats_score %}{{ result.ats_score }}{% else %}0{% endif %}%"
               ></div>
             </div>
           </div>
@@ -427,12 +427,15 @@
           <div class="category-progress">
             <div class="category-name">
               <span>{{ category|replace('_', ' ')|title }}</span>
-              <span>{{ ((score or 0)/100*100)|int }}%</span>
+              <span
+                >{% if score %}{{ (score * 100)|int }}{% else %}0{% endif
+                %}%</span
+              >
             </div>
             <div class="score-bar">
               <div
                 class="score-fill"
-                style="width: {{ ((score or 0)/100*100)|int }}%"
+                style="width: {% if score %}{{ (score * 100)|int }}{% else %}0{% endif %}%"
               ></div>
             </div>
           </div>

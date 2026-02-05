@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareerOS - AI-Powered Career Assessment</title>
+    <meta
+      name="description"
+      content="Understand your career readiness. Get AI-powered insights on your resume, skills, and career path."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      /* HEADER / NAV */
+      .navbar {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .navbar-nav {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .navbar-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 150ms ease;
+      }
+
+      .navbar-nav a:hover {
+        color: var(--primary);
+      }
+
+      .navbar-cta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 150ms ease;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .navbar-nav {
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
+          margin-top: 1rem;
+        }
+
+        .navbar-cta {
+          width: 100%;
+          gap: 0.5rem;
+        }
+
+        .btn {
+          flex: 1;
+          text-align: center;
+        }
+      }
+
+      /* HERO */
+      .hero {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 6rem 2rem 4rem;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .hero p {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        line-height: 1.7;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 4rem;
+      }
+
+      .cta-large {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+      }
+
+      .trust-badges {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      /* SECTIONS */
+      .section {
+        padding: 4rem 2rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .section-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .section h2 {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .section-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        margin-bottom: 2.5rem;
+        max-width: 700px;
+      }
+
+      /* HOW IT WORKS */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .step {
+        padding: 2rem;
+        background: var(--bg-secondary);
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+
+      .step-num {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      .step h3 {
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+      }
+
+      .step p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* FEATURES */
+      .features {
+        display: grid;
+        gap: 2rem;
+      }
+
+      .feature-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+        padding: 2rem;
+        background: var(--bg-secondary);
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+      }
+
+      .feature-row.alt {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .feature-row.alt .feature-content {
+        order: 2;
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .feature-content p {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-points {
+        list-style: none;
+      }
+
+      .feature-points li {
+        padding: 0.5rem 0;
+        color: var(--text-secondary);
+      }
+
+      .feature-points li:before {
+        content: "✓ ";
+        color: var(--primary);
+        font-weight: 700;
+        margin-right: 0.75rem;
+      }
+
+      @media (max-width: 768px) {
+        .feature-row,
+        .feature-row.alt {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-row.alt .feature-content {
+          order: unset;
+        }
+      }
+
+      /* TRUST / WHY */
+      .why-content {
+        display: grid;
+        gap: 2rem;
+      }
+
+      .why-item {
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary);
+        background: var(--bg-secondary);
+        border-radius: 0.375rem;
+      }
+
+      .why-item h3 {
+        margin-bottom: 0.5rem;
+      }
+
+      .why-item p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* CTA */
+      .cta-final {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        margin-top: 3rem;
+      }
+
+      .cta-final h2 {
+        color: white;
+        margin-bottom: 1rem;
+      }
+
+      .cta-final p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+      }
+
+      .btn-white {
+        background: white;
+        color: var(--primary);
+        padding: 1rem 2rem;
+        border: none;
+      }
+
+      .btn-white:hover {
+        background: var(--bg-secondary);
+      }
+
+      /* FOOTER */
+      .footer {
+        background: #2a3142;
+        color: #9ca5b8;
+        padding: 3rem 2rem 1.5rem;
+        margin-top: 4rem;
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+        text-align: left;
+      }
+
+      .footer-section h4 {
+        color: white;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        letter-spacing: 0.05em;
+      }
+
+      .footer-section a {
+        display: block;
+        font-size: 0.9rem;
+        color: #9ca5b8;
+        margin-bottom: 0.75rem;
+        text-decoration: none;
+        transition: color 150ms ease;
+      }
+
+      .footer-section a:hover {
+        color: white;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(156, 165, 184, 0.15);
+        padding-top: 1.5rem;
+        font-size: 0.85rem;
+        color: #7a839a;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <a href="/" class="navbar-brand">🎯 CareerOS</a>
+      <div class="navbar-nav">
+        <a href="#how">How It Works</a>
+        <a href="#features">What We Check</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="navbar-cta">
+        {% if current_user.is_authenticated %}
+        <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+        <a href="/auth/logout" class="btn btn-secondary">Logout</a>
+        {% else %}
+        <a href="/auth/login" class="btn btn-secondary">Sign In</a>
+        <a href="/auth/register" class="btn btn-primary">Get Started</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Understand Your Career Readiness</h1>
+      <p>
+        AI-powered assessment of your resume, skills, and career alignment. Get
+        clarity on where you stand and what matters next.
+      </p>
+
+      <div class="hero-cta">
+        {% if current_user.is_authenticated %}
+        <a href="/dashboard" class="btn btn-primary cta-large"
+          >Go to Dashboard</a
+        >
+        {% else %}
+        <a href="/auth/register" class="btn btn-primary cta-large"
+          >Start Free Assessment</a
+        >
+        <a href="#how" class="btn btn-secondary cta-large">Learn More</a>
+        {% endif %}
+      </div>
+
+      <div class="trust-badges">
+        <span>✓ No credit card required</span>
+        <span>✓ Takes ~2 minutes</span>
+        <span>✓ Instant feedback</span>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how">
+      <div class="section-inner">
+        <h2>How It Works</h2>
+        <p class="section-subtitle">
+          Three simple steps to understand your career position
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Upload</h3>
+            <p>
+              Share your resume. PDF, Word, or text—any format works. Takes 30
+              seconds.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Analyze</h3>
+            <p>
+              Our AI runs 50+ checks on formatting, keywords, ATS compatibility,
+              and skill relevance.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Improve</h3>
+            <p>
+              Get specific, actionable insights. Track progress as you refine
+              and reupload.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT WE CHECK -->
+    <section class="section" id="features">
+      <div class="section-inner">
+        <h2>What We Analyze</h2>
+        <p class="section-subtitle">
+          Comprehensive career assessment covering what actually matters
+        </p>
+
+        <div class="features">
+          <!-- ATS Compatibility -->
+          <div class="feature-row">
+            <div>
+              <div class="feature-icon">✓</div>
+              <h3>ATS Compatibility</h3>
+              <p>
+                We check if your resume would pass ATS screening—the gatekeeper
+                that determines if recruiters ever see your resume.
+              </p>
+              <ul class="feature-points">
+                <li>Formatting issues</li>
+                <li>Keyword analysis</li>
+                <li>Parsing success rate</li>
+              </ul>
+            </div>
+            <div
+              style="
+                background: var(--bg-secondary);
+                padding: 2rem;
+                border-radius: 0.5rem;
+                text-align: center;
+                color: var(--text-secondary);
+              "
+            >
+              📊 ATS Parsing Check
+            </div>
+          </div>
+
+          <!-- Career Readiness -->
+          <div class="feature-row alt">
+            <div>
+              <div class="feature-icon">🎯</div>
+              <h3>Career Readiness</h3>
+              <p>
+                Understand your position relative to your target role. What
+                skills are you missing? What should you emphasize?
+              </p>
+              <ul class="feature-points">
+                <li>Role fit analysis</li>
+                <li>Skill gap identification</li>
+                <li>Experience relevance</li>
+              </ul>
+            </div>
+            <div
+              style="
+                background: var(--bg-secondary);
+                padding: 2rem;
+                border-radius: 0.5rem;
+                text-align: center;
+                color: var(--text-secondary);
+              "
+            >
+              🎭 Career Matching
+            </div>
+          </div>
+
+          <!-- Skill Assessment -->
+          <div class="feature-row">
+            <div>
+              <div class="feature-icon">📚</div>
+              <h3>Skill Assessment</h3>
+              <p>
+                Track your skills across resumes. See what you're known for, and
+                identify growth areas for career acceleration.
+              </p>
+              <ul class="feature-points">
+                <li>Skill frequency tracking</li>
+                <li>In-demand skill identification</li>
+                <li>Learning recommendations</li>
+              </ul>
+            </div>
+            <div
+              style="
+                background: var(--bg-secondary);
+                padding: 2rem;
+                border-radius: 0.5rem;
+                text-align: center;
+                color: var(--text-secondary);
+              "
+            >
+              📈 Skill Progress
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY CAREEROS -->
+    <section class="section">
+      <div class="section-inner">
+        <h2>Why CareerOS</h2>
+        <p class="section-subtitle">
+          Built for people who want honest, useful feedback
+        </p>
+
+        <div class="why-content">
+          <div class="why-item">
+            <h3>Real career feedback</h3>
+            <p>
+              Not generic scores. We analyze like recruiters do—starting with
+              your ATS compatibility, then your actual fit for roles.
+            </p>
+          </div>
+          <div class="why-item">
+            <h3>Track progress over time</h3>
+            <p>
+              Upload multiple resumes, see how your scores improve, understand
+              the impact of your changes. Build confidence in your career
+              direction.
+            </p>
+          </div>
+          <div class="why-item">
+            <h3>Actionable insights</h3>
+            <p>
+              We don't just tell you what's wrong. We show you exactly what to
+              fix and why it matters for your career prospects.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section">
+      <div class="section-inner">
+        <div class="cta-final">
+          <h2>Ready to Understand Your Career Position?</h2>
+          <p>
+            Get your first assessment in 2 minutes. No credit card. No
+            commitments.
+          </p>
+          <a href="/auth/register" class="btn btn-white cta-large"
+            >Start Your Assessment</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Product</h4>
+          {% if current_user.is_authenticated %}
+          <a href="/dashboard">Dashboard</a>
+          <a href="/dashboard/career-roadmap">Career Roadmap</a>
+          <a href="/dashboard/skill-gap">Skill Gap</a>
+          <a href="/dashboard/reports">Reports</a>
+          {% else %}
+          <a href="#how">How It Works</a>
+          <a href="#features">Features</a>
+          <a href="/auth/register">Get Started</a>
+          {% endif %}
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <a href="/contact">Contact Us</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 CareerOS. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

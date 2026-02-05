@@ -1,0 +1,310 @@
+{% extends "base.html" %} {% block title %}Contact & Feedback - CareerOS{%
+endblock %} {% block extra_css %}
+<style>
+  .contact-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .contact-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  .contact-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .contact-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+  }
+
+  .contact-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-method {
+    text-align: center;
+  }
+
+  .contact-method-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-method h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-method p {
+    color: var(--text-secondary);
+  }
+
+  .contact-method a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 150ms ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.1);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .btn-submit {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  .btn-submit:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-cancel {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 150ms ease;
+  }
+
+  .btn-cancel:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .faq {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .faq-item {
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+  }
+
+  .faq-item h3 {
+    margin-bottom: 0.75rem;
+    color: var(--primary);
+  }
+
+  .faq-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .contact-container {
+      padding: 1.5rem;
+    }
+
+    .contact-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="contact-container">
+  <!-- HEADER -->
+  <div class="contact-header">
+    <h1>🤝 Let's Connect</h1>
+    <p>
+      Have feedback? Want to discuss a feature? We're here to help shape
+      CareerOS into something truly useful.
+    </p>
+  </div>
+
+  <!-- CONTACT METHODS -->
+  <div class="contact-section">
+    <h2>Get in Touch</h2>
+    <div class="contact-methods">
+      <div class="contact-method">
+        <div class="contact-method-icon">💬</div>
+        <h3>Feedback Form</h3>
+        <p>Send us your thoughts directly below</p>
+      </div>
+      <div class="contact-method">
+        <div class="contact-method-icon">📧</div>
+        <h3>Email</h3>
+        <p><a href="mailto:support@careeros.ai">support@careeros.ai</a></p>
+      </div>
+      <div class="contact-method">
+        <div class="contact-method-icon">🐛</div>
+        <h3>Report Issues</h3>
+        <p><a href="mailto:bugs@careeros.ai">bugs@careeros.ai</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK FORM -->
+  <div class="contact-section">
+    <h2>Send Us Feedback</h2>
+    <form method="POST" action="/contact/submit">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          placeholder="e.g., Feature idea, Bug report, General feedback"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Tell us what's on your mind..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Send Feedback</button>
+        <a href="/" class="btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- FAQ -->
+  <div class="contact-section">
+    <h2>Frequently Asked</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <h3>What data do you collect?</h3>
+        <p>
+          We only ask for what's necessary: your resume for analysis, and basic
+          contact info if you share feedback. We never sell your data.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How long does analysis take?</h3>
+        <p>
+          ATS and career readiness analysis happens instantly. You'll see your
+          results as soon as you upload. Detailed insights are available in your
+          dashboard.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can I delete my data?</h3>
+        <p>
+          Yes. Go to your profile settings and request account deletion. All
+          your data will be removed within 24 hours.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is CareerOS really free?</h3>
+        <p>
+          We offer a free tier with all core features. We're building premium
+          plans for advanced features, but the basics will always be free.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How is CareerOS different from other tools?</h3>
+        <p>
+          We focus on what actually matters: ATS compatibility, real career
+          alignment, and actionable feedback. No generic scores. No BS.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

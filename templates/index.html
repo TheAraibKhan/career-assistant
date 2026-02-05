@@ -3,972 +3,1841 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Career Assistant - Navigate Your Path</title>
+    <meta
+      name="description"
+      content="Get AI-powered feedback on your resume. Built for students and early professionals looking to land their first or next role."
+    />
+    <meta
+      name="keywords"
+      content="resume checker, AI resume review, career assistant, job application help"
+    />
+    <meta name="author" content="Career Assistant" />
+
+    <title>
+      Career Assistant — AI Resume Review for Students & Early Professionals
+    </title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      * {
+      /* ===== CSS RESET & BASE ===== */
+      *,
+      *::before,
+      *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
 
+      :root {
+        /* Primary Colors - Soft blue professional palette */
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+
+        /* Accent Colors */
+        --accent: #6b7fd7;
+        --accent-light: #8d9fe8;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+
+        /* Neutral Colors */
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(59, 91, 219, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(59, 91, 219, 0.08);
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(59, 91, 219, 0.12);
+
+        /* Spacing */
+        --space-xs: 0.25rem;
+        --space-sm: 0.5rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+        --space-3xl: 4rem;
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 1rem;
+
+        /* Transitions */
+        --transition-fast: 150ms ease;
+        --transition-base: 220ms ease;
+        --transition-slow: 350ms ease;
+      }
+
       html {
         scroll-behavior: smooth;
+        font-size: 16px;
       }
 
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-        background: #fafaf9;
-        color: #2c2c2c;
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
       }
 
-      /* Navigation */
-      .navbar {
-        background: white;
-        border-bottom: 1px solid #f0f0f0;
-        padding: 1.25rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 100;
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
       }
 
-      .navbar-brand {
-        font-size: 15px;
-        font-weight: 600;
-        color: #1e40af;
-        letter-spacing: -0.3px;
+      a {
+        color: inherit;
         text-decoration: none;
       }
 
-      .navbar-actions {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-      }
-
-      .navbar-actions a {
-        color: #666;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-        transition: color 150ms ease-out;
-      }
-
-      .navbar-actions a:hover {
-        color: #1d4ed8;
-      }
-
-      .btn-primary {
-        background: #1e40af;
-        color: white;
-        padding: 0.625rem 1.25rem;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: background-color 150ms ease-out;
-        font-size: 14px;
+      button {
+        font-family: inherit;
         cursor: pointer;
       }
 
-      .btn-primary:hover {
-        background: #1d4ed8;
+      /* ===== HEADER ===== */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition: all var(--transition-base);
       }
 
-      .container {
+      .site-header.scrolled {
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+      }
+
+      .header-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 1.125rem 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.015em;
+        transition: color var(--transition-base);
+      }
+
+      .logo:hover {
+        color: var(--primary);
+      }
+
+      .main-nav {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+      }
+
+      .main-nav a {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: color var(--transition-base);
+        letter-spacing: -0.01em;
+      }
+
+      .main-nav a:hover {
+        color: var(--primary);
+      }
+
+      .nav-login {
+        padding: 0;
+        margin: 0;
+      }
+
+      .btn-primary {
+        background: white;
+        color: var(--text-primary);
+        padding: 0.5rem 1.125rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        transition: all var(--transition-base);
+        box-shadow: none;
+      }
+
+      .btn-primary:hover {
+        background: var(--bg-secondary);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        padding: 0.5rem;
+      }
+
+      .mobile-menu-toggle span {
+        width: 24px;
+        height: 2px;
+        background-color: var(--text-primary);
+        border-radius: 2px;
+        transition: all var(--transition-base);
+      }
+
+      /* ===== HERO SECTION ===== */
+      .hero {
+        padding: 4.5rem 2.5rem 5rem;
+        background: linear-gradient(
+          180deg,
+          var(--bg-secondary) 0%,
+          var(--bg-primary) 100%
+        );
+        position: relative;
+      }
+
+      .hero-content {
+        max-width: 720px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        font-weight: 600;
+        line-height: 1.25;
+        letter-spacing: -0.025em;
+        color: var(--text-primary);
+        margin-bottom: 1.25rem;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        line-height: 1.65;
+        color: var(--text-secondary);
+        max-width: 640px;
+        margin: 0 auto 2.25rem;
+        font-weight: 400;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 0.875rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 3.5rem;
+      }
+
+      .btn-large {
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 1px 3px 0 rgba(59, 91, 219, 0.15);
+        border: none;
+      }
+
+      .btn-large:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 4px 8px 0 rgba(59, 91, 219, 0.2);
+      }
+
+      .btn-large:active {
+        transform: translateY(1px);
+      }
+
+      .btn-secondary {
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        transition: all var(--transition-base);
+        background: white;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-secondary);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: clamp(2.5rem, 6vw, 5rem);
+        padding: 0;
+        background: transparent;
+        border: none;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-item strong {
+        display: block;
+        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.375rem;
+        letter-spacing: -0.02em;
+      }
+
+      .stat-item span {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      /* ===== SECTION COMMONS ===== */
+      .section-wrapper {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 2rem;
       }
 
-      /* Hero Section */
-      .hero {
-        padding: 10rem 2rem;
+      .section-header {
         text-align: center;
-        background: #fafaf9;
-        position: relative;
-        overflow: hidden;
-        min-height: 70vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        margin-bottom: var(--space-3xl);
       }
 
-      .hero::before {
+      .section-header h2 {
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+
+      .section-header p {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* ===== HOW IT WORKS SECTION ===== */
+      .how-section {
+        padding: 5rem 2rem;
+        background: white;
+      }
+
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        position: relative;
+      }
+
+      .step-card {
+        padding: 2rem 1.75rem;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        transition: all var(--transition-slow);
+        position: relative;
+      }
+
+      .step-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        opacity: 0;
+        transition: opacity var(--transition-base);
+      }
+
+      .step-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(91, 107, 142, 0.15);
+      }
+
+      .step-card:hover::before {
+        opacity: 1;
+      }
+
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+        position: relative;
+      }
+
+      .step-number::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: var(--primary);
+        z-index: -1;
+        opacity: 0.1;
+      }
+
+      .step-card h3 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.01em;
+      }
+
+      .step-card p {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+      }
+
+      /* ===== FEATURES SECTION REDESIGN ===== */
+      .features-section {
+        padding: 6rem 2rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .features-section::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(59, 91, 219, 0.05) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .features-section::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        left: -15%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(100, 118, 242, 0.04) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .features-list {
+        display: grid;
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Smart Feature Card with Health Indicator */
+      .feature-item {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        padding: 2.5rem;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1.25rem;
+        transition: all var(--transition-slow);
+        align-items: start;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .feature-item:hover {
+        border-color: var(--primary);
+        box-shadow: 0 12px 24px -5px rgba(59, 91, 219, 0.15);
+        transform: translateY(-4px);
+      }
+
+      a.feature-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .feature-item::before {
         content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        background-image:
-          radial-gradient(
-            circle at 20% 50%,
-            rgba(30, 64, 175, 0.03) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 80% 80%,
-            rgba(37, 99, 235, 0.02) 0%,
-            transparent 50%
-          );
-        pointer-events: none;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        opacity: 0;
+        transition: opacity var(--transition-base);
       }
 
-      .hero-content {
-        position: relative;
-        z-index: 1;
+      .feature-item:hover {
+        transform: translateY(-4px);
+        border-color: rgba(59, 91, 219, 0.25);
+        box-shadow: 0 12px 24px rgba(59, 91, 219, 0.12);
       }
 
-      .hero h1 {
-        font-size: 64px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 2rem;
-        letter-spacing: -0.5px;
-        line-height: 1.2;
+      .feature-item:hover::before {
+        opacity: 1;
       }
 
-      .hero p {
-        font-size: 21px;
-        color: #555;
-        max-width: 580px;
-        margin: 0 auto 4rem;
-        line-height: 1.7;
-        font-weight: 400;
-      }
-
-      .hero-cta {
-        display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .btn-large {
-        padding: 1rem 2.5rem;
-        font-size: 16px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition:
-          background-color 150ms ease-out,
-          border-color 150ms ease-out;
-        text-decoration: none;
-        display: inline-block;
-      }
-
-      .btn-large.primary {
-        background: #1e40af;
-        color: white;
-      }
-
-      .btn-large.primary:hover {
-        background: #1d4ed8;
-      }
-
-      .btn-large.secondary {
-        background: white;
-        color: #1e40af;
-        border: 2px solid #1e40af;
-      }
-
-      .btn-large.secondary:hover {
-        background: #f9fafb;
-        border-color: #1d4ed8;
-        color: #1d4ed8;
-      }
-
-      /* Features Grid */
-      .features {
-        padding: 5rem 2rem;
-        background: white;
-      }
-
-      .section-header {
-        text-align: center;
-        margin-bottom: 3rem;
-      }
-
-      .section-header h2 {
-        font-size: 36px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 1rem;
-      }
-
-      .section-header p {
-        font-size: 16px;
-        color: #666;
-        max-width: 500px;
-        margin: 0 auto;
-      }
-
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-      }
-
-      .feature-card {
-        padding: 2rem;
-        background: #fafaf9;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        text-align: center;
-        transition:
-          border-color 150ms ease-out,
-          box-shadow 150ms ease-out;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
+      /* Feature Icon with Health Indicator */
+      .feature-icon-wrapper {
         display: flex;
         flex-direction: column;
-      }
-
-      .feature-card:hover {
-        border-color: #d1d5db;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        gap: 1.5rem;
       }
 
       .feature-icon {
-        font-size: 32px;
-        margin-bottom: 1rem;
-        width: 48px;
-        height: 48px;
+        flex-shrink: 0;
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-left: auto;
-        margin-right: auto;
-        background: #eff6ff;
-        border-radius: 8px;
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 91, 219, 0.2);
+        font-size: 2rem;
+        transition: all var(--transition-base);
       }
 
-      .feature-card h3 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin-bottom: 0.8rem;
+      .feature-item:hover .feature-icon {
+        transform: scale(1.08) rotate(2deg);
+        box-shadow: 0 8px 20px rgba(59, 91, 219, 0.28);
       }
 
-      .feature-card p {
-        font-size: 14px;
-        color: #666;
-        line-height: 1.6;
-      }
-
-      /* How It Works */
-      .how-it-works {
-        padding: 5rem 2rem;
-        background: #fafaf9;
-      }
-
-      .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-      }
-
-      .step-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        transition:
-          border-color 150ms ease-out,
-          box-shadow 150ms ease-out;
-      }
-
-      .step-card:hover {
-        border-color: #d1d5db;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-      }
-
-      .step-number {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        background: #eff6ff;
-        color: #1e40af;
-        border-radius: 50%;
-        font-weight: 700;
-        font-size: 16px;
-        margin-bottom: 1rem;
-      }
-
-      .step-card h3 {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin-bottom: 0.5rem;
-      }
-
-      .step-card p {
-        font-size: 14px;
-        color: #666;
-        line-height: 1.6;
-      }
-
-      /* CTA Section */
-      .cta-section {
-        padding: 5rem 2rem;
-        text-align: center;
-        background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-        border-top: 1px solid #e8e8e8;
-        border-bottom: 1px solid #e8e8e8;
-      }
-
-      .cta-section h2 {
-        font-size: 40px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 1.25rem;
-        letter-spacing: -0.5px;
-      }
-
-      .cta-section p {
-        font-size: 16px;
-        color: #666;
-        margin-bottom: 2.5rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        line-height: 1.7;
-      }
-
-      /* Resources Section */
-      .resources {
-        padding: 5rem 2rem;
-        background: #fafaf9;
-      }
-
-      .resources h2 {
-        font-size: 28px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 3rem;
-        text-align: center;
-      }
-
-      .resources-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-      }
-
-      .resource-card {
-        background: white;
-        padding: 2.5rem;
-        border-radius: 10px;
-        border: 1px solid #e8e8e8;
-        transition: all 0.3s ease;
+      /* Health Indicator Badges */
+      .health-indicators {
         display: flex;
         flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 0.5rem;
       }
 
-      .resource-card:hover {
-        border-color: #1e40af;
-        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.08);
-        transform: translateY(-2px);
+      .health-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
       }
 
-      .resource-card h3 {
-        font-size: 18px;
+      .health-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .health-dot.green {
+        background: #10b981;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+      }
+
+      .health-dot.yellow {
+        background: #f59e0b;
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+      }
+
+      .health-dot.red {
+        background: #ef4444;
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+      }
+
+      .health-item span:last-child {
+        color: var(--text-secondary);
+      }
+
+      /* Feature Content */
+      .feature-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .feature-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .feature-title-block h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.01em;
+      }
+
+      .feature-subtitle {
+        font-size: 0.9rem;
+        color: var(--primary);
         font-weight: 600;
-        color: #1a1a1a;
-        margin-bottom: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
-      .resource-card p {
-        font-size: 14px;
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-        flex-grow: 1;
-      }
-
-      .resource-link {
-        color: #2563eb;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
-        transition: color 150ms ease-out;
+      .feature-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-      }
-
-      .resource-link:hover {
-        color: #1d4ed8;
-      }
-
-      /* Contact & Founder Section */
-      .contact-section {
-        padding: 6rem 2rem;
-        background: linear-gradient(135deg, #ffffff 0%, #fafaf9 100%);
-        border-top: 1px solid #e8e8e8;
-      }
-
-      .contact-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5rem;
-        align-items: stretch;
-      }
-
-      .contact-left h2 {
-        font-size: 40px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 1.25rem;
-        letter-spacing: -0.5px;
-      }
-
-      .contact-intro {
-        font-size: 16px;
-        color: #666;
-        margin-bottom: 2.5rem;
-        line-height: 1.7;
-      }
-
-      .founder-info {
-        margin-bottom: 2.5rem;
-        padding: 2rem;
-        background: white;
-        border: 1px solid #e8e8e8;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      }
-
-      .founder-info h3 {
-        font-size: 22px;
-        font-weight: 700;
-        color: #1e40af;
-        margin-bottom: 0.75rem;
-        letter-spacing: -0.3px;
-      }
-
-      .founder-role {
-        font-size: 15px;
-        color: #1a1a1a;
-        line-height: 1.6;
-        margin-bottom: 1rem;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(
+          135deg,
+          rgba(59, 91, 219, 0.1) 0%,
+          rgba(100, 118, 242, 0.1) 100%
+        );
+        border: 1px solid rgba(59, 91, 219, 0.2);
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
         font-weight: 600;
+        color: var(--primary);
+        white-space: nowrap;
       }
 
-      .founder-focus {
-        font-size: 13px;
-        color: #666;
-        line-height: 1.7;
+      /* Problem → Solution Structure */
+      .feature-insight {
+        background: #f8fafc;
+        border-left: 3px solid var(--primary);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        display: grid;
+        gap: 0.75rem;
       }
 
-      .contact-links {
+      .insight-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+
+      .insight-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+      }
+
+      /* Impact/Score Indicator */
+      .feature-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+
+      .metric-item {
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        border: 1px solid #f0f1f3;
+        text-align: center;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .metric-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      /* Action Suggestions */
+      .action-suggestions {
         display: flex;
         flex-direction: column;
-        gap: 0;
-        margin-top: 1.5rem;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        max-width: 520px;
+        gap: 0.75rem;
+      }
+
+      .suggestion {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.875rem;
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.05) 0%,
+          transparent 100%
+        );
+        border-left: 2px solid #10b981;
+        border-radius: 0.375rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-secondary);
+      }
+
+      .suggestion-icon {
+        flex-shrink: 0;
+        color: #10b981;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+
+      /* Confidence Score */
+      .confidence-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .confidence-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .confidence-track {
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 3px;
         overflow: hidden;
       }
 
-      .contact-item {
-        padding: 1.25rem 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        border-bottom: 1px solid #f3f4f6;
-        transition: background-color 150ms ease-out;
-        cursor: pointer;
+      .confidence-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 3px;
+        transition: width var(--transition-slow);
       }
 
-      .contact-item:last-child {
-        border-bottom: none;
+      /* Responsive Grid */
+      @media (max-width: 1024px) {
+        .feature-item {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .feature-icon-wrapper {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .health-indicators {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
       }
 
-      .contact-item:hover {
-        background-color: #f9fafb;
-      }
-
-      .contact-label {
-        font-size: 14px;
-        font-weight: 500;
-        color: #374151;
-        letter-spacing: -0.2px;
-      }
-
-      .contact-link-text {
-        font-size: 15px;
-        font-weight: 500;
-        color: #2563eb;
-        text-decoration: none;
-        transition:
-          text-decoration 150ms ease-out,
-          color 150ms ease-out;
-      }
-
-      .contact-link-text:hover {
-        text-decoration: underline;
-        color: #1d4ed8;
-      }
-
-      .contact-item:focus-within .contact-link-text {
-        outline: 2px solid #2563eb;
-        outline-offset: 2px;
-      }
-
-      /* Contact Form */
-      .contact-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.75rem;
-        background: white;
-        padding: 2.5rem;
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-      }
-
-      .form-group label {
-        font-size: 14px;
-        font-weight: 600;
-        color: #1a1a1a;
-        letter-spacing: -0.3px;
-      }
-
-      .form-group input,
-      .form-group textarea {
-        padding: 0.95rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        font-size: 14px;
-        font-family: inherit;
-        color: #1a1a1a;
-        background: #fafaf9;
-        transition:
-          border-color 150ms ease-out,
-          box-shadow 150ms ease-out,
-          background-color 150ms ease-out;
-      }
-
-      .form-group input:focus,
-      .form-group textarea:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: white;
-        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
-      }
-
-      .form-group input::placeholder,
-      .form-group textarea::placeholder {
-        color: #999;
-      }
-
-      .form-group textarea {
-        resize: vertical;
-        min-height: 130px;
-        line-height: 1.6;
-      }
-
-      .btn-submit {
-        padding: 0.95rem 1.75rem;
-        background: #1e40af;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 150ms ease-out;
-        align-self: flex-start;
-        letter-spacing: -0.3px;
-      }
-
-      .btn-submit:hover {
-        background: #1d4ed8;
-      }
-
-      .btn-submit:active {
-        background: #1d4ed8;
-      }
-
-      .btn-submit:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .form-feedback {
-        font-size: 13px;
-        margin-top: -0.75rem;
-        font-weight: 500;
-      }
-
-      .form-feedback.error {
-        color: #c53030;
-      }
-
-      .form-feedback.success {
-        color: #22543d;
-      }
-
-      /* Footer */
-      .footer {
-        background: #2c2c2c;
-        color: #999;
-        padding: 2rem;
-        text-align: center;
-        font-size: 13px;
-        border-top: 1px solid #3a3a3a;
-      }
-
-      /* Responsive */
       @media (max-width: 768px) {
+        .features-section {
+          padding: 4rem 1.5rem;
+        }
+
+        .feature-item {
+          padding: 1.75rem;
+          border-radius: 1rem;
+        }
+
+        .feature-icon {
+          width: 64px;
+          height: 64px;
+          font-size: 1.75rem;
+        }
+
+        .feature-title-block h3 {
+          font-size: 1.25rem;
+        }
+
+        .feature-metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== TRUST SECTION ===== */
+      .trust-section {
+        padding: 5rem 2rem;
+        background: white;
+      }
+
+      .trust-content {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .trust-content h2 {
+        font-size: clamp(1.875rem, 4vw, 2.5rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+      }
+
+      .trust-content p {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .trust-author {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .trust-author span {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      /* ===== CTA SECTION ===== */
+      .cta-section {
+        padding: 5rem 2.5rem;
+        background: white;
+      }
+
+      .cta-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 3.5rem 3rem;
+        background: linear-gradient(
+          135deg,
+          rgba(59, 91, 219, 0.04) 0%,
+          rgba(100, 118, 242, 0.03) 100%
+        );
+        border: 1px solid rgba(59, 91, 219, 0.08);
+        border-radius: var(--radius-lg);
+        text-align: center;
+      }
+
+      .cta-container h2 {
+        font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.875rem;
+        letter-spacing: -0.025em;
+        line-height: 1.3;
+      }
+
+      .cta-container p {
+        font-size: 1.0625rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-weight: 400;
+      }
+
+      .btn-cta {
+        background: white;
+        color: var(--text-primary);
+        padding: 0.875rem 2rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        transition: all var(--transition-base);
+        display: inline-block;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      .btn-cta:hover {
+        background: var(--bg-secondary);
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 2px 4px 0 rgba(59, 91, 219, 0.1);
+      }
+
+      /* ===== FOOTER ===== */
+      .site-footer {
+        background: #2a3142;
+        color: #9ca5b8;
+        padding: 3.5rem 2rem 2.5rem;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: 3.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .footer-brand .logo {
+        color: #e8ebf0;
+        font-size: 1.375rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      .footer-brand p {
+        font-size: 0.9375rem;
+        line-height: 1.65;
+        max-width: 280px;
+        color: #9ca5b8;
+      }
+
+      .footer-links {
+        display: contents;
+      }
+
+      .footer-column h4 {
+        color: #e8ebf0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .footer-column a {
+        display: block;
+        font-size: 0.9375rem;
+        color: #9ca5b8;
+        margin-bottom: 0.875rem;
+        transition: color var(--transition-base);
+      }
+
+      .footer-column a:hover {
+        color: #e8ebf0;
+      }
+
+      .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-top: 2.5rem;
+        border-top: 1px solid rgba(156, 165, 184, 0.15);
+        text-align: center;
+      }
+
+      .footer-bottom p {
+        font-size: 0.875rem;
+        color: #7a839a;
+      }
+
+      /* ===== RESPONSIVE DESIGN ===== */
+      @media (max-width: 1024px) {
+        .header-container {
+          padding: 1rem 1.5rem;
+        }
+
         .hero {
-          padding: 3rem 1.5rem;
+          padding: 4rem 1.5rem 3rem;
         }
 
-        .hero h1 {
-          font-size: 32px;
+        .hero-stats {
+          gap: 2rem;
+          padding: 1.5rem;
         }
 
-        .hero p {
-          font-size: 16px;
+        .how-section,
+        .features-section,
+        .trust-section,
+        .cta-section {
+          padding: 4rem 1.5rem;
         }
 
-        .hero-cta {
+        .footer-container {
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+        }
+
+        .footer-brand {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .main-nav {
+          position: fixed;
+          top: 73px;
+          left: 0;
+          right: 0;
+          background: white;
           flex-direction: column;
+          padding: 1.5rem;
+          border-bottom: 1px solid var(--border);
+          box-shadow: var(--shadow-lg);
+          transform: translateY(-100%);
+          opacity: 0;
+          transition: all var(--transition-base);
+          pointer-events: none;
         }
 
-        .btn-large {
+        .main-nav.active {
+          transform: translateY(0);
+          opacity: 1;
+          pointer-events: all;
+        }
+
+        .mobile-menu-toggle {
+          display: flex;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+          transform: rotate(45deg) translateY(7px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+          transform: rotate(-45deg) translateY(-7px);
+        }
+
+        .hero-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .btn-large,
+        .btn-secondary {
           width: 100%;
+          justify-content: center;
         }
 
-        .section-header h2 {
-          font-size: 28px;
+        .hero-stats {
+          flex-direction: column;
+          gap: 1.5rem;
         }
 
-        .features-grid,
-        .steps-grid,
-        .resources-grid {
+        .steps-grid {
           grid-template-columns: 1fr;
         }
 
-        .navbar {
+        .feature-item {
           flex-direction: column;
-          gap: 1rem;
+        }
+
+        .cta-container {
+          padding: 3rem 2rem;
+        }
+
+        .footer-container {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-brand {
+          grid-column: 1;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header-container {
           padding: 1rem;
         }
 
-        .navbar-actions {
-          width: 100%;
-          justify-content: space-around;
-          flex-wrap: wrap;
+        .hero {
+          padding: 3rem 1rem 2rem;
         }
 
-        .contact-container {
-          grid-template-columns: 1fr;
-          gap: 2.5rem;
+        .section-wrapper {
+          padding: 0 1rem;
         }
 
-        .contact-left h2 {
-          font-size: 32px;
+        .how-section,
+        .features-section,
+        .trust-section,
+        .cta-section {
+          padding: 3rem 1rem;
         }
 
-        .contact-form {
-          padding: 2rem;
+        .step-card,
+        .feature-item {
+          padding: 1.5rem;
+        }
+
+        .cta-container {
+          padding: 2.5rem 1.5rem;
         }
       }
 
-      /* Touch device optimization - disable hover effects */
-      @media (hover: none) and (pointer: coarse) {
-        .btn-primary:hover {
-          background: #1e40af;
+      /* ===== ACCESSIBILITY ===== */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
+      }
 
-        .btn-large.primary:hover {
-          background: #1e40af;
-        }
+      /* Focus visible for keyboard navigation */
+      *:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
 
-        .btn-large.secondary:hover {
-          background: white;
-          border-color: #1e40af;
-          color: #1e40af;
-        }
-
-        .feature-card:hover {
-          border-color: #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .step-card:hover {
-          border-color: #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .resource-link:hover {
-          color: #2563eb;
-        }
-
-        .contact-item:hover {
-          background-color: #ffffff;
-        }
-
-        .contact-link-text:hover {
-          text-decoration: none;
-          color: #2563eb;
-        }
+      /* ===== UTILITY CLASSES ===== */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
       }
     </style>
   </head>
   <body>
-    <div class="navbar">
-      <div class="navbar-brand">CareerAI</div>
-      <div class="navbar-actions">
-        {% if session.user_id %}
-        <a href="{{ url_for('resume.upload') }}">Resume</a>
-        <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
-        <a href="{{ url_for('auth.profile') }}">Profile</a>
-        <a href="{{ url_for('auth.logout') }}">Logout</a>
-        {% else %}
-        <a href="{{ url_for('auth.login') }}">Login</a>
-        <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign Up</a>
-        {% endif %}
+    <!-- Header -->
+    <header class="site-header" id="header">
+      <div class="header-container">
+        <a href="/" class="logo">Career Assistant</a>
+        <nav class="main-nav" id="mainNav">
+          <a href="#how-it-works">How it works</a>
+          <a href="/resume/upload">Resume Analysis</a>
+          <a href="/features">Features</a>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/login" class="nav-login">Sign in</a>
+          <a href="/resume/upload" class="btn-primary">Analyze Free</a>
+        </nav>
+        <button
+          class="mobile-menu-toggle"
+          id="mobileMenuToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-    </div>
+    </header>
 
-    <div class="container">
+    <main>
       <!-- Hero Section -->
-      <div class="hero">
+      <section class="hero">
         <div class="hero-content">
-          <h1>Clarity on where you're going.</h1>
-          <p>
-            Your career operating system. Weekly guidance. Real progress
-            tracking. A calm partner in career decisions.
+          <h1>AI Career Coach. Real Results.</h1>
+          <p class="hero-subtitle">
+            Get honest, actionable feedback on your resume—from ATS scoring to role alignment. Built for students, freshers, and early professionals who want to stand out.
           </p>
-          <div class="hero-cta">
-            {% if not session.user_id %}
-            <a href="{{ url_for('auth.register') }}" class="btn-large primary"
-              >Start Assessment</a
-            >
-            <a href="{{ url_for('auth.register') }}" class="btn-large secondary"
-              >Upload Resume</a
-            >
-            {% else %}
-            <a href="{{ url_for('dashboard.index') }}" class="btn-large primary"
-              >Open Dashboard</a
-            >
-            <a href="{{ url_for('resume.upload') }}" class="btn-large secondary"
-              >Update Resume</a
-            >
-            {% endif %}
+          <div class="hero-actions">
+            <a href="/resume/upload" class="btn-large">Analyze My Resume (Free)</a>
+            <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <strong>12,400+</strong>
+              <span>resumes analyzed</span>
+            </div>
+            <div class="stat-item">
+              <strong>Completely Free</strong>
+              <span>no credit card required</span>
+            </div>
+            <div class="stat-item">
+              <strong>&lt;60 seconds</strong>
+              <span>instant results</span>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Contact & Founder Section -->
-      <div class="contact-section">
-        <div class="contact-container">
-          <!-- Left Column -->
-          <div class="contact-left">
-            <h2>Get in Touch</h2>
-            <p class="contact-intro">
-              Have questions, feedback, or ideas? I'm always open to meaningful
-              conversations.
+      <!-- How It Works Section -->
+      <section id="how-it-works" class="how-section">
+        <div class="section-wrapper">
+          <header class="section-header">
+            <h2>From Resume to Results in 3 Steps</h2>
+            <p>Simple, fast, and designed for people who actually want constructive feedback—not generic scores.</p>
+          </header>
+
+          <div class="steps-grid">
+            <article class="step-card">
+              <div class="step-number">1</div>
+              <h3>Upload Your Resume</h3>
+              <p>
+                PDF, Word, or plain text—doesn't matter. We analyze the same way recruiters do, starting with ATS parsing.
+              </p>
+            </article>
+
+            <article class="step-card">
+              <div class="step-number">2</div>
+              <h3>Get Honest Feedback</h3>
+              <p>
+                We show you exactly what recruiters see in 6 seconds, your ATS compatibility score, skill gaps, and high-impact improvements with reasoning.
+              </p>
+            </article>
+
+            <article class="step-card">
+              <div class="step-number">3</div>
+              <h3>Take Action & Track Progress</h3>
+              <p>
+                Fix what matters most, reupload, and watch your scores improve. Build your career confidence, not just a resume.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="features-section">
+        <div class="section-wrapper">
+          <header class="section-header">
+            <h2>Built on Real Hiring Insights</h2>
+            <p>
+              We analyze resumes the way actual ATS systems and recruiters do. Every feature targets real reasons why resumes get rejected.
             </p>
+          </header>
 
-            <div class="founder-info">
-              <h3>Araib Khan</h3>
-              <p class="founder-role">
-                Founder & CEO of Career Assistant <br />
-              </p>
-              <p class="founder-focus">
-                Building scalable, career-focused SaaS products<br />
-                Focus: Software Development, AI/ML, Career Platforms
-              </p>
-            </div>
+          <div class="features-list">
+            <!-- Feature 1: ATS Compatibility -->
+            <a href="/features/ats-detection" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">✓</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Parsing</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Visibility</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Keywords</span>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Critical Check</span>
+                    <h3>ATS Killer Detection</h3>
+                  </div>
+                  <span class="feature-badge">85% Pass Rate</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">What's Happening</span>
+                  <p class="insight-text">
+                    Most recruiters never see your resume—ATS software filters
+                    it first. We detect hidden killers like tables, unusual
+                    formatting, and missing parsing markers that cause 40% of
+                    resumes to fail.
+                  </p>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">Why It Matters</span>
+                  <p class="insight-text">
+                    A perfectly written resume means nothing if the ATS can't
+                    read it. We scan for technical issues that silently reject
+                    your application before any human reads it.
+                  </p>
+                </div>
+                <div class="action-suggestions">
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Avoid tables</strong> for layout; use bullet
+                      points instead</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Remove images & icons</strong> that ATS software
+                      can't read</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Use standard fonts</strong> like Arial or
+                      Calibri</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </article>
+            </a>
 
-            <div class="contact-links">
-              <div class="contact-item">
-                <span class="contact-label">Email</span>
-                <a
-                  href="mailto:khanaraib81@gmail.com"
-                  class="contact-link-text"
-                >
-                  khanaraib81@gmail.com
-                </a>
+            <!-- Feature 2: Role Match Intelligence -->
+            <a href="/features/gap-analysis" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">🎯</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Skills Fit</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Experience</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot red"></div>
+                    <span>Keywords</span>
+                  </div>
+                </div>
               </div>
-              <div class="contact-item">
-                <span class="contact-label">LinkedIn</span>
-                <a
-                  href="https://www.linkedin.com/in/the-araib-khan/"
-                  target="_blank"
-                  class="contact-link-text"
-                >
-                  linkedin.com/in/the-araib-khan/
-                </a>
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Smart Matching</span>
+                    <h3>Role-Specific Gap Analysis</h3>
+                  </div>
+                  <span class="feature-badge">Role Match: 72%</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">What We Do</span>
+                  <p class="insight-text">
+                    Compare your resume to actual job descriptions. We identify
+                    exactly which keywords, skills, and experiences matter most
+                    for your target role, then show you what's missing.
+                  </p>
+                </div>
+                <div class="feature-metrics">
+                  <div class="metric-item">
+                    <div class="metric-value">8/12</div>
+                    <div class="metric-label">Key Skills Found</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">4</div>
+                    <div class="metric-label">Keywords Missing</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">6/10</div>
+                    <div class="metric-label">Experience Match</div>
+                  </div>
+                </div>
+                <div class="confidence-bar">
+                  <div class="confidence-label">
+                    <span>Keyword Confidence</span>
+                    <span>72%</span>
+                  </div>
+                  <div class="confidence-track">
+                    <div class="confidence-fill" style="width: 72%"></div>
+                  </div>
+                </div>
               </div>
-              <div class="contact-item">
-                <span class="contact-label">GitHub</span>
-                <a
-                  href="https://github.com/TheAraibKhan"
-                  target="_blank"
-                  class="contact-link-text"
-                >
-                  github.com/TheAraibKhan
-                </a>
-              </div>
-            </div>
-          </div>
+            </article>
+            </a>
 
-          <!-- Right Column -->
-          <div class="contact-right">
-            <form id="contact-form" class="contact-form">
-              <div class="form-group">
-                <label for="contact-name">Full Name</label>
-                <input
-                  type="text"
-                  id="contact-name"
-                  name="name"
-                  placeholder="Your name"
-                  required
-                />
+            <!-- Feature 3: Recruiter's 6-Second View -->
+            <a href="/features/recruiter-perspective" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">👁️</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Clarity</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Impact</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Scannability</span>
+                  </div>
+                </div>
               </div>
-
-              <div class="form-group">
-                <label for="contact-email">Email Address</label>
-                <input
-                  type="email"
-                  id="contact-email"
-                  name="email"
-                  placeholder="your@email.com"
-                  required
-                />
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Human Factor</span>
+                    <h3>Recruiter's Perspective Mode</h3>
+                  </div>
+                  <span class="feature-badge">Visual Scan</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">The Reality</span>
+                  <p class="insight-text">
+                    Recruiters spend 6 seconds scanning resumes. We analyze what
+                    they notice in that glance: is your summary compelling? Are
+                    achievements bold? Can they find your most important info
+                    instantly?
+                  </p>
+                </div>
+                <div class="action-suggestions">
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Strengthen weak verbs:</strong> Replace "helped"
+                      with "drove" or "accelerated"</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Add impact numbers:</strong> "Increased revenue
+                      34%" beats "improved sales"</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Lead with value:</strong> Put your strongest
+                      achievement first in each role</span
+                    >
+                  </div>
+                </div>
               </div>
+            </article>
+            </a>
 
-              <div class="form-group">
-                <label for="contact-message">Message</label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  placeholder="What's on your mind?"
-                  rows="5"
-                  required
-                ></textarea>
+            <!-- Feature 4: Bullet Point Power Score -->
+            <a href="/features/bullet-impact" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">⚡</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Weight</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Specificity</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot red"></div>
+                    <span>Compat.</span>
+                  </div>
+                </div>
               </div>
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Smart Optimization</span>
+                    <h3>Bullet Point Impact Scoring</h3>
+                  </div>
+                  <span class="feature-badge">Avg Score: 6.8/10</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">How We Score</span>
+                  <p class="insight-text">
+                    Each bullet point gets scored on: specificity of results,
+                    use of power verbs, quantifiable impact, and ATS keyword
+                    fit. We show you exactly which bullets are weak and how to
+                    strengthen them.
+                  </p>
+                </div>
+                <div class="feature-metrics">
+                  <div class="metric-item">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">Strong Bullets</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">5</div>
+                    <div class="metric-label">Needs Work</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">2</div>
+                    <div class="metric-label">Weak Language</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+            </a>
 
-              <button type="submit" class="btn-submit">Send Message</button>
-              <div id="form-feedback" class="form-feedback"></div>
-            </form>
+            <!-- Feature 5: Formatting & Clarity Score -->
+            <a href="/features/formatting-guidance" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">🎨</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Layout</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Typography</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Spacing</span>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Polish & Details</span>
+                    <h3>Visual & Formatting Guidance</h3>
+                  </div>
+                  <span class="feature-badge">91% Optimal</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">What Matters</span>
+                  <p class="insight-text">
+                    Small formatting issues kill credibility: inconsistent
+                    spacing, wrong fonts, poor margins. We catch and fix them
+                    all with section-by-section guidance.
+                  </p>
+                </div>
+                <div class="action-suggestions">
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Use 1-inch margins</strong> and consistent line
+                      spacing</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Pick one font family;</strong> stick with it
+                      throughout</span
+                    >
+                  </div>
+                  <div class="suggestion">
+                    <span class="suggestion-icon">→</span>
+                    <span
+                      ><strong>Real dates, real names:</strong> No abbreviations
+                      or creative formats</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </article>
+            </a>
+
+            <!-- Feature 6: Career Readiness Dashboard -->
+            <a href="/features/career-readiness" class="feature-link">
+            <article class="feature-item">
+              <div class="feature-icon-wrapper">
+                <div class="feature-icon">📊</div>
+                <div class="health-indicators">
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Overall</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot green"></div>
+                    <span>Trackable</span>
+                  </div>
+                  <div class="health-item">
+                    <div class="health-dot yellow"></div>
+                    <span>Trending</span>
+                  </div>
+                </div>
+              </div>
+              <div class="feature-content">
+                <div class="feature-header">
+                  <div class="feature-title-block">
+                    <span class="feature-subtitle">Long-Term Growth</span>
+                    <h3>Career Readiness Score & Trends</h3>
+                  </div>
+                  <span class="feature-badge">Score: 78/100</span>
+                </div>
+                <div class="feature-insight">
+                  <span class="insight-label">Track Progress Over Time</span>
+                  <p class="insight-text">
+                    Upload multiple versions and watch your score improve. See
+                    trends across: ATS compatibility, keyword density, impact
+                    strength, and readability. Build your resume methodically.
+                  </p>
+                </div>
+                <div class="feature-metrics">
+                  <div class="metric-item">
+                    <div class="metric-value">↑ 12%</div>
+                    <div class="metric-label">Last 2 weeks</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">5</div>
+                    <div class="metric-label">Versions Uploaded</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-value">78%</div>
+                    <div class="metric-label">Overall Health</div>
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <!-- Trust Section -->
+      <section class="trust-section">
+        <div class="section-wrapper">
+          <div class="trust-content">
+            <h2>Built by someone who's been there</h2>
+            <p>
+              I built this because I remember what it's like to send out dozens
+              of applications and hear nothing back. Your resume isn't bad—it
+              just needs the right tweaks to get noticed.
+            </p>
+            <p>
+              This tool gives you the same feedback I wish I had when I was
+              starting out. It's free for students, always will be.
+            </p>
+            <div class="trust-author">
+              <span>— Araib Khan, Creator</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="cta-container">
+          <h2>Ready to Get More Interviews?</h2>
+          <p>
+            Join thousands of students and early professionals getting actionable feedback on their resumes. No spam. No nonsense. Just real career guidance.
+          </p>
+          <a href="/resume/upload" class="btn-cta">Analyze My Resume Now</a>
+        </div>
+      </section>
+    </main>
 
     <!-- Footer -->
-    <div class="footer">
-      <p>&copy; 2026 Araib Khan. All rights reserved.</p>
-    </div>
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <span class="logo">Career Assistant</span>
+          <p>
+            AI-powered resume feedback for students and early professionals.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="/features">Features</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/how-it-works">How it works</a>
+          </div>
+
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy">Privacy</a>
+          </div>
+
+          <div class="footer-column">
+            <h4>Connect</h4>
+            <a
+              href="https://github.com/TheAraibKhan"
+              target="_blank"
+              rel="noopener"
+              >GitHub</a
+            >
+            <a
+              href="https://www.linkedin.com/in/the-araib-khan/"
+              target="_blank"
+              rel="noopener"
+              >LinkedIn</a
+            >
+            <a href="mailto:khanaraib81@gmail.com">Email</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Career Assistant. Made with care.</p>
+      </div>
+    </footer>
 
     <script>
-      // Contact Form Handler
-      document
-        .getElementById("contact-form")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
+      // Header scroll effect
+      const header = document.getElementById("header");
+      let lastScrollTop = 0;
 
-          const form = this;
-          const feedback = document.getElementById("form-feedback");
-          const submitBtn = document.querySelector(".btn-submit");
+      window.addEventListener("scroll", () => {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
 
-          // Clear previous feedback
-          feedback.textContent = "";
-          feedback.className = "form-feedback";
+        if (scrollTop > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
 
-          // Get form data
-          const name = document.getElementById("contact-name").value.trim();
-          const email = document.getElementById("contact-email").value.trim();
-          const message = document
-            .getElementById("contact-message")
-            .value.trim();
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
 
-          // Validation
-          if (!name) {
-            feedback.textContent = "Please enter your name.";
-            feedback.className = "form-feedback error";
-            return;
-          }
+      // Mobile menu toggle
+      const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+      const mainNav = document.getElementById("mainNav");
 
-          if (!email || !email.includes("@")) {
-            feedback.textContent = "Please enter a valid email address.";
-            feedback.className = "form-feedback error";
-            return;
-          }
+      mobileMenuToggle.addEventListener("click", () => {
+        const isExpanded =
+          mobileMenuToggle.getAttribute("aria-expanded") === "true";
 
-          if (!message || message.length < 10) {
-            feedback.textContent =
-              "Please write a message (at least 10 characters).";
-            feedback.className = "form-feedback error";
-            return;
-          }
+        mobileMenuToggle.setAttribute("aria-expanded", !isExpanded);
+        mobileMenuToggle.classList.toggle("active");
+        mainNav.classList.toggle("active");
+      });
 
-          // Disable button during submission
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Sending...";
-
-          try {
-            const response = await fetch("/api/contact", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                name: name,
-                email: email,
-                message: message,
-              }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-              feedback.textContent =
-                "Thanks for reaching out. I'll get back to you soon.";
-              feedback.className = "form-feedback success";
-              form.reset();
-            } else {
-              feedback.textContent =
-                data.message || "Something went wrong. Please try again.";
-              feedback.className = "form-feedback error";
-            }
-          } catch (error) {
-            console.error("Error:", error);
-            feedback.textContent = "Unable to send message. Please try again.";
-            feedback.className = "form-feedback error";
-          } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Send Message";
+      // Close mobile menu when clicking nav links
+      const navLinks = mainNav.querySelectorAll("a");
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          if (mainNav.classList.contains("active")) {
+            mobileMenuToggle.click();
           }
         });
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const href = this.getAttribute("href");
+
+          if (href !== "#" && href.length > 1) {
+            e.preventDefault();
+            const target = document.querySelector(href);
+
+            if (target) {
+              const headerOffset = 80;
+              const elementPosition = target.getBoundingClientRect().top;
+              const offsetPosition =
+                elementPosition + window.pageYOffset - headerOffset;
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+              });
+            }
+          }
+        });
+      });
+
+      // Intersection Observer for scroll animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      // Observe step cards and feature items
+      document.querySelectorAll(".step-card, .feature-item").forEach((el) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(20px)";
+        el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        observer.observe(el);
+      });
+
+      // Make feature items clickable
+      const featureLinks = {
+        'ATS Killer Detection': '/features/ats-detection',
+        'Role-Specific Gap Analysis': '/features/gap-analysis',
+        "Recruiter's Perspective Mode": '/features/recruiter-perspective',
+        'Bullet Point Impact Scoring': '/features/bullet-impact',
+        'Visual & Formatting Guidance': '/features/formatting-guidance',
+        'Career Readiness Score & Trends': '/features/career-readiness'
+      };
+
+      document.querySelectorAll('.feature-item').forEach((item) => {
+        // Find the h3 element to get the feature title
+        const titleElement = item.querySelector('h3');
+        if (titleElement) {
+          const featureTitle = titleElement.textContent;
+          const featureUrl = featureLinks[featureTitle];
+          
+          if (featureUrl) {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', (e) => {
+              // Only navigate if clicking on the card itself, not on elements inside
+              if (!e.target.closest('button, a')) {
+                window.location.href = featureUrl;
+              }
+            });
+          }
+        }
+      });
     </script>
   </body>
 </html>

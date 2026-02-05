@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATS Detection - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .issue-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .issue-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: var(--bg-tertiary);
+        border-left: 4px solid var(--danger);
+        border-radius: 0.5rem;
+      }
+
+      .issue-list strong {
+        color: var(--danger);
+      }
+
+      .solution-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .solution-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .solution-list strong {
+        color: var(--success);
+      }
+
+      .checklist {
+        margin: 1.5rem 0;
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: var(--bg-tertiary);
+        border-radius: 0.5rem;
+      }
+
+      .checklist-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary);
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all 150ms ease;
+      }
+
+      .checklist-checkbox:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .checklist-checkbox.checked {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
+      }
+
+      .checklist-text {
+        color: var(--text-secondary);
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* User Analysis Section */
+      .analysis-section {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>ATS Killer Detection</h1>
+        <p>
+          Your resume passes through Applicant Tracking Systems (ATS) software
+          before any human sees it. We detect what kills your chances.
+        </p>
+        <span class="status-badge">85% of resumes pass this check</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">40%</div>
+          <div class="stat-label">Of resumes fail ATS screening</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">6 sec</div>
+          <div class="stat-label">Average recruiter review time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100+</div>
+          <div class="stat-label">Possible ATS issues detected</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100+</div>
+          <div class="stat-label">Possible ATS issues detected</div>
+        </div>
+      </div>
+
+      <!-- User Analysis Section -->
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">ATS Score</div>
+            <div class="analysis-card-value" id="atsScore">--</div>
+            <div class="analysis-card-description">
+              How well your resume parses
+            </div>
+            <div class="analysis-badge" id="atsStatus">Not scanned yet</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Critical Issues</div>
+            <div class="analysis-card-value" id="criticalCount">--</div>
+            <div class="analysis-card-description">
+              Must fix before applying
+            </div>
+            <div class="analysis-badge danger" id="criticalStatus">
+              None detected
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Formatting Problems</div>
+            <div class="analysis-card-value" id="formatCount">--</div>
+            <div class="analysis-card-description">
+              Visual and layout issues
+            </div>
+            <div class="analysis-badge warning" id="formatStatus">
+              Check details
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Keywords Found</div>
+            <div class="analysis-card-value" id="keywordCount">--</div>
+            <div class="analysis-card-description">
+              Match with job description
+            </div>
+            <div class="analysis-badge" id="keywordStatus">In progress</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>What's the Problem?</h2>
+        <p>
+          ATS systems are designed to parse resumes and extract key information.
+          They're not sophisticated—they stumble on formatting, images, tables,
+          and unusual fonts. If the ATS can't read your resume properly, it
+          never reaches a human recruiter, no matter how qualified you are.
+        </p>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          "
+        >
+          Common ATS Killers:
+        </h3>
+        <ul class="issue-list">
+          <li>
+            <strong>Tables & complex layouts</strong> - ATS reads text
+            sequentially and gets confused
+          </li>
+          <li>
+            <strong>Images, graphics, or icons</strong> - Most ATS can't
+            interpret visual elements
+          </li>
+          <li>
+            <strong>Headers, footers, or sidebars</strong> - Information in
+            margins often gets lost
+          </li>
+          <li>
+            <strong>Unusual fonts</strong> - Fancy typefaces fail to parse
+            correctly
+          </li>
+          <li>
+            <strong>PDF formatting issues</strong> - Improper conversion
+            destroys structure
+          </li>
+          <li>
+            <strong>Missing keywords</strong> - ATS searches for specific terms;
+            if they're absent, you're invisible
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Why This Matters</h2>
+        <p>
+          Imagine this: You're perfectly qualified for a role, but your resume
+          never reaches the hiring manager because the ATS couldn't parse it. A
+          technical failure, not a content one, ends your opportunity. This
+          happens to thousands of candidates every day.
+        </p>
+        <p>
+          <strong>The reality:</strong> Your resume must clear the ATS filter
+          before your qualifications even matter. It's a gatekeeper, and many
+          candidates don't realize they've already been filtered out.
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2>How to Fix It</h2>
+        <ul class="solution-list">
+          <li>
+            <strong>Use a clean, simple format</strong> - Stick to bullet points
+            and standard margins
+          </li>
+          <li>
+            <strong>Remove images and icons</strong> - ATS software treats them
+            as blank space
+          </li>
+          <li>
+            <strong>Use standard fonts</strong> - Arial, Calibri, or Times New
+            Roman are safest
+          </li>
+          <li>
+            <strong>Avoid tables</strong> - Use tabs and spaces instead to
+            organize information
+          </li>
+          <li>
+            <strong>Include relevant keywords</strong> - Mirror language from
+            the job description
+          </li>
+          <li>
+            <strong>Save as .docx or .pdf</strong> - Avoid exotic file formats
+          </li>
+        </ul>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          "
+        >
+          Quick ATS Compatibility Checklist:
+        </h3>
+        <div class="checklist">
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">No images, logos, or graphics</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">No headers, footers, or text boxes</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">Standard font (size 10-12pt)</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">1-inch margins on all sides</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">No tables or complex layouts</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox">✓</div>
+            <div class="checklist-text">
+              Job keywords from description included
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Ready to Check Your Resume?</h3>
+        <p>
+          Upload your resume now and get instant feedback on ATS compatibility
+          and 5 other critical checks.
+        </p>
+        <a href="/resume" class="btn">Upload & Analyze</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // Checklist functionality
+      document.querySelectorAll(".checklist-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("click", function () {
+          this.classList.toggle("checked");
+        });
+      });
+
+      // User Analysis Section - Simulate data from session/localStorage
+      function initializeAnalysis() {
+        // Simulate resume analysis data (in real app, this would come from backend)
+        const analysisData = {
+          atsScore: localStorage.getItem("atsScore") || null,
+          criticalCount: localStorage.getItem("criticalCount") || null,
+          formatCount: localStorage.getItem("formatCount") || null,
+          keywordCount: localStorage.getItem("keywordCount") || null,
+        };
+
+        // If we have analysis data, show the analysis section
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.atsScore) {
+            document.getElementById("atsScore").textContent =
+              analysisData.atsScore + "%";
+            const atsStatus = document.getElementById("atsStatus");
+            const score = parseInt(analysisData.atsScore);
+            if (score >= 80) {
+              atsStatus.textContent = "Excellent";
+              atsStatus.className = "analysis-badge";
+            } else if (score >= 60) {
+              atsStatus.textContent = "Good";
+              atsStatus.className = "analysis-badge warning";
+            } else {
+              atsStatus.textContent = "Needs work";
+              atsStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.criticalCount) {
+            document.getElementById("criticalCount").textContent =
+              analysisData.criticalCount;
+            const criticalStatus = document.getElementById("criticalStatus");
+            if (analysisData.criticalCount === "0") {
+              criticalStatus.textContent = "All clear ✓";
+            } else {
+              criticalStatus.textContent = "Fix required";
+            }
+          }
+
+          if (analysisData.formatCount) {
+            document.getElementById("formatCount").textContent =
+              analysisData.formatCount;
+          }
+
+          if (analysisData.keywordCount) {
+            document.getElementById("keywordCount").textContent =
+              analysisData.keywordCount;
+            const keywordStatus = document.getElementById("keywordStatus");
+            const keywords = parseInt(analysisData.keywordCount);
+            if (keywords > 15) {
+              keywordStatus.textContent = "Strong match";
+              keywordStatus.className = "analysis-badge";
+            } else if (keywords > 8) {
+              keywordStatus.textContent = "Good coverage";
+              keywordStatus.className = "analysis-badge";
+            } else {
+              keywordStatus.textContent = "Add more";
+              keywordStatus.className = "analysis-badge warning";
+            }
+          }
+        }
+      }
+
+      // Initialize analysis on page load
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

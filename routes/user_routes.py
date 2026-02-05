@@ -38,13 +38,15 @@ def home():
     
     if request.method == "POST":
         try:
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.form.get('_ajax') == '1'
+            
             if 'user_id' in session:
                 usage_check = check_usage_limit(session['user_id'], 'career_analyses_used')
                 if not usage_check['allowed']:
                     error = usage_check['message']
-            else:
-                error = "Please log in to use career analysis"
-                return render_template("index.html", error=error)
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': error}), 403
+                    return render_template("index.html", error=error)
             
             name = request.form.get("name", "").strip()
             email = session.get('email', request.form.get("email", "")).strip()
@@ -57,10 +59,14 @@ def home():
             
             if not all([name, interest, level]):
                 error = "Name, interest, and level are required"
+                if is_ajax:
+                    return jsonify({'success': False, 'message': error})
             else:
                 career_rec = get_career_recommendation(interest, level)
                 if not career_rec:
                     error = "Invalid interest or level selection"
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': error})
                 else:
                     role = career_rec['role']
                     tier = career_rec['tier']
@@ -95,22 +101,37 @@ def home():
                             gaps=gaps
                         )
                     
-                    if submission_id:
+                    if submission_id or user_id:
                         # Increment usage after successful analysis
-                        increment_usage(user_id, 'career_analyses_used')
+                        if user_id:
+                            increment_usage(user_id, 'career_analyses_used')
                         recommendation = role
                         detailed_rec = guidance or career_rec
+                        
+                        if is_ajax:
+                            return jsonify({
+                                'success': True,
+                                'data': {
+                                    'role': role,
+                                    'confidence': confidence,
+                                    'readiness_score': readiness_score,
+                                    'current_level': level,
+                                    'strengths': strengths[:5],
+                                    'gaps': gaps[:5],
+                                    'next_actions': next_actions[:5],
+                                    'next_role': next_role
+                                }
+                            })
                     else:
-                        if user_id:
-                            error = "Failed to save submission to database"
-                        else:
-                            # Allow analysis for non-logged-in users, just don't save
-                            recommendation = role
-                            detailed_rec = guidance or career_rec
+                        error = "Failed to process analysis"
+                        if is_ajax:
+                            return jsonify({'success': False, 'message': error})
         
         except Exception as e:
             error = f"Error processing request: {str(e)}"
             traceback.print_exc()
+            if is_ajax:
+                return jsonify({'success': False, 'message': error}), 500
     
     # Get usage context for display
     usage_context = None

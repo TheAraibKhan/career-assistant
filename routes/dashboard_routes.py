@@ -69,7 +69,7 @@ def index():
         analytics['timeline'] = submissions[:7]
     
     return render_template(
-        'dashboard/index.html',
+        'dashboard/real_dashboard.html',
         user=user,
         usage_context=usage_context,
         analytics=analytics,

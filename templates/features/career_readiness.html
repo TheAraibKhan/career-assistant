@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Career Readiness Score - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .score-breakdown {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .score-card {
+        padding: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          rgba(59, 91, 219, 0.05) 0%,
+          rgba(100, 118, 242, 0.05) 100%
+        );
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .score-card.high {
+        background: linear-gradient(
+          135deg,
+          rgba(90, 157, 126, 0.05) 0%,
+          rgba(157, 206, 183, 0.05) 100%
+        );
+      }
+
+      .score-card.low {
+        background: linear-gradient(
+          135deg,
+          rgba(217, 119, 6, 0.05) 0%,
+          rgba(249, 192, 130, 0.05) 100%
+        );
+      }
+
+      .score-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+
+      .score-value.high {
+        color: var(--success);
+      }
+
+      .score-value.low {
+        color: var(--warning);
+      }
+
+      .score-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .benchmark {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(59, 91, 219, 0.1);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .readiness-level {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .level-item {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        background: var(--bg-tertiary);
+        border-radius: 0.5rem;
+        border-left: 4px solid var(--primary);
+      }
+
+      .level-item h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1.125rem;
+      }
+
+      .level-item p {
+        color: var(--text-secondary);
+      }
+
+      .level-item.critical {
+        border-left-color: var(--danger);
+        background: rgba(217, 119, 6, 0.05);
+      }
+
+      .level-item.warning {
+        border-left-color: var(--warning);
+        background: rgba(212, 146, 95, 0.05);
+      }
+
+      .level-item.ready {
+        border-left-color: var(--success);
+        background: rgba(90, 157, 126, 0.05);
+      }
+
+      .progress-framework {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        background: var(--bg-tertiary);
+        border-radius: 0.75rem;
+      }
+
+      .progress-item {
+        margin-bottom: 1.5rem;
+      }
+
+      .progress-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background: var(--success);
+        border-radius: 4px;
+        transition: width 300ms ease;
+      }
+
+      .action-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .action-item {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .action-item strong {
+        color: var(--success);
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .analysis-section {
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+
+        .score-breakdown {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Career Readiness Score & Trends</h1>
+        <p>
+          Track your resume readiness over time. Understand where you stand and
+          what to improve for maximum impact.
+        </p>
+        <span class="status-badge">Comprehensive career readiness metric</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">68</div>
+          <div class="stat-label">Average readiness score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">28%</div>
+          <div class="stat-label">Avg improvement per month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4.2x</div>
+          <div class="stat-label">Likelihood to get interview</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>What is Career Readiness?</h2>
+        <p>
+          Career Readiness is our comprehensive metric that scores how prepared
+          your resume is to land interviews. It combines all the factors we
+          check: ATS compatibility, content quality, impact, formatting,
+          relevance, and perceived fit for your target roles.
+        </p>
+        <p>
+          <strong>Your Career Readiness Score is not a judgment.</strong> It's a
+          roadmap showing exactly where to improve and what will have the
+          biggest impact.
+        </p>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+          "
+        >
+          Your Readiness Breakdown:
+        </h3>
+        <div class="score-breakdown">
+          <div class="score-card high">
+            <div class="score-value high">82</div>
+            <div class="score-label">Content Quality</div>
+            <div class="benchmark">Strong bullet points</div>
+          </div>
+          <div class="score-card">
+            <div class="score-value">66</div>
+            <div class="score-label">ATS Compatibility</div>
+            <div class="benchmark">Minor formatting issues</div>
+          </div>
+          <div class="score-card low">
+            <div class="score-value low">52</div>
+            <div class="score-label">Target Alignment</div>
+            <div class="benchmark">Some skill gaps</div>
+          </div>
+          <div class="score-card">
+            <div class="score-value">74</div>
+            <div class="score-label">Visual Polish</div>
+            <div class="benchmark">Professional formatting</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Score Tiers & What They Mean</h2>
+
+        <ul class="readiness-level">
+          <li class="level-item critical">
+            <h3>🔴 0-40: Critical</h3>
+            <p>
+              Your resume needs significant work. Likely being rejected in early
+              screens. Focus on ATS compatibility and content basics.
+            </p>
+          </li>
+          <li class="level-item warning">
+            <h3>🟡 41-60: Developing</h3>
+            <p>
+              You're on the right track but have clear gaps. Recruiters might
+              call, but you're missing opportunities. Prioritize missing skills
+              and bullet strength.
+            </p>
+          </li>
+          <li class="level-item">
+            <h3>🟢 61-75: Solid</h3>
+            <p>
+              Your resume is doing its job. You'll land interviews. Small
+              improvements can push you higher. Focus on relevance to specific
+              roles.
+            </p>
+          </li>
+          <li class="level-item ready">
+            <h3>✓ 76+: Interview Ready</h3>
+            <p>
+              Your resume is competitive. You're likely to get interviews when
+              you apply to aligned roles. Continue improving to stand out from
+              other strong candidates.
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Progress Framework: From Current to Ready</h2>
+
+        <div class="progress-framework">
+          <div class="progress-item">
+            <div class="progress-label">
+              <span>Week 1-2: Fix ATS Issues</span>
+              <span>+8 points</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 30%"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label">
+              <span>Week 3-4: Strengthen Bullets</span>
+              <span>+12 points</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 60%"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label">
+              <span>Week 5-6: Add Metrics & Impact</span>
+              <span>+10 points</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 50%"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label">
+              <span>Week 7-8: Target Role Alignment</span>
+              <span>+8 points</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 35%"></div>
+            </div>
+          </div>
+        </div>
+
+        <p
+          style="
+            margin-top: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+          "
+        >
+          <strong>Timeline:</strong> Most users reach "Interview Ready" within
+          2-4 weeks of focused effort. Focus on high-impact improvements first.
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2>Immediate Actions to Improve</h2>
+        <ul class="action-list">
+          <li class="action-item">
+            <strong>Priority 1:</strong> Fix ATS blocking issues (remove tables,
+            images, odd formatting)
+          </li>
+          <li class="action-item">
+            <strong>Priority 2:</strong> Add metrics to 3 weakest bullets
+            (increase impact by ~25%)
+          </li>
+          <li class="action-item">
+            <strong>Priority 3:</strong> Identify and highlight 5-10 keywords
+            matching your target role
+          </li>
+          <li class="action-item">
+            <strong>Priority 4:</strong> Get a friend's feedback on the
+            recruiter's 6-second view
+          </li>
+          <li class="action-item">
+            <strong>Priority 5:</strong> Re-submit weekly and track improvements
+            (your score should go up 5-10 points per week)
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Tracking Your Progress</h2>
+        <p>
+          Each time you upload a new version of your resume, we score it and
+          show you exactly what improved and what still needs work. Watch your
+          score climb week by week.
+        </p>
+        <p>
+          <strong>Pro tip:</strong> Most users find that making one focused
+          improvement (like adding metrics to all bullets) creates a noticeable
+          jump in their score. Then they tackle the next improvement.
+        </p>
+      </div>
+
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">Readiness Score</div>
+            <div class="analysis-card-value" id="readinessScore">--</div>
+            <div class="analysis-card-description">Interview preparation</div>
+            <div class="analysis-badge" id="readinessStatus">
+              Not scanned yet
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Content Quality</div>
+            <div class="analysis-card-value" id="completionPercent">--</div>
+            <div class="analysis-card-description">Resume completeness</div>
+            <div class="analysis-badge warning" id="completionStatus">
+              Review details
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">ATS Score</div>
+            <div class="analysis-card-value" id="alignmentScore">--</div>
+            <div class="analysis-card-description">
+              Applicant tracking system
+            </div>
+            <div class="analysis-badge" id="alignmentStatus">Measuring</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Target Fit</div>
+            <div class="analysis-card-value" id="targetFit">--</div>
+            <div class="analysis-card-description">Role alignment match</div>
+            <div class="analysis-badge" id="targetStatus">In progress</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Get Your Career Readiness Score</h3>
+        <p>
+          Upload your resume now and get a detailed breakdown of your readiness
+          score, improvement priorities, and a personalized roadmap to reach
+          "Interview Ready" status.
+        </p>
+        <a href="/resume" class="btn">Upload & Get Scored</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // User Analysis Section
+      function initializeAnalysis() {
+        const analysisData = {
+          readinessScore: localStorage.getItem("readinessScore") || null,
+          completionPercent: localStorage.getItem("completionPercent") || null,
+          alignmentScore: localStorage.getItem("alignmentScore") || null,
+          targetFit: localStorage.getItem("targetFit") || null,
+        };
+
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.readinessScore) {
+            document.getElementById("readinessScore").textContent =
+              analysisData.readinessScore + "%";
+            const readinessStatus = document.getElementById("readinessStatus");
+            const score = parseInt(analysisData.readinessScore);
+            if (score >= 80) {
+              readinessStatus.textContent = "Ready";
+              readinessStatus.className = "analysis-badge";
+            } else if (score >= 60) {
+              readinessStatus.textContent = "Good Progress";
+              readinessStatus.className = "analysis-badge warning";
+            } else {
+              readinessStatus.textContent = "Keep Working";
+              readinessStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.completionPercent) {
+            document.getElementById("completionPercent").textContent =
+              analysisData.completionPercent + "%";
+          }
+
+          if (analysisData.alignmentScore) {
+            document.getElementById("alignmentScore").textContent =
+              analysisData.alignmentScore + "%";
+          }
+
+          if (analysisData.targetFit) {
+            document.getElementById("targetFit").textContent =
+              analysisData.targetFit + "%";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

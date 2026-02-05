@@ -1,9 +1,47 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 import re
 import logging
+from database.db import get_db
+from datetime import datetime
 
 contact_bp = Blueprint("contact", __name__)
 logger = logging.getLogger(__name__)
+
+
+@contact_bp.route("/", methods=["GET"])
+def index():
+    """Contact page"""
+    return render_template('contact.html')
+
+
+@contact_bp.route("/submit", methods=["POST"])
+def submit():
+    """Submit feedback via HTML form"""
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    subject = request.form.get('subject', '').strip()
+    message = request.form.get('message', '').strip()
+    
+    if not all([name, email, subject, message]):
+        flash('All fields are required', 'error')
+        return redirect(url_for('contact.index'))
+    
+    try:
+        db = get_db()
+        feedback_text = f"From: {name} ({email})\nSubject: {subject}\n\n{message}"
+        db.execute('''
+            INSERT INTO user_feedback (user_id, feedback_text, rating, feature, submitted_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (None, feedback_text, None, 'general', datetime.now().isoformat()))
+        db.commit()
+        
+        logger.info(f"Contact form submission - Name: {name}, Email: {email}, Subject: {subject}")
+        flash('Thanks for your feedback! We appreciate you.', 'success')
+        return redirect(url_for('contact.index'))
+    except Exception as e:
+        logger.error(f"Contact form error: {str(e)}")
+        flash('Something went wrong. Please try again.', 'error')
+        return redirect(url_for('contact.index'))
 
 
 @contact_bp.route("/api/contact", methods=["POST"])

@@ -1,0 +1,156 @@
+{% extends "base.html" %} {% block title %}My Skills - CareerOS{% endblock %} {%
+block extra_css %}
+<style>
+  .skills-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .skills-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .skills-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .skills-stat {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .skills-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .skills-stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .skills-list {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    transition: all 150ms ease;
+  }
+
+  .skill-item:hover {
+    background: var(--bg-secondary);
+  }
+
+  .skill-name {
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .skill-count {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-left: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .skills-container {
+      padding: 1rem;
+    }
+
+    .skills-header {
+      padding: 1.5rem;
+    }
+
+    .skill-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .skill-count {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="skills-container">
+  <!-- HEADER -->
+  <div class="skills-header">
+    <h1 style="margin-bottom: 0.5rem">My Skills</h1>
+    <p>Tracked skills from your resumes and career analyses</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="skills-stats">
+    <div class="skills-stat">
+      <div class="skills-stat-value">{{ unique_skill_count }}</div>
+      <div class="skills-stat-label">Unique Skills</div>
+    </div>
+    <div class="skills-stat">
+      <div class="skills-stat-value">{{ skills|length }}</div>
+      <div class="skills-stat-label">Total Entries</div>
+    </div>
+  </div>
+
+  <!-- SKILLS LIST -->
+  {% if skills %}
+  <div class="skills-list">
+    <h2 style="margin-bottom: 1.5rem">Your Skills</h2>
+
+    {% for skill, data in skills %}
+    <div class="skill-item">
+      <div class="skill-name">📌 {{ skill }}</div>
+      <div class="skill-count">{{ data.count }} mentions</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📚</div>
+    <h2 style="margin-bottom: 0.5rem">No skills tracked yet</h2>
+    <p>Upload resumes to track your skills</p>
+    <a href="/resume/upload" class="btn btn-primary" style="margin-top: 1rem"
+      >Upload Resume</a
+    >
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

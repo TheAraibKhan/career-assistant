@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Role-Specific Gap Analysis - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .gap-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .gap-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: var(--bg-tertiary);
+        border-left: 4px solid var(--warning);
+        border-radius: 0.5rem;
+      }
+
+      .gap-list strong {
+        color: var(--warning);
+      }
+
+      .solution-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .solution-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .solution-list strong {
+        color: var(--success);
+      }
+
+      .skill-matrix {
+        margin: 1.5rem 0;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      .skill-matrix th,
+      .skill-matrix td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .skill-matrix th {
+        background: var(--bg-tertiary);
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .skill-matrix tr:hover {
+        background: var(--bg-tertiary);
+      }
+
+      .skill-level {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .skill-bar {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .skill-bar-fill {
+        height: 100%;
+        background: var(--success);
+        border-radius: 3px;
+        transition: width 300ms ease;
+      }
+
+      .gap-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .gap-indicator.missing {
+        background: var(--danger);
+      }
+
+      .gap-indicator.partial {
+        background: var(--warning);
+      }
+
+      .gap-indicator.strong {
+        background: var(--success);
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* User Analysis Section */
+      .analysis-section {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Role-Specific Gap Analysis</h1>
+        <p>
+          Not all skills are equal. We analyze what's missing for your target
+          role and create a personalized roadmap.
+        </p>
+        <span class="status-badge">78% match to target roles</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">5-8</div>
+          <div class="stat-label">Key skills per role</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">23%</div>
+          <div class="stat-label">Average skill gap</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">6 mo</div>
+          <div class="stat-label">Time to close gap</div>
+        </div>
+      </div>
+
+      <!-- User Analysis Section -->
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">Skill Match</div>
+            <div class="analysis-card-value" id="skillScore">--</div>
+            <div class="analysis-card-description">Match to target role</div>
+            <div class="analysis-badge" id="skillStatus">Not scanned yet</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Gaps Identified</div>
+            <div class="analysis-card-value" id="gapCount">--</div>
+            <div class="analysis-card-description">Skills to develop</div>
+            <div class="analysis-badge warning" id="gapStatus">
+              Review details
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Growth Timeline</div>
+            <div class="analysis-card-value" id="timeline">--</div>
+            <div class="analysis-card-description">Months to close gaps</div>
+            <div class="analysis-badge" id="timelineStatus">Estimated</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Readiness Level</div>
+            <div class="analysis-card-value" id="readiness">--</div>
+            <div class="analysis-card-description">For target role</div>
+            <div class="analysis-badge" id="readinessStatus">In progress</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>What's the Problem?</h2>
+        <p>
+          Job titles are deceiving. A "Software Engineer" at one company needs
+          different skills than at another. You might have strong technical
+          skills but lack what this specific role needs, and vice versa.
+        </p>
+        <p>
+          Most candidates don't strategically align their resume with the role
+          they're targeting. This gap shows as "not quite right fit" in
+          recruiter feedback—even when you're qualified.
+        </p>
+
+        <h3
+          style="
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          "
+        >
+          Example: Product Manager Role
+        </h3>
+        <table class="skill-matrix">
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Your Level</th>
+              <th>Required</th>
+              <th>Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Product Strategy</td>
+              <td>
+                <div class="skill-level">
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width: 40%"></div>
+                  </div>
+                  40%
+                </div>
+              </td>
+              <td>Expert</td>
+              <td><span class="gap-indicator missing"></span>Large Gap</td>
+            </tr>
+            <tr>
+              <td>Data Analysis</td>
+              <td>
+                <div class="skill-level">
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width: 75%"></div>
+                  </div>
+                  75%
+                </div>
+              </td>
+              <td>Professional</td>
+              <td><span class="gap-indicator partial"></span>Small Gap</td>
+            </tr>
+            <tr>
+              <td>Cross-functional Communication</td>
+              <td>
+                <div class="skill-level">
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width: 90%"></div>
+                  </div>
+                  90%
+                </div>
+              </td>
+              <td>Expert</td>
+              <td><span class="gap-indicator strong"></span>Strong</td>
+            </tr>
+            <tr>
+              <td>SQL/Analytics Tools</td>
+              <td>
+                <div class="skill-level">
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width: 30%"></div>
+                  </div>
+                  30%
+                </div>
+              </td>
+              <td>Professional</td>
+              <td><span class="gap-indicator missing"></span>Large Gap</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-section">
+        <h2>Why This Matters</h2>
+        <p>
+          <strong>Recruiters screen resumes against role requirements.</strong>
+          If you're missing 2-3 key skills, your resume gets filtered. You might
+          be capable of learning them, but the initial screen doesn't account
+          for potential.
+        </p>
+        <p>
+          <strong>Your career trajectory depends on knowing:</strong> What do I
+          have? What does this role need? What's the fastest path to close the
+          gap?
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2>How to Close the Gap</h2>
+        <ul class="solution-list">
+          <li>
+            <strong>Identify your target role</strong> - Be specific (not just
+            "manager," but which type)
+          </li>
+          <li>
+            <strong>Extract required skills</strong> - Review job descriptions
+            for patterns
+          </li>
+          <li>
+            <strong>Highlight transferable skills</strong> - Show how existing
+            experience translates
+          </li>
+          <li>
+            <strong>Plan skill development</strong> - Online courses, projects,
+            or on-the-job training
+          </li>
+          <li>
+            <strong>Quantify your progress</strong> - Show improvement through
+            metrics and examples
+          </li>
+          <li>
+            <strong>Reframe your narrative</strong> - Explain the gap as a
+            growth trajectory, not a weakness
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Smart Next Steps</h2>
+        <p>
+          Instead of being discouraged by gaps, use them as a roadmap. The
+          fastest path to your target role is filling these specific, identified
+          gaps—not becoming an all-around generalist.
+        </p>
+        <p>
+          <strong>Our system identifies your top 3 gaps</strong> and suggests
+          realistic paths to close them, including resources and timelines.
+        </p>
+      </div>
+
+      <div class="cta-section">
+        <h3>Get Your Personalized Gap Analysis</h3>
+        <p>
+          Upload your resume and tell us your target role. We'll map your skills
+          against what's needed and create a growth plan.
+        </p>
+        <a href="/resume" class="btn">Upload & Analyze</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // User Analysis Section
+      function initializeAnalysis() {
+        const analysisData = {
+          skillScore: localStorage.getItem("skillScore") || null,
+          gapCount: localStorage.getItem("gapCount") || null,
+          timeline: localStorage.getItem("timeline") || null,
+          readiness: localStorage.getItem("readiness") || null,
+        };
+
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.skillScore) {
+            document.getElementById("skillScore").textContent =
+              analysisData.skillScore + "%";
+            const skillStatus = document.getElementById("skillStatus");
+            const score = parseInt(analysisData.skillScore);
+            if (score >= 75) {
+              skillStatus.textContent = "Strong";
+              skillStatus.className = "analysis-badge";
+            } else if (score >= 50) {
+              skillStatus.textContent = "Moderate";
+              skillStatus.className = "analysis-badge warning";
+            } else {
+              skillStatus.textContent = "Needs work";
+              skillStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.gapCount) {
+            document.getElementById("gapCount").textContent =
+              analysisData.gapCount;
+          }
+
+          if (analysisData.timeline) {
+            document.getElementById("timeline").textContent =
+              analysisData.timeline;
+          }
+
+          if (analysisData.readiness) {
+            document.getElementById("readiness").textContent =
+              analysisData.readiness + "%";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

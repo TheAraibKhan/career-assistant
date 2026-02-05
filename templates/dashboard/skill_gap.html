@@ -1,0 +1,293 @@
+{% extends "base.html" %} {% block title %}Skill Gap Analysis - CareerOS{%
+endblock %} {% block extra_css %}
+<style>
+  .skill-gap-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .skill-gap-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .skill-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .skill-category {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .skill-category-title {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+  }
+
+  .skill-category-list {
+    list-style: none;
+  }
+
+  .skill-category-list li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skill-category-list li:last-child {
+    border-bottom: none;
+  }
+
+  .skill-category-list li::before {
+    content: "• ";
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .gap-section {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .gap-message {
+    background: rgba(217, 119, 6, 0.1);
+    border-left: 4px solid var(--warning);
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .learning-path {
+    background: rgba(90, 157, 126, 0.05);
+    border: 1px solid var(--success);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .learning-path h3 {
+    color: var(--success);
+    margin-bottom: 1rem;
+  }
+
+  .learning-step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .learning-step-num {
+    background: var(--success);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .learning-step-content {
+    flex: 1;
+  }
+
+  .learning-step-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .learning-step-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .skill-gap-container {
+      padding: 1rem;
+    }
+
+    .skill-categories {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="skill-gap-container">
+  <!-- HEADER -->
+  <div class="skill-gap-header">
+    <h1 style="margin-bottom: 0.5rem">🎯 Skill Gap Analysis</h1>
+    <p>Identify what you need to learn to reach your career goals</p>
+  </div>
+
+  {% if latest_analysis %}
+  <!-- RECOMMENDED SKILLS -->
+  <div class="skill-categories">
+    <div class="skill-category">
+      <div class="skill-category-title">✅ Your Strengths</div>
+      <ul class="skill-category-list">
+        <li>Problem Solving</li>
+        <li>Communication</li>
+        <li>Leadership</li>
+        <li>Adaptability</li>
+      </ul>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-category-title">⚠️ Gaps Identified</div>
+      <ul class="skill-category-list">
+        <li>Advanced Technical Skills</li>
+        <li>Project Management</li>
+        <li>Data Analysis</li>
+        <li>Strategic Planning</li>
+      </ul>
+    </div>
+
+    <div class="skill-category">
+      <div class="skill-category-title">🚀 High Impact Skills</div>
+      <ul class="skill-category-list">
+        <li>Industry-Specific Tools</li>
+        <li>Certifications</li>
+        <li>Emerging Technologies</li>
+        <li>Domain Expertise</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GAPS SECTION -->
+  <div class="gap-section">
+    <h3 style="color: var(--primary); margin-bottom: 1rem">
+      Analysis Findings
+    </h3>
+    {% if latest_analysis.gaps %}
+    <div class="gap-message">
+      <strong>Key Gaps:</strong> {{ latest_analysis.gaps }}
+    </div>
+    {% else %}
+    <p style="color: var(--text-secondary); margin-bottom: 1rem">
+      Based on your profile, here are areas where developing new skills would
+      provide the most value.
+    </p>
+    {% endif %}
+
+    <!-- LEARNING PATH -->
+    <div class="learning-path">
+      <h3>Your Personalized Learning Path</h3>
+
+      <div class="learning-step">
+        <div class="learning-step-num">1</div>
+        <div class="learning-step-content">
+          <div class="learning-step-title">
+            Foundation Building (0-3 months)
+          </div>
+          <div class="learning-step-desc">
+            Focus on fundamental concepts and core competencies in identified
+            gap areas
+          </div>
+        </div>
+      </div>
+
+      <div class="learning-step">
+        <div class="learning-step-num">2</div>
+        <div class="learning-step-content">
+          <div class="learning-step-title">
+            Practical Application (3-6 months)
+          </div>
+          <div class="learning-step-desc">
+            Apply new skills through projects, certifications, or real-world
+            scenarios
+          </div>
+        </div>
+      </div>
+
+      <div class="learning-step">
+        <div class="learning-step-num">3</div>
+        <div class="learning-step-content">
+          <div class="learning-step-title">
+            Mastery & Specialization (6-12 months)
+          </div>
+          <div class="learning-step-desc">
+            Deepen expertise and build advanced competency in chosen areas
+          </div>
+        </div>
+      </div>
+
+      <div class="learning-step">
+        <div class="learning-step-num">4</div>
+        <div class="learning-step-content">
+          <div class="learning-step-title">Showcase & Scale (Ongoing)</div>
+          <div class="learning-step-desc">
+            Demonstrate expertise through portfolio, speaking, or leadership
+            roles
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="gap-section">
+    <h3 style="color: var(--primary); margin-bottom: 1rem">
+      AI Recommendation
+    </h3>
+    <p>{{ latest_analysis.recommendation }}</p>
+  </div>
+
+  <!-- CTA -->
+  <div
+    style="
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+    "
+  >
+    <h3 style="margin-bottom: 1rem">Want More Detailed Guidance?</h3>
+    <p style="margin-bottom: 1.5rem; color: var(--text-secondary)">
+      Get personalized course recommendations and learning resources from our AI
+      coach
+    </p>
+    <a href="/chatbot" class="btn btn-primary">Chat with AI Coach</a>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🎯</div>
+    <h2 style="margin-bottom: 0.5rem">No gap analysis available yet</h2>
+    <p>
+      Upload a resume and complete a career analysis to get your personalized
+      skill gap analysis
+    </p>
+    <a href="/resume/upload" class="btn btn-primary" style="margin-top: 1rem"
+      >Upload Resume Now</a
+    >
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

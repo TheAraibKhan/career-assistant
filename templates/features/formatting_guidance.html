@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visual & Formatting Guidance - Career Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --warning: #d4925f;
+        --danger: #d97706;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --border: #e5e7eb;
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      html.dark-mode {
+        --primary: #60a5fa;
+        --primary-dark: #3b82f6;
+        --primary-light: #93c5fd;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f97316;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --border: #334155;
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 150ms ease;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .dark-mode-toggle {
+        width: 48px;
+        height: 28px;
+        background: var(--border);
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 150ms ease;
+        display: flex;
+        align-items: center;
+        padding: 0 2px;
+      }
+
+      .dark-mode-toggle:hover {
+        background: var(--primary);
+      }
+
+      .dark-mode-toggle::after {
+        content: "☀️";
+        font-size: 14px;
+        transition: all 200ms ease;
+        position: absolute;
+        left: 4px;
+      }
+
+      html.dark-mode .dark-mode-toggle {
+        background: var(--primary);
+      }
+
+      html.dark-mode .dark-mode-toggle::after {
+        content: "🌙";
+        left: auto;
+        right: 4px;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 150ms ease;
+      }
+
+      .back-button:hover {
+        background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .main-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+
+      .page-header {
+        margin-bottom: 3rem;
+      }
+
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .page-header p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .content-section p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.8;
+      }
+
+      .guideline-list {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .guideline-item {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        background: var(--bg-tertiary);
+        border-left: 4px solid var(--primary);
+        border-radius: 0.5rem;
+      }
+
+      .guideline-item strong {
+        color: var(--primary);
+      }
+
+      .do-donts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+      }
+
+      .do-box {
+        padding: 1.5rem;
+        background: rgba(90, 157, 126, 0.05);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+      }
+
+      .dont-box {
+        padding: 1.5rem;
+        background: rgba(217, 119, 6, 0.05);
+        border-left: 4px solid var(--warning);
+        border-radius: 0.5rem;
+      }
+
+      .do-box h4 {
+        color: var(--success);
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .dont-box h4 {
+        color: var(--warning);
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .do-box ul,
+      .dont-box ul {
+        list-style: none;
+        margin: 0;
+      }
+
+      .do-box li,
+      .dont-box li {
+        margin-bottom: 0.75rem;
+        color: var(--text-secondary);
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .do-box li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--success);
+        font-weight: 600;
+      }
+
+      .dont-box li::before {
+        content: "✗";
+        position: absolute;
+        left: 0;
+        color: var(--warning);
+        font-weight: 600;
+      }
+
+      .format-checklist {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 91, 219, 0.05) 0%,
+          rgba(100, 118, 242, 0.05) 100%
+        );
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin: 1.5rem 0;
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(59, 91, 219, 0.1);
+      }
+
+      .checklist-item:last-child {
+        border-bottom: none;
+      }
+
+      .checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all 150ms ease;
+      }
+
+      .checkbox:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .checkbox.checked {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
+      }
+
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        margin-top: 3rem;
+      }
+
+      .cta-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: white;
+        color: var(--primary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .stat-card {
+        background: var(--bg-tertiary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .analysis-section {
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+      }
+
+      .analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .analysis-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(59, 91, 219, 0.1);
+        border-radius: 0.75rem;
+        color: var(--primary);
+      }
+
+      .analysis-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .analysis-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .analysis-card {
+        background: var(--bg-primary);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        transition: all 150ms ease;
+      }
+
+      .analysis-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .analysis-card-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--primary);
+      }
+
+      .analysis-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .analysis-card-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .analysis-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(90, 157, 126, 0.1);
+        color: var(--success);
+        border-radius: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+      }
+
+      .analysis-badge.warning {
+        background: rgba(212, 146, 95, 0.1);
+        color: var(--warning);
+      }
+
+      .analysis-badge.danger {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--danger);
+      }
+
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 1.75rem;
+        }
+
+        .do-donts {
+          grid-template-columns: 1fr;
+        }
+
+        .main-content {
+          margin: 2rem auto;
+        }
+
+        .content-section {
+          padding: 1.5rem;
+        }
+
+        .cta-section {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <a href="/" class="logo">Career Assistant</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1.5rem">
+          <button
+            class="dark-mode-toggle"
+            id="darkModeToggle"
+            title="Toggle dark mode"
+          ></button>
+          <a href="/" class="back-button">← Back to Home</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>Visual & Formatting Guidance</h1>
+        <p>
+          Formatting is not just about aesthetics—it affects readability, ATS
+          compatibility, and recruiter first impressions.
+        </p>
+        <span class="status-badge">Professional polish matters</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">38%</div>
+          <div class="stat-label">Say format affects perception</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">63%</div>
+          <div class="stat-label">Resumes with formatting issues rejected</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2 sec</div>
+          <div class="stat-label">Impact of poor formatting</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Why Formatting Matters</h2>
+        <p>
+          Your resume's visual appearance sends a signal before anyone reads a
+          word. Sloppy formatting suggests carelessness. Poor spacing makes it
+          hard to scan. Bad typography looks outdated. These factors combine to
+          cost you interviews.
+        </p>
+        <p>
+          <strong>Good formatting is invisible.</strong> It doesn't distract. It
+          guides the reader's eye. It shows professionalism without effort.
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2>Font and Typography</h2>
+
+        <div class="do-donts">
+          <div class="do-box">
+            <h4>✓ Do</h4>
+            <ul>
+              <li>
+                <strong>Use standard fonts:</strong> Arial, Calibri, Times New
+                Roman
+              </li>
+              <li><strong>10-12pt font size</strong> for body text</li>
+              <li>
+                <strong>11-14pt for headers</strong>
+              </li>
+              <li><strong>Consistent spacing</strong> throughout</li>
+              <li><strong>Black text on white</strong> background</li>
+            </ul>
+          </div>
+
+          <div class="dont-box">
+            <h4>✗ Don't</h4>
+            <ul>
+              <li>
+                <strong>Use decorative fonts:</strong> Comic Sans, script fonts
+              </li>
+              <li>
+                <strong>Mix more than 2 fonts</strong>
+              </li>
+              <li>
+                <strong>Use colored text</strong> (except subtle accent colors)
+              </li>
+              <li><strong>Go below 10pt</strong> (hard to read)</li>
+              <li>
+                <strong>Use shadows or 3D effects</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <strong>Pro Tip:</strong> If you're unsure, stick with Arial 11pt or
+          Calibri 11pt. They're universally readable, ATS-friendly, and look
+          professional.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Spacing & Layout</h2>
+
+        <div class="do-donts">
+          <div class="do-box">
+            <h4>✓ Do</h4>
+            <ul>
+              <li><strong>1-inch margins</strong> on all sides</li>
+              <li><strong>Single-spaced</strong> within sections</li>
+              <li><strong>1.15 or 1.5 spacing</strong> between sections</li>
+              <li><strong>Bullet points</strong> for easy scanning</li>
+              <li>
+                <strong>Consistent indentation</strong>
+              </li>
+            </ul>
+          </div>
+
+          <div class="dont-box">
+            <h4>✗ Don't</h4>
+            <ul>
+              <li><strong>Custom margins</strong> (breaks ATS parsing)</li>
+              <li><strong>Double-spaced text</strong> (looks sparse)</li>
+              <li>
+                <strong>Text boxes or columns</strong> (ATS can't read them)
+              </li>
+              <li><strong>Headers/footers</strong> (excluded from ATS)</li>
+              <li>
+                <strong>Excessive whitespace</strong> (appears unpolished)
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <strong>The 1-page rule:</strong> Aim for 1 page if you have less than
+          5 years experience. 2 pages is acceptable for senior roles. Never go
+          beyond 2 pages.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Visual Elements & Color</h2>
+
+        <div class="do-donts">
+          <div class="do-box">
+            <h4>✓ Do</h4>
+            <ul>
+              <li><strong>Use 1-2 subtle accent colors</strong> for headers</li>
+              <li><strong>Bold job titles</strong> for emphasis</li>
+              <li>
+                <strong>Italics for company names</strong> (optional but clean)
+              </li>
+              <li>
+                <strong>Simple horizontal lines</strong> to separate sections
+              </li>
+              <li>
+                <strong>Professional grayscale palette</strong>
+              </li>
+            </ul>
+          </div>
+
+          <div class="dont-box">
+            <h4>✗ Don't</h4>
+            <ul>
+              <li>
+                <strong>Use more than 3 colors</strong>
+              </li>
+              <li>
+                <strong>Add logos or pictures</strong>
+              </li>
+              <li>
+                <strong>Use borders around sections</strong>
+              </li>
+              <li>
+                <strong>Include colored backgrounds</strong>
+              </li>
+              <li>
+                <strong>Add emojis or icons</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <strong>Best color choices:</strong> Navy blue, dark gray, or black
+          for main text. Subtle blue or gray for accents (matching your industry
+          standards).
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>Professional Polish Checklist</h2>
+
+        <div class="format-checklist">
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>Consistent font throughout (1-2 fonts max)</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>1-inch margins on all sides</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>No images, logos, or graphics</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>Black text on white background</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>Single-spaced within sections</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>1 or 2 pages maximum</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>No text boxes, tables, or columns</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>No headers, footers, or sidebars</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>Proper alignment (left-aligned or flush left)</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox"></div>
+            <span>No spelling or grammatical errors</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <div class="analysis-icon">📊</div>
+          <h3>Your Resume Analysis</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="analysis-card">
+            <div class="analysis-card-title">Format Score</div>
+            <div class="analysis-card-value" id="formatScore">--</div>
+            <div class="analysis-card-description">Professional formatting</div>
+            <div class="analysis-badge" id="formatStatus">Not scanned yet</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Issues Found</div>
+            <div class="analysis-card-value" id="issuesFound">--</div>
+            <div class="analysis-card-description">Areas to fix</div>
+            <div class="analysis-badge warning" id="issuesStatus">
+              Review details
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Positives</div>
+            <div class="analysis-card-value" id="positivesFound">--</div>
+            <div class="analysis-card-description">Well-formatted elements</div>
+            <div class="analysis-badge" id="positivesStatus">Strong</div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-card-title">Polish Score</div>
+            <div class="analysis-card-value" id="polishScore">--</div>
+            <div class="analysis-card-description">Visual presentation</div>
+            <div class="analysis-badge" id="polishStatus">Improving</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>Get Detailed Formatting Feedback</h3>
+        <p>
+          Upload your resume and we'll scan it for formatting issues, suggest
+          improvements, and give you a professional polish score.
+        </p>
+        <a href="/resume" class="btn">Upload & Analyze</a>
+      </div>
+    </div>
+
+    <script>
+      // Dark mode functionality
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+
+      // Check localStorage for dark mode preference
+      if (localStorage.getItem("darkMode") === "true") {
+        html.classList.add("dark-mode");
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        html.classList.toggle("dark-mode");
+        const isDarkMode = html.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDarkMode);
+      });
+
+      // Checkbox toggle
+      document.querySelectorAll(".checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("click", function () {
+          this.classList.toggle("checked");
+        });
+      });
+
+      // User Analysis Section
+      function initializeAnalysis() {
+        const analysisData = {
+          formatScore: localStorage.getItem("formatScore") || null,
+          issuesFound: localStorage.getItem("issuesFound") || null,
+          positivesFound: localStorage.getItem("positivesFound") || null,
+          polishScore: localStorage.getItem("polishScore") || null,
+        };
+
+        if (Object.values(analysisData).some((val) => val !== null)) {
+          const analysisSection = document.getElementById("analysisSection");
+          analysisSection.style.display = "block";
+
+          if (analysisData.formatScore) {
+            document.getElementById("formatScore").textContent =
+              analysisData.formatScore + "%";
+            const formatStatus = document.getElementById("formatStatus");
+            const score = parseInt(analysisData.formatScore);
+            if (score >= 80) {
+              formatStatus.textContent = "Excellent";
+              formatStatus.className = "analysis-badge";
+            } else if (score >= 60) {
+              formatStatus.textContent = "Good";
+              formatStatus.className = "analysis-badge warning";
+            } else {
+              formatStatus.textContent = "Needs work";
+              formatStatus.className = "analysis-badge danger";
+            }
+          }
+
+          if (analysisData.issuesFound) {
+            document.getElementById("issuesFound").textContent =
+              analysisData.issuesFound;
+          }
+
+          if (analysisData.positivesFound) {
+            document.getElementById("positivesFound").textContent =
+              analysisData.positivesFound;
+          }
+
+          if (analysisData.polishScore) {
+            document.getElementById("polishScore").textContent =
+              analysisData.polishScore + "%";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+    </script>
+  </body>
+</html>

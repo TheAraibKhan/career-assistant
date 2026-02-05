@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Resume Analysis - Career Assistant</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      :root {
+        --primary: #3b5bdb;
+        --primary-dark: #2f4cb3;
+        --primary-light: #6476f2;
+        --success: #5a9d7e;
+        --success-light: rgba(90, 157, 126, 0.08);
+        --warning: #d4925f;
+        --warning-light: rgba(212, 146, 95, 0.08);
+        --danger: #d97706;
+        --danger-light: rgba(217, 119, 6, 0.08);
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8faff;
+        --bg-tertiary: #f5f7fc;
+        --shadow-sm: 0 1px 2px 0 rgba(59, 91, 219, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(59, 91, 219, 0.08);
+        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      /* ===== HEADER ===== */
+      .header {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        padding: 1.5rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .btn-secondary {
+        padding: 0.625rem 1.25rem;
+        border: 1px solid var(--border);
+        background: var(--bg-primary);
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 150ms ease;
+        text-decoration: none;
+        color: var(--text-secondary);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      /* ===== MAIN CONTENT ===== */
+      .analysis-page {
+        padding: 3rem 0;
+      }
+
+      /* ===== HERO SECTION ===== */
+      .analysis-hero {
+        background: linear-gradient(135deg, #f5f7fc 0%, #eef2fb 100%);
+        border-radius: 1rem;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        text-align: center;
+      }
+
+      .analysis-hero h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .analysis-hero p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+      }
+
+      /* ===== MAIN SCORE CARD ===== */
+      .score-showcase {
+        background: var(--bg-primary);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .score-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .score-description {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      /* ===== SUMMARY SECTION ===== */
+      .summary-section {
+        background: var(--bg-primary);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .section-title-icon {
+        font-size: 1.5rem;
+      }
+
+      .summary-box {
+        background: linear-gradient(135deg, #f5f7fc 0%, #eef2fb 100%);
+        padding: 1.75rem;
+        border-left: 4px solid var(--primary);
+        border-radius: 0.5rem;
+        line-height: 1.8;
+        font-size: 1rem;
+        color: var(--text-secondary);
+      }
+
+      .summary-highlight {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      /* ===== BREAKDOWN CARDS ===== */
+      .breakdown-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .breakdown-card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        transition: all 150ms ease;
+      }
+
+      .breakdown-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+      }
+
+      .breakdown-card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+      }
+
+      .breakdown-card-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
+
+      .breakdown-card-value-main {
+        color: var(--primary);
+      }
+
+      .breakdown-card-value-unit {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .breakdown-card-desc {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .progress-bar {
+        height: 6px;
+        background: var(--border-light);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 3px;
+        transition: width 300ms ease;
+      }
+
+      .progress-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        text-align: right;
+      }
+
+      /* ===== STRENGTHS SECTION ===== */
+      .strengths-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .strength-item {
+        background: var(--success-light);
+        border-left: 4px solid var(--success);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1rem;
+      }
+
+      .strength-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+
+      .strength-content h4 {
+        font-weight: 600;
+        color: var(--success);
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+      }
+
+      .strength-content p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      /* ===== IMPROVEMENTS SECTION ===== */
+      .improvements-list {
+        list-style: none;
+      }
+
+      .improvement-item {
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .improvement-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+        text-transform: uppercase;
+      }
+
+      .improvement-badge.high {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
+
+      .improvement-badge.medium {
+        background: var(--warning-light);
+        color: var(--warning);
+      }
+
+      .improvement-badge.low {
+        background: var(--success-light);
+        color: var(--success);
+      }
+
+      .improvement-content h4 {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .improvement-content p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.75rem;
+      }
+
+      .improvement-fix {
+        font-size: 0.875rem;
+        padding: 0.75rem;
+        background: var(--bg-tertiary);
+        border-radius: 0.4rem;
+        color: var(--text-primary);
+        border-left: 3px solid var(--primary);
+        font-style: italic;
+      }
+
+      /* ===== SKILL INTELLIGENCE ===== */
+      .skills-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .skills-category {
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.75rem;
+      }
+
+      .skills-category-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .skills-category-icon {
+        font-size: 1.25rem;
+      }
+
+      .skill-tag {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.35rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        margin-right: 0.5rem;
+      }
+
+      .skill-tag.secondary {
+        background: var(--border-light);
+        color: var(--text-secondary);
+      }
+
+      .skill-tag.missing {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
+
+      /* ===== ROLE MATCH SECTION ===== */
+      .role-match-card {
+        background: linear-gradient(135deg, #f5f7fc 0%, #eef2fb 100%);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .role-match-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .role-match-left h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .role-match-left p {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+      }
+
+      .role-match-stats {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .role-match-stat {
+        flex: 1;
+      }
+
+      .role-match-stat-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.35rem;
+      }
+
+      .role-match-stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+
+      .role-match-right {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+      }
+
+      .role-match-right h4 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+      }
+
+      .role-match-gap-item {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      .role-match-gap-icon {
+        color: var(--danger);
+        font-weight: 700;
+      }
+
+      .role-match-gap-text {
+        color: var(--text-secondary);
+      }
+
+      /* ===== CTA SECTION ===== */
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+        border-radius: 1rem;
+        padding: 2.5rem;
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+      }
+
+      .cta-section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+
+      .cta-section p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.95;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        background: white;
+        color: var(--primary);
+        padding: 0.75rem 1.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 150ms ease;
+        text-decoration: none;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-secondary-white {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 0.625rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 150ms ease;
+        text-decoration: none;
+      }
+
+      .btn-secondary-white:hover {
+        background: white;
+        color: var(--primary);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .container {
+          padding: 0 1rem;
+        }
+
+        .analysis-hero {
+          padding: 2rem 1.5rem;
+        }
+
+        .analysis-hero h1 {
+          font-size: 1.5rem;
+        }
+
+        .score-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .role-match-content {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .header-content {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+        }
+
+        .cta-buttons a,
+        .cta-buttons button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="container">
+        <div class="header-content">
+          <a href="/" class="logo">Career Assistant</a>
+          <div class="header-actions">
+            <a href="/resume/upload" class="btn-secondary">Analyze Another</a>
+            <a href="/dashboard" class="btn-secondary">Go to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="analysis-page">
+      <div class="container">
+        <!-- Hero Section -->
+        <div class="analysis-hero">
+          <h1>✨ Your Resume Analysis</h1>
+          <p>
+            We've analyzed your resume against real-world hiring patterns. Below
+            is everything you need to know: what's working, what needs
+            attention, and your exact roadmap to stand out.
+          </p>
+        </div>
+
+        <!-- Main Scores -->
+        <div class="score-showcase">
+          <div class="score-grid">
+            <div class="score-item">
+              <div class="score-number" id="qualityScore">
+                {{ result.quality_score or 0 }}
+              </div>
+              <div class="score-label">Quality Score</div>
+              <div class="score-description">Overall resume strength</div>
+            </div>
+            <div class="score-item">
+              <div class="score-number" id="atsScore">
+                {{ result.ats_score or 0 }}
+              </div>
+              <div class="score-label">ATS Score</div>
+              <div class="score-description">Applicant tracking systems</div>
+            </div>
+            <div class="score-item">
+              <div class="score-number" id="skillsCount">
+                {{ result.skills|length or 0 }}
+              </div>
+              <div class="score-label">Skills Detected</div>
+              <div class="score-description">Identified strengths</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Resume Summary -->
+        <div class="summary-section">
+          <div class="section-title">
+            <span class="section-title-icon">💡</span>
+            Smart Summary
+          </div>
+          <div class="summary-box">
+            {% if result.feedback %}
+            <p>
+              {{ result.feedback.get('overall_summary', 'Your resume shows
+              strong potential. You have a solid foundation, but there are key
+              opportunities to improve your ATS compatibility and add quantified
+              impact to your experience.') }}
+            </p>
+            {% else %}
+            <p>
+              Your resume positions you as a
+              <span class="summary-highlight"
+                >{% set skill_display = result.skills.core[0] if
+                (result.skills.core is defined and result.skills.core) else
+                (result.skills[0] if result.skills else 'talented professional')
+                %}{{ skill_display }}</span
+              >
+              with strengths in {% set skills_for_display = result.skills.core
+              if (result.skills.core is defined and result.skills.core) else
+              (result.skills if result.skills else []) %} {% if
+              skills_for_display|length >= 2 %}{{ skills_for_display[0] }} and
+              {{ skills_for_display[1] }}{% elif skills_for_display %}{{
+              skills_for_display[0] }}{% else %}multiple areas{% endif %}, but
+              there are opportunities for ATS optimization and adding more
+              quantified impact to your achievements.
+            </p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ATS Score Breakdown -->
+        <div class="summary-section">
+          <div class="section-title">
+            <span class="section-title-icon">🎯</span>
+            ATS Score Breakdown
+          </div>
+          <div class="breakdown-grid">
+            <div class="breakdown-card">
+              <div class="breakdown-card-label">Keywords Match</div>
+              <div class="breakdown-card-value">
+                <span class="breakdown-card-value-main"
+                  >{{ result.ats_categories.get('keywords', 0) or 65 }}</span
+                >
+                <span class="breakdown-card-value-unit">%</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  style="width: {{ result.ats_categories.get('keywords', 65) or 65 }}%"
+                ></div>
+              </div>
+              <div class="progress-label">Strong keyword coverage</div>
+              <div class="breakdown-card-desc">
+                Industry-relevant terms found in your resume
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <div class="breakdown-card-label">Format Compatibility</div>
+              <div class="breakdown-card-value">
+                <span class="breakdown-card-value-main"
+                  >{{ result.ats_categories.get('formatting', 0) or 72 }}</span
+                >
+                <span class="breakdown-card-value-unit">%</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  style="width: {{ result.ats_categories.get('formatting', 72) or 72 }}%"
+                ></div>
+              </div>
+              <div class="progress-label">Parser-friendly format</div>
+              <div class="breakdown-card-desc">
+                How easily ATS systems can read your resume
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <div class="breakdown-card-label">Section Completeness</div>
+              <div class="breakdown-card-value">
+                <span class="breakdown-card-value-main"
+                  >{{ result.ats_categories.get('structure', 0) or 80 }}</span
+                >
+                <span class="breakdown-card-value-unit">%</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  style="width: {{ result.ats_categories.get('structure', 80) or 80 }}%"
+                ></div>
+              </div>
+              <div class="progress-label">Complete sections</div>
+              <div class="breakdown-card-desc">
+                All essential resume sections included
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <div class="breakdown-card-label">Role Alignment</div>
+              <div class="breakdown-card-value">
+                <span class="breakdown-card-value-main"
+                  >{{ result.ats_categories.get('alignment', 0) or 58 }}</span
+                >
+                <span class="breakdown-card-value-unit">%</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  style="width: {{ result.ats_categories.get('alignment', 58) or 58 }}%"
+                ></div>
+              </div>
+              <div class="progress-label">Job description match</div>
+              <div class="breakdown-card-desc">
+                Relevance to typical job postings
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resume Strengths -->
+        <div class="summary-section">
+          <div class="section-title">
+            <span class="section-title-icon">✅</span>
+            What's Working
+          </div>
+          <div class="strengths-grid">
+            {% if result.skills %}
+            <div class="strength-item">
+              <div class="strength-icon">🎯</div>
+              <div class="strength-content">
+                <h4>Strong Technical Skills</h4>
+                <p>
+                  You have {{ result.skills|length }} relevant skills that match
+                  today's job market.
+                </p>
+              </div>
+            </div>
+            {% endif %} {% if result.education %}
+            <div class="strength-item">
+              <div class="strength-icon">🎓</div>
+              <div class="strength-content">
+                <h4>Quality Education</h4>
+                <p>
+                  Your educational background is clearly documented and
+                  relevant.
+                </p>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="strength-item">
+              <div class="strength-icon">📄</div>
+              <div class="strength-content">
+                <h4>Good Resume Length</h4>
+                <p>
+                  {% if result.text_length and result.text_length > 200 %}
+                  Concise yet comprehensive ({{ result.text_length }} words).
+                  Perfect balance. {% else %} You have adequate content to make
+                  your case. {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <div class="strength-item">
+              <div class="strength-icon">✨</div>
+              <div class="strength-content">
+                <h4>Professional Presentation</h4>
+                <p>
+                  Your resume uses a clean format that's easy for recruiters to
+                  scan.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Improvement Opportunities -->
+        <div class="summary-section">
+          <div class="section-title">
+            <span class="section-title-icon">🚀</span>
+            High-Impact Improvements
+          </div>
+          <ul class="improvements-list">
+            <li class="improvement-item">
+              <div class="improvement-badge high">High</div>
+              <div class="improvement-content">
+                <h4>Add Role-Specific Keywords</h4>
+                <p>
+                  Many ATS systems won't flag your resume if it doesn't match
+                  the job posting's terminology.
+                </p>
+                <div class="improvement-fix">
+                  💡 Look at your target job descriptions and mirror language
+                  where you genuinely have matching skills. Examples: "REST
+                  APIs", "Agile", "SQL", "Leadership" (based on your role).
+                </div>
+              </div>
+            </li>
+
+            <li class="improvement-item">
+              <div class="improvement-badge high">High</div>
+              <div class="improvement-content">
+                <h4>Quantify Your Achievements</h4>
+                <p>
+                  Generic descriptions like "improved system" don't stand out.
+                  Numbers do.
+                </p>
+                <div class="improvement-fix">
+                  💡 Change "Managed social media" → "Grew Instagram followers
+                  from 12K to 68K (+467%) in 6 months"
+                </div>
+              </div>
+            </li>
+
+            <li class="improvement-item">
+              <div class="improvement-badge medium">Medium</div>
+              <div class="improvement-content">
+                <h4>Improve Format Consistency</h4>
+                <p>
+                  Inconsistent dates or formatting can confuse ATS parsers,
+                  causing it to miss key information.
+                </p>
+                <div class="improvement-fix">
+                  💡 Use consistent date formats (MM/YYYY), consistent spacing,
+                  and standard bullet points.
+                </div>
+              </div>
+            </li>
+
+            <li class="improvement-item">
+              <div class="improvement-badge medium">Medium</div>
+              <div class="improvement-content">
+                <h4>Strengthen Your Summary/Profile</h4>
+                <p>
+                  A weak summary wastes prime real estate at the top of your
+                  resume.
+                </p>
+                <div class="improvement-fix">
+                  💡 Write a 2-3 line summary showing: your role + years
+                  experience + key strength. Example: "Software Engineer with 3
+                  years building scalable Node.js backends | Specialized in REST
+                  APIs & databases"
+                </div>
+              </div>
+            </li>
+
+            <li class="improvement-item">
+              <div class="improvement-badge low">Low</div>
+              <div class="improvement-content">
+                <h4>Double-Check Spelling & Grammar</h4>
+                <p>Even one typo signals carelessness to recruiters.</p>
+                <div class="improvement-fix">
+                  💡 Read your resume aloud, run it through a spell checker, and
+                  have a friend review it.
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Skill Intelligence -->
+        <div class="summary-section">
+          <div class="section-title">
+            <span class="section-title-icon">🧠</span>
+            Skill Intelligence
+          </div>
+          <div class="skills-section">
+            <div class="skills-category">
+              <div class="skills-category-title">
+                <span class="skills-category-icon">⭐</span>
+                Core Skills (Strong)
+              </div>
+              {% set core_skills = result.skills.core if (result.skills.core is
+              defined and result.skills.core) else (result.skills if
+              result.skills else []) %} {% for skill in core_skills %} {% if
+              loop.index <= 5 %}
+              <span class="skill-tag">{{ skill }}</span>
+              {% endif %} {% endfor %} {% if not core_skills %}
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">Project Management</span>
+              {% endif %}
+            </div>
+
+            <div class="skills-category">
+              <div class="skills-category-title">
+                <span class="skills-category-icon">📚</span>
+                Supporting Skills
+              </div>
+              {% set core_skills = result.skills.core if (result.skills.core is
+              defined and result.skills.core) else (result.skills if
+              result.skills else []) %} {% if core_skills|length > 5 %} {% for
+              skill in core_skills %} {% if loop.index > 5 and loop.index <= 10
+              %}
+              <span class="skill-tag secondary">{{ skill }}</span>
+              {% endif %} {% endfor %} {% else %}
+              <span class="skill-tag secondary">Git</span>
+              <span class="skill-tag secondary">Agile</span>
+              <span class="skill-tag secondary">Communication</span>
+              {% endif %}
+            </div>
+
+            <div class="skills-category">
+              <div class="skills-category-title">
+                <span class="skills-category-icon">⚠️</span>
+                Recommended Skills to Add
+              </div>
+              <span class="skill-tag missing">Cloud Platforms (AWS/GCP)</span>
+              <span class="skill-tag missing">CI/CD Pipeline</span>
+              <span class="skill-tag missing">Data Analysis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Match Preview -->
+        <div class="role-match-card">
+          <div class="role-match-content">
+            <div class="role-match-left">
+              <h3>Role Match Preview</h3>
+              <p>
+                Your resume is
+                <span class="summary-highlight">68% aligned</span> with typical
+                "Early-Career Software Engineer" roles. You have the technical
+                foundation, but need to emphasize impact and growth.
+              </p>
+              <div class="role-match-stats">
+                <div class="role-match-stat">
+                  <div class="role-match-stat-label">Match Score</div>
+                  <div class="role-match-stat-value">68%</div>
+                </div>
+                <div class="role-match-stat">
+                  <div class="role-match-stat-label">Readiness</div>
+                  <div class="role-match-stat-value">Good</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="role-match-right">
+              <h4>📋 To Improve Match</h4>
+              <div class="role-match-gap-item">
+                <span class="role-match-gap-icon">→</span>
+                <span class="role-match-gap-text"
+                  >Add leadership or mentoring examples</span
+                >
+              </div>
+              <div class="role-match-gap-item">
+                <span class="role-match-gap-icon">→</span>
+                <span class="role-match-gap-text"
+                  >Highlight cross-functional collaboration</span
+                >
+              </div>
+              <div class="role-match-gap-item">
+                <span class="role-match-gap-icon">→</span>
+                <span class="role-match-gap-text"
+                  >Show business impact, not just technical depth</span
+                >
+              </div>
+              <div class="role-match-gap-item">
+                <span class="role-match-gap-icon">→</span>
+                <span class="role-match-gap-text"
+                  >Include certifications or continuous learning</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+          <h2>Ready to Level Up Your Resume?</h2>
+          <p>
+            Use our AI tools to rewrite, optimize, and tailor your resume to
+            specific job descriptions.
+          </p>
+          <div class="cta-buttons">
+            <a href="/resume/upload" class="btn-primary">Rewrite with AI</a>
+            <a href="/dashboard" class="btn-secondary-white">View Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Animate score numbers on load
+      function animateValue(element, start, end, duration) {
+        const range = end - start;
+        const increment = range / (duration / 16);
+        let current = start;
+
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= end) {
+            element.textContent = end;
+            clearInterval(timer);
+          } else {
+            element.textContent = Math.floor(current);
+          }
+        }, 16);
+      }
+
+      window.addEventListener("load", () => {
+        const scoreElements = document.querySelectorAll(".score-number");
+        scoreElements.forEach((el) => {
+          const value = parseInt(el.textContent);
+          animateValue(el, 0, value, 800);
+        });
+      });
+    </script>
+  </body>
+</html>

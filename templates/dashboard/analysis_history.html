@@ -1,0 +1,157 @@
+{% extends "base.html" %} {% block title %}Analysis History - CareerOS{%
+endblock %} {% block extra_css %}
+<style>
+  .analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .analysis-table thead {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analysis-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .analysis-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analysis-table tbody tr:hover {
+    background: var(--bg-secondary);
+  }
+
+  .analysis-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .score-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .action-links {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-links a {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .analysis-table {
+      font-size: 0.875rem;
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+      padding: 0.75rem;
+    }
+
+    .analysis-table tbody tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+      display: block;
+      text-align: left;
+      border: none;
+    }
+
+    .action-links {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div style="margin-bottom: 2rem">
+  <h1 style="margin-bottom: 0.5rem">Analysis History</h1>
+  <p style="color: var(--text-secondary)">
+    All your career analyses and recommendations
+  </p>
+</div>
+
+{% if analyses %}
+<div style="overflow-x: auto">
+  <table class="analysis-table">
+    <thead>
+      <tr>
+        <th>Analysis</th>
+        <th>Interest</th>
+        <th>Level</th>
+        <th>Score</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for analysis in analyses %}
+      <tr>
+        <td style="font-weight: 600">{{ analysis.name }}</td>
+        <td style="text-transform: capitalize">
+          {{ analysis.interest or 'N/A' }}
+        </td>
+        <td style="text-transform: capitalize">
+          {{ analysis.level or 'N/A' }}
+        </td>
+        <td>
+          {% if analysis.readiness_score %}
+          <span class="score-badge">{{ analysis.readiness_score }}%</span>
+          {% else %} N/A {% endif %}
+        </td>
+        <td style="color: var(--text-muted)">{{ analysis.created_at[:10] }}</td>
+        <td>
+          <div class="action-links">
+            <a
+              href="/resume/{{ analysis.id }}/view"
+              class="btn btn-small btn-primary"
+              >View</a
+            >
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">📊</div>
+  <h2 style="margin-bottom: 0.5rem">No analyses yet</h2>
+  <p>Upload a resume to get your first career analysis</p>
+  <a href="/resume/upload" class="btn btn-primary" style="margin-top: 1rem"
+    >Upload Resume</a
+  >
+</div>
+{% endif %} {% endblock %}
