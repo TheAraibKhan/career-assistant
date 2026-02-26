@@ -2,7 +2,7 @@
                  GEMINI CHATBOT INTEGRATION - COMPLETE
 ================================================================================
 
-✅ INTEGRATION SUCCESSFUL
+ INTEGRATION SUCCESSFUL
 
 Your smart career assistant is now powered by Google Gemini instead of OpenAI.
 
@@ -206,7 +206,7 @@ NEXT STEPS
 READ: GEMINI_QUICKSTART.md for detailed instructions
 
 ================================================================================
-STATUS: ✅ PRODUCTION READY
+STATUS: PRODUCTION READY
 ================================================================================
 
 All systems verified and operational.
