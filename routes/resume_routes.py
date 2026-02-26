@@ -37,10 +37,10 @@ def upload():
             if file.filename == '':
                 error = 'No file selected'
             else:
-                # Validate file with human-friendly messages
                 validation = ResumeUploadService.validate_resume_file(file, file.filename)
                 
                 if not validation['valid']:
+                    # Use the first error message, which is already human-friendly
                     error = validation['errors'][0]
                 else:
                     try:
@@ -112,7 +112,9 @@ def upload():
                         else:
                             error = parse_result.get('error', 'Could not parse resume')
                     except Exception as e:
-                        error = 'Error processing file. Please try again.'
+                        # Log the actual error for debugging
+                        print(f"Resume processing error: {str(e)}")
+                        error = 'We had trouble processing your file. Please ensure it\'s a valid PDF or Word document and try again.'
     
     return render_template('resume/upload.html', error=error, result=result)
 
@@ -124,6 +126,45 @@ def analysis_results():
         return redirect(url_for('resume.upload'))
     
     result = session.get('analysis_result', {})
+    return render_template('resume/analysis_results.html', result=result)
+
+
+@resume_bp.route('/<int:submission_id>/view', methods=['GET'])
+def view_analysis(submission_id):
+    """View a specific analysis by ID."""
+    from database.db import get_db
+    
+    db = get_db()
+    submission = db.execute('''
+        SELECT * FROM submissions WHERE id = ?
+    ''', (submission_id,)).fetchone()
+    
+    if not submission:
+        return redirect(url_for('dashboard.index'))
+    
+    # Helper to safely read sqlite3.Row columns
+    def col(name, default=''):
+        try:
+            val = submission[name]
+            return val if val is not None else default
+        except (IndexError, KeyError):
+            return default
+    
+    strengths_raw = col('strengths', '')
+    gaps_raw = col('gaps', '')
+    skills_raw = col('resume_parsed_skills', '')
+    
+    result = {
+        'success': True,
+        'role': col('recommendation', 'N/A'),
+        'readiness_score': col('readiness_score', 0),
+        'confidence': col('confidence_score', 0),
+        'strengths': [s.strip() for s in strengths_raw.split(',') if s.strip()] if strengths_raw else [],
+        'gaps': [s.strip() for s in gaps_raw.split(',') if s.strip()] if gaps_raw else [],
+        'skills': [s.strip() for s in skills_raw.split(',') if s.strip()] if skills_raw else [],
+        'submission_id': submission['id']
+    }
+    
     return render_template('resume/analysis_results.html', result=result)
 
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Upload - Career Assistant</title>
+    <title>Resume Upload - CareerAssist</title>
     <style>
       * {
         margin: 0;
@@ -13,121 +13,213 @@
 
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-        background: #fafaf9;
-        min-height: 100vh;
-        color: #2c2c2c;
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          "Roboto",
+          sans-serif;
+        background: #ffffff;
+        color: #1f2937;
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
+      [data-theme="dark"] body {
+        background: #0f172a;
+        color: #f1f5f9;
+      }
+
+      /* Premium Navbar */
       .navbar {
-        background: white;
-        border-bottom: 1px solid #f0f0f0;
-        padding: 1.25rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+        padding: 0.875rem 2.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 1000;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+
+      [data-theme="dark"] .navbar {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: rgba(45, 55, 72, 0.8);
       }
 
       .navbar-brand {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1e40af;
-        letter-spacing: -0.3px;
+        font-size: 1.375rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
       }
 
       .navbar-actions {
         display: flex;
-        gap: 1.5rem;
+        gap: 0.75rem;
         align-items: center;
       }
 
       .navbar-actions a {
-        color: #666;
+        color: #6b7280;
         text-decoration: none;
         font-weight: 500;
-        font-size: 14px;
-        transition: color 0.2s ease;
+        font-size: 0.9375rem;
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.375rem;
+        transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .navbar-actions a:hover {
-        color: #1e40af;
+        color: #1f2937;
+        background: rgba(147, 51, 234, 0.04);
       }
 
+      [data-theme="dark"] .navbar-actions a {
+        color: #94a3b8;
+      }
+
+      [data-theme="dark"] .navbar-actions a:hover {
+        color: #f1f5f9;
+        background: rgba(147, 51, 234, 0.08);
+      }
+
+      /* Premium Container */
       .container {
-        max-width: 900px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 3rem 2rem;
       }
 
+      /* Elegant Header */
       .header {
         margin-bottom: 3rem;
         text-align: center;
       }
 
       .header h1 {
-        font-size: 32px;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        color: #1a1a1a;
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .header p {
-        font-size: 16px;
-        color: #666;
+        font-size: 1.0625rem;
+        color: #6b7280;
         line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
+      /* Premium Alert Messages */
       .error-message {
-        background: #fff5f5;
-        color: #c53030;
-        padding: 1.25rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+        color: #991b1b;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
         margin-bottom: 1.5rem;
-        border-left: 4px solid #f5576c;
+        border-left: 4px solid #dc2626;
         font-weight: 500;
+        font-size: 0.9375rem;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
       }
 
       .success-message {
-        background: #f0fff4;
-        color: #22543d;
-        padding: 1.25rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        color: #065f46;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
         margin-bottom: 1.5rem;
-        border-left: 4px solid #52c255;
+        border-left: 4px solid #10b981;
         font-weight: 500;
+        font-size: 0.9375rem;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
       }
 
+      /* Premium Upload Section */
       .upload-section {
         background: white;
-        border-radius: 10px;
-        padding: 3rem;
+        border-radius: 1rem;
+        padding: 4rem 3rem;
         margin-bottom: 2rem;
-        border: 2px dashed #d0d0d0;
+        border: 2px dashed #e5e7eb;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(147, 51, 234, 0.02) 0%,
+          rgba(236, 72, 153, 0.02) 100%
+        );
+        opacity: 0;
+        transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
       }
 
       .upload-section:hover {
-        border-color: #1e40af;
-        background: #eff6ff;
+        border-color: #9333ea;
+        box-shadow: 0 8px 24px rgba(147, 51, 234, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .upload-section:hover::before {
+        opacity: 1;
+      }
+
+      .upload-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(147, 51, 234, 0.25);
+      }
+
+      .upload-icon svg {
+        width: 32px;
+        height: 32px;
+        color: white;
       }
 
       .upload-section h2 {
-        font-size: 20px;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
-        color: #1a1a1a;
-        font-weight: 600;
+        color: #1f2937;
+        font-weight: 700;
+        letter-spacing: -0.02em;
       }
 
       .upload-section p {
-        color: #666;
-        margin-bottom: 1.5rem;
-        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 2rem;
+        font-size: 0.9375rem;
+        line-height: 1.6;
       }
 
       .file-input-wrapper {
@@ -139,27 +231,51 @@
         display: none;
       }
 
+      /* Premium File Button */
       .file-button {
-        background: #1e40af;
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
         color: white;
-        padding: 0.875rem 2rem;
-        border-radius: 6px;
+        padding: 0.875rem 2.5rem;
+        border-radius: 0.625rem;
         cursor: pointer;
         font-weight: 600;
         border: none;
-        transition: all 0.3s ease;
-        font-size: 15px;
+        transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.9375rem;
+        box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
+        letter-spacing: -0.01em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .file-button:hover {
-        background: #1a35a3;
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
         transform: translateY(-2px);
       }
 
+      .file-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(147, 51, 234, 0.25);
+      }
+
       .file-info {
-        color: #999;
-        font-size: 12px;
-        margin-top: 0.75rem;
+        color: #9ca3af;
+        font-size: 0.8125rem;
+        margin-top: 1rem;
+        font-weight: 500;
+      }
+
+      .file-name-display {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(147, 51, 234, 0.05);
+        border-radius: 0.5rem;
+        color: #9333ea;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-block;
       }
 
       .results-section {
@@ -327,7 +443,7 @@
   </head>
   <body>
     <nav class="navbar">
-      <div class="navbar-brand">CareerAI</div>
+      <div class="navbar-brand">CareerAssist</div>
       <div class="navbar-actions">
         <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
         <a href="{{ url_for('dashboard.analysis_history') }}">Analysis</a>
@@ -350,8 +466,27 @@
       <div class="error-message">{{ error }}</div>
       {% endif %} {% if not result %}
       <div class="upload-section">
+        <!-- Premium Upload Icon -->
+        <div class="upload-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+
         <h2>Upload Your Resume</h2>
-        <p>PDF, DOC, or DOCX format up to 10MB</p>
+        <p>PDF, DOC, or DOCX format • Maximum 10MB</p>
         <form method="POST" enctype="multipart/form-data">
           <div class="file-input-wrapper">
             <input
@@ -360,12 +495,33 @@
               name="resume"
               accept=".pdf,.doc,.docx"
               required
+              onchange="updateFileName(this)"
             />
             <button
               type="button"
               class="file-button"
               onclick="document.getElementById('resume').click()"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="
+                  display: inline-block;
+                  vertical-align: middle;
+                  margin-right: 0.5rem;
+                "
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
               Choose File
             </button>
           </div>
@@ -375,6 +531,21 @@
           </button>
         </form>
       </div>
+
+      <script>
+        function updateFileName(input) {
+          const fileNameSpan = document.getElementById("file-name");
+          if (input.files && input.files[0]) {
+            fileNameSpan.textContent = input.files[0].name;
+            fileNameSpan.style.color = "#9333ea";
+            fileNameSpan.style.fontWeight = "600";
+          } else {
+            fileNameSpan.textContent = "No file selected";
+            fileNameSpan.style.color = "#9ca3af";
+            fileNameSpan.style.fontWeight = "500";
+          }
+        }
+      </script>
       {% endif %} {% if result %}
       <div class="success-message">
         Your resume has been analyzed. Review the insights below to strengthen
@@ -480,7 +651,7 @@
     </div>
 
     <div class="footer">
-      <p>&copy; 2026 Career Assistant. All rights reserved.</p>
+      <p>&copy; 2026 CareerAssist. All rights reserved.</p>
     </div>
 
     <script>

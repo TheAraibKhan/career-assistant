@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("careerassist-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explore your target career role — get personalized skill maps, salary ranges, career paths, and actionable steps to land your dream job."
+    />
+    <title>Target Role Exploration — CareerAssist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary: #9333ea;
+        --primary-dark: #7c3aed;
+        --accent: #ec4899;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f8faff;
+        --white: #ffffff;
+      }
+      [data-theme="dark"] {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #2d3748;
+        --bg: #0f172a;
+        --white: #1e293b;
+      }
+      [data-theme="dark"] .site-header {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: #2d3748;
+      }
+      [data-theme="dark"] .stat-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .content-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .path-step {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .skill-chip {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+        color: #c4b5fd;
+      }
+      [data-theme="dark"] .back-link {
+        border-color: #2d3748;
+        color: #94a3b8;
+      }
+      [data-theme="dark"] .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.08);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] body {
+        background: var(--bg);
+      }
+      [data-theme="dark"] .page-hero {
+        background: linear-gradient(
+          135deg,
+          #1a1040 0%,
+          #0f172a 50%,
+          #101828 100%
+        );
+        border-bottom-color: rgba(147, 51, 234, 0.15);
+      }
+      [data-theme="dark"] .page-hero h1 {
+        color: #f1f5f9;
+      }
+      [data-theme="dark"] .page-hero p.lead {
+        color: #cbd5e1;
+      }
+      [data-theme="dark"] .hero-badge {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] .cta-btn {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #f1f5f9 !important;
+      }
+      [data-theme="dark"] .cta-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
+      [data-theme="dark"] .salary-bar-bg {
+        background: #2d3748;
+      }
+      [data-theme="dark"] .role-tag {
+        background: rgba(147, 51, 234, 0.12);
+        border-color: rgba(147, 51, 234, 0.25);
+        color: #c4b5fd;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 300ms ease,
+          color 300ms ease;
+      }
+
+      /* ── Header ── */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition:
+          box-shadow 200ms ease,
+          background 300ms ease;
+      }
+      .site-header.scrolled {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+      .header-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+      }
+      .header-nav {
+        display: flex;
+        gap: 1.75rem;
+        align-items: center;
+      }
+      .header-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 200ms;
+      }
+      .header-nav a:hover {
+        color: var(--primary);
+      }
+      .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+      .btn-outline {
+        padding: 0.5rem 1.125rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 200ms;
+        background: transparent;
+        cursor: pointer;
+      }
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .btn-primary {
+        padding: 0.5rem 1.125rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        border: none;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        transition: all 200ms;
+        cursor: pointer;
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35);
+      }
+      .theme-toggle {
+        background: transparent;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 0.4rem 0.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms;
+      }
+      .theme-toggle:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .sun-icon,
+      .moon-icon {
+        transition: opacity 200ms;
+      }
+      [data-theme="dark"] .sun-icon {
+        display: block;
+      }
+      [data-theme="dark"] .moon-icon {
+        display: none;
+      }
+      .sun-icon {
+        display: none;
+      }
+      .moon-icon {
+        display: block;
+      }
+
+      /* ── Back link ── */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 200ms;
+      }
+      .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.05);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+
+      /* ── Hero ── */
+      .page-hero {
+        background: linear-gradient(
+          135deg,
+          #f5f0ff 0%,
+          #fdf4ff 40%,
+          #f0f9ff 100%
+        );
+        border-bottom: 1px solid rgba(147, 51, 234, 0.1);
+        padding: 3.5rem 2rem 3rem;
+        text-align: center;
+      }
+      .hero-inner {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .feature-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(147, 51, 234, 0.08);
+        border: 1px solid rgba(147, 51, 234, 0.18);
+        border-radius: 100px;
+        padding: 0.35rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.25rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .page-hero h1 {
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 800;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+      .page-hero h1 span {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .page-hero p.lead {
+        font-size: 1.05rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.7;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .role-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        background: rgba(147, 51, 234, 0.07);
+        border: 1px solid rgba(147, 51, 234, 0.18);
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        background: rgba(16, 185, 129, 0.07);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--success);
+      }
+
+      /* ── Layout ── */
+      .main-content {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2.5rem 2rem 4rem;
+      }
+      .section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      /* ── Stats row ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        transition:
+          transform 200ms,
+          box-shadow 200ms;
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      }
+      .stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+      }
+      .stat-icon.purple {
+        background: rgba(147, 51, 234, 0.1);
+        color: var(--primary);
+      }
+      .stat-icon.green {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+      .stat-icon.amber {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+      }
+      .stat-icon.pink {
+        background: rgba(236, 72, 153, 0.1);
+        color: var(--accent);
+      }
+      .stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .stat-label {
+        font-size: 0.825rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      /* ── Cards grid ── */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 720px) {
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .content-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.75rem;
+        transition: box-shadow 200ms;
+      }
+      .content-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      }
+      .content-card.full {
+        grid-column: 1 / -1;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .card-icon.purple {
+        background: rgba(147, 51, 234, 0.1);
+        color: var(--primary);
+      }
+      .card-icon.green {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+      .card-icon.amber {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+      }
+      .card-icon.blue {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+      }
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .card-subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .card-body {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.7;
+      }
+      .card-body p + p {
+        margin-top: 0.75rem;
+      }
+
+      /* ── Skill chips ── */
+      .skills-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .skill-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        background: rgba(147, 51, 234, 0.06);
+        border: 1px solid rgba(147, 51, 234, 0.15);
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+      .skill-chip.core {
+        background: rgba(147, 51, 234, 0.12);
+        border-color: rgba(147, 51, 234, 0.28);
+      }
+      .skill-chip.nice {
+        background: rgba(16, 185, 129, 0.07);
+        border-color: rgba(16, 185, 129, 0.2);
+        color: var(--success);
+      }
+
+      /* ── Career path steps ── */
+      .path-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .path-step {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        position: relative;
+      }
+      .path-step + .path-step {
+        border-top: 1px solid var(--border);
+      }
+      .step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .step-body {
+        flex: 1;
+      }
+      .step-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+      }
+      .step-desc {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+      .step-badge {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding: 0.2rem 0.65rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .step-badge.entry {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+      .step-badge.mid {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+      }
+      .step-badge.senior {
+        background: rgba(147, 51, 234, 0.1);
+        color: var(--primary);
+      }
+      .step-badge.lead {
+        background: rgba(236, 72, 153, 0.1);
+        color: var(--accent);
+      }
+
+      /* ── Salary bar ── */
+      .salary-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .salary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .salary-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+      .salary-bar-bg {
+        height: 8px;
+        background: var(--border);
+        border-radius: 100px;
+        overflow: hidden;
+      }
+      .salary-bar-fill {
+        height: 100%;
+        border-radius: 100px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transition: width 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        width: 0%;
+      }
+
+      /* ── Checklist ── */
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .check-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.55;
+      }
+      .check-row svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* ── CTA block ── */
+      .cta-block {
+        background: linear-gradient(
+          135deg,
+          #9333ea 0%,
+          #7c3aed 50%,
+          #6d28d9 100%
+        );
+        border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-block::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 70% -20%,
+          rgba(236, 72, 153, 0.4) 0%,
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      .cta-block h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+        letter-spacing: -0.02em;
+      }
+      .cta-block p {
+        font-size: 0.95rem;
+        opacity: 0.88;
+        margin-bottom: 1.5rem;
+      }
+      .cta-btns {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .cta-btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 200ms;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .cta-btn.white {
+        background: #fff;
+        color: #7c3aed;
+      }
+      .cta-btn.white:hover {
+        background: #f3f0ff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      }
+      .cta-btn.ghost {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+      }
+      .cta-btn.ghost:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 640px) {
+        .header-nav,
+        .header-actions .btn-outline {
+          display: none;
+        }
+        .header-inner {
+          padding: 0.875rem 1rem;
+        }
+        .page-hero {
+          padding: 2.5rem 1rem 2rem;
+        }
+        .main-content {
+          padding: 1.5rem 1rem 3rem;
+        }
+        .cta-block {
+          padding: 1.75rem 1.25rem;
+        }
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Header ── -->
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="/" class="logo">CareerAssist</a>
+        <nav class="header-nav">
+          <a href="/#how-it-works">How It Works</a>
+          <a href="/#features">Features</a>
+          <a href="/resume/upload">Analyze Resume</a>
+        </nav>
+        <div class="header-actions">
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle theme"
+          >
+            <svg
+              class="sun-icon"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <svg
+              class="moon-icon"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <a href="/resume/upload" class="btn-outline">Upload Resume</a>
+          <a href="/resume/upload" class="btn-primary">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Hero ── -->
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div class="feature-eyebrow">
+          <svg
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Career Path Intelligence
+        </div>
+        <h1>Your Path to <span id="heroRoleSpan">Your Target Role</span></h1>
+        <p class="lead" id="heroDesc">
+          Understand exactly what it takes to land — and thrive in — the role
+          you're chasing. Skills, salary, roadmap, and more.
+        </p>
+        <div class="hero-meta">
+          <div class="role-tag" id="heroRoleTag">
+            <svg
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span id="roleTagText">Role Analysis</span>
+          </div>
+          <div class="hero-badge">
+            <svg
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            AI-Powered Insights
+          </div>
+          <div class="hero-badge" id="levelBadge" style="display: none">
+            <svg
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"
+              />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            </svg>
+            <span id="levelBadgeText"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Main ── -->
+    <main class="main-content">
+      <!-- Stats row -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          </div>
+          <div class="stat-value" id="statDemand">High</div>
+          <div class="stat-label">Market Demand</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          </div>
+          <div class="stat-value" id="statSalary">—</div>
+          <div class="stat-label">Avg. Annual Salary</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
+            </svg>
+          </div>
+          <div class="stat-value" id="statSkills">8–12</div>
+          <div class="stat-label">Core Skills Needed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon pink">
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="stat-value" id="statTime">6–18 mo</div>
+          <div class="stat-label">Avg. Time to Land Role</div>
+        </div>
+      </div>
+
+      <!-- Cards grid -->
+      <div class="cards-grid">
+        <!-- Core skills card -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon purple">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Must-Have Skills</div>
+              <div class="card-subtitle">
+                Core competencies recruiters screen for
+              </div>
+            </div>
+          </div>
+          <div class="skills-cloud" id="coreSkillsCloud">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Nice-to-have skills -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon green">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Nice-to-Have Skills</div>
+              <div class="card-subtitle">
+                Differentiators that set top candidates apart
+              </div>
+            </div>
+          </div>
+          <div class="skills-cloud" id="niceSkillsCloud">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- What you'll do day-to-day -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon amber">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Day-to-Day Responsibilities</div>
+              <div class="card-subtitle">
+                What you'll actually spend your time on
+              </div>
+            </div>
+          </div>
+          <div class="checklist" id="responsibilityList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Salary bands -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon blue">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Salary Bands by Level</div>
+              <div class="card-subtitle">Annual compensation ranges (USD)</div>
+            </div>
+          </div>
+          <div class="salary-row" id="salaryBands">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Career path – full width -->
+        <div class="content-card full">
+          <div class="card-header">
+            <div class="card-icon purple">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Career Progression Roadmap</div>
+              <div class="card-subtitle">
+                A realistic trajectory from where you are to where you want to
+                be
+              </div>
+            </div>
+          </div>
+          <div class="path-grid" id="careerPath">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- How to stand out -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon amber">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">How to Stand Out</div>
+              <div class="card-subtitle">
+                Actions that move you to the top of the pile
+              </div>
+            </div>
+          </div>
+          <div class="checklist" id="standOutList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Interview focus areas -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-icon blue">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Interview Focus Areas</div>
+              <div class="card-subtitle">
+                Topics most commonly tested in interviews
+              </div>
+            </div>
+          </div>
+          <div class="checklist" id="interviewList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Back link -->
+      <div style="margin-bottom: 1.5rem">
+        <a href="/" class="back-link">
+          <svg
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back to Home
+        </a>
+      </div>
+
+      <!-- CTA block -->
+      <div class="cta-block">
+        <h2>Ready to Close the Gap?</h2>
+        <p>
+          Upload your resume for a personalised ATS scan, keyword gap report,
+          and bullet-impact scoring tailored to your target role.
+        </p>
+        <div class="cta-btns">
+          <a href="/resume/upload" class="cta-btn white">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            Upload My Resume
+          </a>
+          <a href="/features/gap-analysis" class="cta-btn ghost"
+            >View Gap Analysis →</a
+          >
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ── Theme toggle ──
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('careerassist-theme', next);
+      });
+
+      // ── Scroll header shadow ──
+      const header = document.getElementById('siteHeader');
+      window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 10);
+      });
+
+      // ── Read URL params ──
+      const params  = new URLSearchParams(window.location.search);
+      const role     = params.get('role')     || 'Software Engineer';
+      const level    = params.get('level')    || '';
+      const industry = params.get('industry') || '';
+
+      // ── Update hero with role ──
+      document.getElementById('heroRoleSpan').textContent = role;
+      document.getElementById('heroDesc').textContent =
+        `Understand exactly what it takes to land — and thrive in — a ${role} role. Skills, salary, roadmap, and more.`;
+      document.getElementById('roleTagText').textContent = role;
+
+      if (level) {
+        const levelLabels = {
+          student: 'Student / Intern', entry: 'Entry Level', mid: 'Mid Level',
+          senior: 'Senior', lead: 'Lead / Manager', executive: 'Executive'
+        };
+        const badge = document.getElementById('levelBadge');
+        badge.style.display = '';
+        document.getElementById('levelBadgeText').textContent = levelLabels[level] || level;
+      }
+
+      // ── Role-aware data maps ──
+      const ROLE_DATA = {
+        default: {
+          demand: 'High',
+          salary: '$95K–$160K',
+          skills: ['Communication', 'Problem Solving', 'Teamwork', 'Time Management', 'Adaptability', 'Critical Thinking', 'Leadership', 'Data Analysis'],
+          niceSkills: ['Public Speaking', 'Project Management', 'Agile', 'Stakeholder Management', 'Mentoring'],
+          responsibilities: [
+            'Collaborate with cross-functional teams to meet project goals',
+            'Analyse data and present findings to stakeholders',
+            'Contribute to planning and strategy sessions',
+            'Document processes and maintain knowledge bases',
+            'Continuously learn and adapt to evolving requirements',
+          ],
+          salaryBands: [
+            { label: 'Entry (0–2 yrs)', range: '$55K–$80K', pct: 35 },
+            { label: 'Mid (3–5 yrs)',   range: '$80K–$120K', pct: 60 },
+            { label: 'Senior (6+ yrs)', range: '$120K–$160K', pct: 85 },
+          ],
+          path: [
+            { title: 'Junior / Entry',  desc: 'Build fundamentals, get reps in, ship real work.', badge: 'entry',  badgeText: '0–2 years' },
+            { title: 'Mid-Level',       desc: 'Take ownership of components/projects, grow scope.', badge: 'mid',    badgeText: '3–5 years' },
+            { title: 'Senior',          desc: 'Drive technical/domain decisions, mentor juniors.', badge: 'senior', badgeText: '6–9 years' },
+            { title: 'Lead / Manager',  desc: 'Lead a team, define roadmap, shape culture.', badge: 'lead',   badgeText: '10+ years' },
+          ],
+          standOut: [
+            'Build a concrete portfolio with 3–5 strong examples relevant to the role.',
+            'Quantify every achievement on your resume (%, $, time saved, users impacted).',
+            'Get a referral — 40 % of hires come from internal referrals.',
+            'Tailor your resume keywords to each job description before applying.',
+            'Do a mock interview specific to this role at least twice before the real thing.',
+          ],
+          interview: [
+            'Behavioural questions — STAR format answers for leadership & conflict',
+            'Domain expertise — role-specific knowledge and terminology',
+            'Case studies or take-home tasks related to your key responsibilities',
+            'Culture fit and values alignment with the company',
+            'Questions showing you've researched the company and role deeply',
+          ],
+        },
+        'software engineer': {
+          demand: 'Very High',
+          salary: '$110K–$185K',
+          skills: ['JavaScript', 'Python', 'System Design', 'SQL', 'Git', 'REST APIs', 'Data Structures', 'Algorithms'],
+          niceSkills: ['TypeScript', 'Docker', 'Kubernetes', 'GraphQL', 'CI/CD', 'AWS / GCP / Azure', 'Open Source contributions'],
+          responsibilities: [
+            'Design & build scalable backend services and RESTful APIs',
+            'Write clean, well-tested, production-ready code',
+            'Participate in architecture and code-review discussions',
+            'Debug production issues and optimise system performance',
+            'Collaborate with product and design on feature scoping',
+            'Champion engineering best-practices across the team',
+          ],
+          salaryBands: [
+            { label: 'Junior (0–2 yrs)', range: '$80K–$115K', pct: 40 },
+            { label: 'Mid (3–5 yrs)',     range: '$115K–$155K', pct: 63 },
+            { label: 'Senior (6+ yrs)',   range: '$155K–$200K', pct: 85 },
+            { label: 'Staff / Principal', range: '$200K–$280K+', pct: 100 },
+          ],
+          path: [
+            { title: 'Junior Engineer',   desc: 'Land first role via projects, internships, or bootcamp. Ship features with guidance.', badge: 'entry', badgeText: '0–2 years' },
+            { title: 'Mid-Level Engineer',desc: 'Own features end-to-end. Lead small technical decisions, mentor interns.', badge: 'mid', badgeText: '3–5 years' },
+            { title: 'Senior Engineer',   desc: 'Drive architecture and cross-team technical direction. Advocate for engineering quality.', badge: 'senior', badgeText: '6–8 years' },
+            { title: 'Staff Engineer',    desc: 'Shape company-wide technical strategy. Solve the hardest, most ambiguous problems.', badge: 'lead', badgeText: '8+ years' },
+          ],
+          standOut: [
+            'Contribute to open-source projects and link them prominently on your resume.',
+            'Solve 100+ LeetCode questions — focus on patterns, not grinding.',
+            'Build and deploy a full-stack side project you can talk about in depth.',
+            'Write about what you build on a blog or LinkedIn — engineers who communicate win.',
+            'Get a mock system-design interview from a senior engineer before you apply.',
+          ],
+          interview: [
+            'Data structures & algorithms (arrays, trees, graphs, dynamic programming)',
+            'System design (scalability, databases, caching, load balancing)',
+            'Behavioural — leadership, conflict, handling ambiguity (STAR format)',
+            'Code quality, testing strategy, and debugging approach',
+            'Domain knowledge specific to the company/tech stack',
+          ],
+        },
+        'product manager': {
+          demand: 'High',
+          salary: '$105K–$175K',
+          skills: ['Product Strategy', 'User Research', 'Roadmapping', 'Data Analysis', 'Stakeholder Management', 'Agile/Scrum', 'OKRs', 'SQL'],
+          niceSkills: ['A/B Testing', 'Figma', 'Revenue Modelling', 'Go-to-Market', 'Machine Learning basics', 'Growth Hacking'],
+          responsibilities: [
+            'Define product vision, strategy and roadmap aligned with business goals',
+            'Conduct user research and translate insights into actionable requirements',
+            'Prioritise features and manage the product backlog',
+            'Collaborate daily with engineering, design, marketing, and sales',
+            'Track key metrics and make data-driven decisions to improve the product',
+            'Communicate product updates and strategy to executives and stakeholders',
+          ],
+          salaryBands: [
+            { label: 'APM / PM I (0–2 yrs)', range: '$90K–$120K', pct: 45 },
+            { label: 'PM II (3–5 yrs)',       range: '$120K–$155K', pct: 65 },
+            { label: 'Senior PM (6–8 yrs)',   range: '$155K–$185K', pct: 80 },
+            { label: 'Director+ (9+ yrs)',    range: '$185K–$250K+', pct: 100 },
+          ],
+          path: [
+            { title: 'Associate PM',  desc: 'Join an APM programme or start as a business analyst / customer success. Learn the product inside out.', badge: 'entry', badgeText: '0–2 years' },
+            { title: 'PM',            desc: 'Own a product area. Drive roadmap, run discovery, and ship features that move metrics.', badge: 'mid', badgeText: '3–5 years' },
+            { title: 'Senior PM',     desc: 'Manage a larger product or team of PMs. Drive cross-functional alignment at scale.', badge: 'senior', badgeText: '6–8 years' },
+            { title: 'Director / VP', desc: 'Define company-level product strategy, build and grow a PM organisation.', badge: 'lead', badgeText: '9+ years' },
+          ],
+          standOut: [
+            'Build a product case study — pick a real product, identify a problem, and propose a solution.',
+            'Learn SQL and basic analytics tools (Mixpanel, Amplitude) — data fluency is non-negotiable.',
+            'Read "Inspired" by Marty Cagan and apply the frameworks in real conversations.',
+            'Get experience running user interviews and usability tests — even on side projects.',
+            'Network inside target companies — PM roles are often filled by referral.',
+          ],
+          interview: [
+            'Product sense — "How would you improve X?" and product critique questions',
+            'Analytical / metrics — "How would you measure success?" using frameworks',
+            'Prioritization — "Given limited engineering resources, what do you build first?"',
+            'Estimation / market sizing (Fermi questions)',
+            'Behavioural — influencing without authority, handling stakeholder conflict',
+          ],
+        },
+        'data scientist': {
+          demand: 'Very High',
+          salary: '$100K–$170K',
+          skills: ['Python', 'Machine Learning', 'SQL', 'Statistics', 'Data Visualisation', 'Pandas / NumPy', 'Scikit-learn', 'Experimentation / A/B Testing'],
+          niceSkills: ['Deep Learning', 'TensorFlow / PyTorch', 'Spark', 'MLOps', 'Causal Inference', 'NLP', 'Cloud Platforms'],
+          responsibilities: [
+            'Build and deploy machine learning models to solve real business problems',
+            'Run A/B experiments and analyse results with statistical rigour',
+            'Wrangle, clean, and explore large datasets using Python and SQL',
+            'Communicate complex findings clearly to non-technical stakeholders',
+            'Partner with engineers to productionise models and build data pipelines',
+          ],
+          salaryBands: [
+            { label: 'DS I (0–2 yrs)',    range: '$85K–$115K', pct: 42 },
+            { label: 'DS II (3–5 yrs)',   range: '$115K–$150K', pct: 65 },
+            { label: 'Senior DS (6+ yrs)',range: '$150K–$195K', pct: 85 },
+            { label: 'Staff / Principal', range: '$195K–$260K+', pct: 100 },
+          ],
+          path: [
+            { title: 'Junior Data Scientist',  desc: 'Focus on solidifying Python, stats, and SQL. Ship your first models under guidance.', badge: 'entry', badgeText: '0–2 years' },
+            { title: 'Data Scientist',         desc: 'Own analytical and ML projects independently. Drive insights that influence product decisions.', badge: 'mid', badgeText: '3–5 years' },
+            { title: 'Senior Data Scientist',  desc: 'Define ML architecture, mentor team, deliver high-impact modelling initiatives.', badge: 'senior', badgeText: '6–8 years' },
+            { title: 'Staff / ML Lead',        desc: 'Set data science strategy, lead a team of scientists, and interface with leadership.', badge: 'lead', badgeText: '9+ years' },
+          ],
+          standOut: [
+            'Publish a Kaggle or personal project with clean notebooks and a write-up on Medium/LinkedIn.',
+            'Learn MLOps basics — knowing how to deploy models makes you 10× more valuable.',
+            'Get comfortable explaining model outputs to a business audience without jargon.',
+            'Take on causal inference or experimentation projects — companies live by A/B tests.',
+            'Build a strong GitHub portfolio with well-documented, reproducible projects.',
+          ],
+          interview: [
+            'SQL and data manipulation — advanced queries, window functions, aggregations',
+            'Statistics — hypothesis testing, confidence intervals, central limit theorem',
+            'ML theory — model selection, bias-variance tradeoff, regularisation, evaluation metrics',
+            'Case study — open-ended business problem requiring ML modelling from scratch',
+            'Experimentation design and A/B test analysis',
+          ],
+        },
+      };
+
+      // Match role to data
+      function getRoleData(roleName) {
+        const key = roleName.toLowerCase().trim();
+        // Exact matches first
+        if (ROLE_DATA[key]) return ROLE_DATA[key];
+        // Partial matches
+        for (const k of Object.keys(ROLE_DATA)) {
+          if (k === 'default') continue;
+          if (key.includes(k) || k.includes(key)) return ROLE_DATA[k];
+        }
+        return ROLE_DATA.default;
+      }
+
+      const data = getRoleData(role);
+
+      // ── Populate stats ──
+      document.getElementById('statDemand').textContent = data.demand;
+      document.getElementById('statSalary').textContent = data.salary;
+      document.getElementById('statSkills').textContent = data.skills.length + '+';
+
+      // ── Core skills ──
+      const coreCloud = document.getElementById('coreSkillsCloud');
+      data.skills.forEach(s => {
+        const chip = document.createElement('span');
+        chip.className = 'skill-chip core';
+        chip.textContent = s;
+        coreCloud.appendChild(chip);
+      });
+
+      // ── Nice skills ──
+      const niceCloud = document.getElementById('niceSkillsCloud');
+      data.niceSkills.forEach(s => {
+        const chip = document.createElement('span');
+        chip.className = 'skill-chip nice';
+        chip.textContent = s;
+        niceCloud.appendChild(chip);
+      });
+
+      // ── Responsibilities ──
+      const resList = document.getElementById('responsibilityList');
+      data.responsibilities.forEach(r => {
+        resList.innerHTML += `
+          <div class="check-row">
+            <svg width="15" height="15" fill="none" stroke="#9333ea" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            ${r}
+          </div>`;
+      });
+
+      // ── Salary bands ──
+      const salaryRow = document.getElementById('salaryBands');
+      data.salaryBands.forEach(b => {
+        const id = 'bar' + Math.random().toString(36).slice(2);
+        salaryRow.innerHTML += `
+          <div class="salary-item">
+            <div class="salary-label">
+              <span>${b.label}</span>
+              <span style="font-weight:700;color:var(--text-primary)">${b.range}</span>
+            </div>
+            <div class="salary-bar-bg"><div class="salary-bar-fill" id="${id}" data-pct="${b.pct}"></div></div>
+          </div>`;
+      });
+
+      // Animate bars on load
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.salary-bar-fill').forEach(bar => {
+          setTimeout(() => { bar.style.width = bar.dataset.pct + '%'; }, 200);
+        });
+      });
+
+      // ── Career path ──
+      const pathGrid = document.getElementById('careerPath');
+      data.path.forEach((p, i) => {
+        pathGrid.innerHTML += `
+          <div class="path-step">
+            <div class="step-num">${i + 1}</div>
+            <div class="step-body">
+              <div class="step-title">${p.title}</div>
+              <div class="step-desc">${p.desc}</div>
+              <span class="step-badge ${p.badge}">${p.badgeText}</span>
+            </div>
+          </div>`;
+      });
+
+      // ── Stand out ──
+      const standOut = document.getElementById('standOutList');
+      data.standOut.forEach(s => {
+        standOut.innerHTML += `
+          <div class="check-row">
+            <svg width="15" height="15" fill="none" stroke="#f59e0b" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${s}
+          </div>`;
+      });
+
+      // ── Interview ──
+      const interviewList = document.getElementById('interviewList');
+      data.interview.forEach(item => {
+        interviewList.innerHTML += `
+          <div class="check-row">
+            <svg width="15" height="15" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${item}
+          </div>`;
+      });
+
+      // ── Scroll-in animation for stat cards ──
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.stat-card, .content-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(16px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>

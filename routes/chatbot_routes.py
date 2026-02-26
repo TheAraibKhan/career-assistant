@@ -61,7 +61,7 @@ def chat_message():
         session_id = request.json.get('session_id', str(uuid.uuid4()))
         
         if not message:
-            return jsonify({'error': 'Message cannot be empty'}), 400
+            return jsonify({'error': 'Please enter a message to continue our conversation.'}), 400
         
         # Check usage limits
         usage_check = check_usage_limit(user_id, 'chatbot_messages_used')
@@ -87,7 +87,7 @@ def chat_message():
         bot_response = response_data.get('response', '')
         
         if not bot_response:
-            return jsonify({'error': 'Failed to generate response'}), 500
+            return jsonify({'error': 'Unable to generate a response right now. Please try again.'}), 500
         
         # Save to database
         chatbot.save_message(message, bot_response)
@@ -105,8 +105,12 @@ def chat_message():
         })
     
     except Exception as e:
-        print(f"Chat error: {e}")
-        return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
+        # Log for debugging but show friendly message to user
+        print(f"Chatbot error: {str(e)}")
+        return jsonify({
+            'error': 'Something went wrong. Please try sending your message again.',
+            'retry': True
+        }), 500
 
 
 @api_bp.route('/history', methods=['GET'])
@@ -172,11 +176,11 @@ def update_context():
 def greeting():
     """Get greeting message without requiring login."""
     greeting_messages = [
-        "Hi there! 👋 I'm your AI Career Mentor. What's on your mind today?",
-        "Welcome! 🎓 Ready to explore your career path?",
-        "Hey! 🚀 Let's work on your career goals together.",
-        "Hello! 💼 What can I help you with regarding your career?",
-        "Welcome back! 📈 How can I support your career journey today?"
+        "Hi there! I'm your AI Career Mentor. What's on your mind today?",
+        "Welcome! Ready to explore your career path?",
+        "Hey! Let's work on your career goals together.",
+        "Hello! What can I help you with regarding your career?",
+        "Welcome back! How can I support your career journey today?"
     ]
     
     import random

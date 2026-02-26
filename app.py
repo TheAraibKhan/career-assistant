@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from config import SECRET_KEY, PERMANENT_SESSION_LIFETIME
 from database.models import create_table
 from database.db import init_db
@@ -92,7 +92,122 @@ app.register_blueprint(contact_bp)
 # Main routes
 @app.route('/')
 def index():
-    return render_template('homepage.html')
+    return render_template('index.html')
+
+@app.route('/features/target-role')
+def target_role_feature():
+    return render_template('features/target_role.html')
+
+
+@app.route('/api/analyze-resume', methods=['POST'])
+def api_analyze_resume():
+    """Analyze resume text in-page without file upload, save to DB, return JSON."""
+    from database.db import get_db
+    from services.ats_scorer import get_ats_score
+    import re, json
+    from datetime import datetime
+
+    data = request.get_json(silent=True) or {}
+    resume_text = (data.get('resumeText') or '').strip()
+    role_text   = (data.get('roleText')   or '').strip()
+
+    if not resume_text and not role_text:
+        return jsonify({'success': False, 'message': 'Please provide resume text or target role.'}), 400
+
+    # ── Simple text-based skill extraction ──────────────────────────────────
+    SKILL_KEYWORDS = [
+        'python','java','javascript','typescript','react','angular','vue','node',
+        'sql','mysql','postgresql','mongodb','redis','aws','azure','gcp','docker',
+        'kubernetes','git','linux','machine learning','deep learning','tensorflow',
+        'pytorch','data analysis','excel','power bi','tableau','html','css',
+        'c++','c#','ruby','php','swift','kotlin','rust','go','scala',
+        'communication','leadership','project management','agile','scrum',
+        'problem solving','teamwork','analytical','critical thinking',
+    ]
+    text_lower = resume_text.lower() + ' ' + role_text.lower()
+    found_skills = [s for s in SKILL_KEYWORDS if s in text_lower]
+
+    # ── ATS scoring ─────────────────────────────────────────────────────────
+    has_experience = any(kw in text_lower for kw in
+                         ['work experience','professional experience','employment',
+                          'position','role','internship','job'])
+    education = ['degree'] if any(kw in text_lower for kw in
+                                  ['bachelor','master','phd','degree','university','college']) else []
+
+    ats_result = get_ats_score({
+        'skills': found_skills,
+        'has_experience': has_experience,
+        'education': education,
+        'text_length': len(resume_text),
+        'text': resume_text,
+    })
+
+    ats_score = int(ats_result.get('ats_score', 0))
+
+    # ── Feedback generation ──────────────────────────────────────────────────
+    word_count = len(resume_text.split()) if resume_text else 0
+    has_metrics = bool(re.search(r'\d+[%$]|\d+\s*(percent|million|billion|k\b)', resume_text, re.I))
+    has_action_verbs = any(v in text_lower for v in
+                           ['led','managed','built','designed','implemented','delivered',
+                            'improved','increased','reduced','created','developed'])
+
+    overall_score = min(100, max(10,
+        ats_score * 0.6 +
+        (20 if has_metrics else 0) +
+        (10 if has_action_verbs else 0) +
+        (10 if len(found_skills) >= 5 else len(found_skills) * 2)
+    ))
+
+    feedback = {
+        'ats_score': ats_score,
+        'overall_score': round(overall_score),
+        'word_count': word_count,
+        'skills_found': found_skills,
+        'skills_count': len(found_skills),
+        'has_metrics': has_metrics,
+        'has_action_verbs': has_action_verbs,
+        'has_experience': has_experience,
+        'education_found': len(education) > 0,
+        'target_role': role_text,
+        'recommendations': ats_result.get('recommendations', []),
+        'strengths': ats_result.get('strengths', []),
+        'blockers': ats_result.get('blockers', []),
+        'categories': ats_result.get('categories', {}),
+    }
+
+    # ── Persist to DB ────────────────────────────────────────────────────────
+    try:
+        db = get_db()
+        now = datetime.utcnow().isoformat()
+        user_id = session.get('user_id', 'anonymous')
+        db.execute(
+            '''CREATE TABLE IF NOT EXISTS quick_analyses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT,
+                resume_text TEXT,
+                target_role TEXT,
+                ats_score INTEGER,
+                overall_score INTEGER,
+                skills_found TEXT,
+                recommendations TEXT,
+                created_at TEXT NOT NULL
+            )'''
+        )
+        db.execute(
+            '''INSERT INTO quick_analyses
+               (user_id, resume_text, target_role, ats_score, overall_score,
+                skills_found, recommendations, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+            (user_id, resume_text[:5000], role_text, ats_score,
+             round(overall_score), json.dumps(found_skills),
+             json.dumps(feedback['recommendations']), now)
+        )
+        db.commit()
+    except Exception as e:
+        print(f'DB save error: {e}')
+
+    return jsonify({'success': True, 'data': feedback})
+
 
 @app.route('/login')
 def login():
@@ -116,7 +231,7 @@ def career_guidance():
 
 @app.route('/chatbot')
 def chatbot():
-    return render_template('chatbot.html')
+    return redirect(url_for('chatbot.index'))
 
 # Feature detail routes
 @app.route('/features/ats-detection')
@@ -143,6 +258,18 @@ def formatting_guidance():
 def career_readiness():
     return render_template('features/career_readiness.html')
 
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('errors/404.html'), 404
@@ -151,13 +278,14 @@ def not_found(error):
 def server_error(error):
     return render_template('errors/500.html'), 500
 
-# Create DB on startup
+# Initialize database and models on startup
 with app.app_context():
     init_db()
     create_table()
-    print("Application initialized successfully")
-    print("Database connection established")
-    print("All blueprints registered")
+    print("✓ Application initialized successfully")
+    print("✓ Database connection established")
+    print("✓ All blueprints registered")
+    print("→ Ready to serve requests")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

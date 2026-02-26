@@ -1,9 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("careerassist-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ATS Detection - Career Assistant</title>
+    <meta
+      name="description"
+      content="Learn how ATS systems scan your resume and what formatting issues cause your application to be filtered out before a human reads it."
+    />
+    <title>ATS Killer Detection — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,44 +26,97 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        --primary: #3b5bdb;
-        --primary-dark: #2f4cb3;
-        --primary-light: #6476f2;
-        --success: #5a9d7e;
-        --warning: #d4925f;
-        --danger: #d97706;
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-        --border: #e5e7eb;
-        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
-      }
-
-      html.dark-mode {
-        --primary: #60a5fa;
-        --primary-dark: #3b82f6;
-        --primary-light: #93c5fd;
-        --success: #4ade80;
-        --warning: #facc15;
-        --danger: #f97316;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --border: #334155;
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      }
-
-      * {
+      *,
+      *::before,
+      *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #9333ea;
+        --primary-dark: #7c3aed;
+        --accent: #ec4899;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f8faff;
+        --white: #ffffff;
+      }
+
+      [data-theme="dark"] {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #2d3748;
+        --bg: #0f172a;
+        --white: #1e293b;
+      }
+
+      [data-theme="dark"] .site-header {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: #2d3748;
+      }
+      [data-theme="dark"] .stat-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .content-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .checklist-item {
+        background: #162032;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .checklist-item:hover {
+        background: #1e293b;
+      }
+      [data-theme="dark"] .checkbox {
+        background: #2d3748;
+      }
+      [data-theme="dark"] .back-link {
+        border-color: #2d3748;
+        color: #94a3b8;
+      }
+      [data-theme="dark"] .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.08);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] body {
+        background: var(--bg);
+      }
+      [data-theme="dark"] .page-hero {
+        background: linear-gradient(
+          135deg,
+          #1a1040 0%,
+          #0f172a 50%,
+          #101828 100%
+        );
+        border-bottom-color: rgba(147, 51, 234, 0.15);
+      }
+      [data-theme="dark"] .page-hero h1 {
+        color: #f1f5f9;
+      }
+      [data-theme="dark"] .page-hero p.lead {
+        color: #cbd5e1;
+      }
+      [data-theme="dark"] .hero-badge {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] .cta-btn {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #f1f5f9 !important;
+      }
+      [data-theme="dark"] .cta-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
       }
 
       html {
@@ -61,733 +129,1002 @@
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
+          "Segoe UI",
           sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
+        background: var(--bg);
         color: var(--text-primary);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
       }
 
-      header {
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
+      /* ── Header ── */
+      .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
-        transition: all 150ms ease;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition:
+          box-shadow 200ms ease,
+          background 300ms ease;
+      }
+      .site-header.scrolled {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
       }
 
-      .header-content {
-        max-width: 1200px;
+      /* Dark mode toggle */
+      .dm-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        transition: all 200ms ease;
+        flex-shrink: 0;
+      }
+      .dm-btn:hover {
+        color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.4);
+        background: rgba(147, 51, 234, 0.06);
+      }
+      .dm-btn .ic-sun {
+        display: block;
+      }
+      .dm-btn .ic-moon {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-sun {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-moon {
+        display: block;
+      }
+
+      .header-inner {
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 0 2rem;
+        padding: 1rem 2rem;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
       }
 
       .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-decoration: none;
       }
 
-      .dark-mode-toggle {
-        width: 48px;
-        height: 28px;
-        background: var(--border);
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        position: relative;
-        transition: background 150ms ease;
-        display: flex;
-        align-items: center;
-        padding: 0 2px;
-      }
-
-      .dark-mode-toggle:hover {
-        background: var(--primary);
-      }
-
-      .dark-mode-toggle::after {
-        content: "☀️";
-        font-size: 14px;
-        transition: all 200ms ease;
-        position: absolute;
-        left: 4px;
-      }
-
-      html.dark-mode .dark-mode-toggle {
-        background: var(--primary);
-      }
-
-      html.dark-mode .dark-mode-toggle::after {
-        content: "🌙";
-        left: auto;
-        right: 4px;
-      }
-
-      .back-button {
+      .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
         color: var(--text-secondary);
         text-decoration: none;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
         border-radius: 0.5rem;
-        transition: all 150ms ease;
+        transition: all 160ms ease;
       }
-
-      .back-button:hover {
-        background: var(--bg-tertiary);
+      .back-link:hover {
         color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.3);
+        background: rgba(147, 51, 234, 0.04);
+      }
+      .back-link svg {
+        flex-shrink: 0;
       }
 
-      .main-content {
-        max-width: 900px;
-        margin: 3rem auto;
-        padding: 0 2rem;
+      /* ── Hero Banner ── */
+      .page-hero {
+        background: linear-gradient(
+          135deg,
+          #f5f3ff 0%,
+          #faf5ff 50%,
+          #f0f9ff 100%
+        );
+        border-bottom: 1px solid rgba(147, 51, 234, 0.08);
+        padding: 3.5rem 2rem 3rem;
+        position: relative;
+        overflow: hidden;
       }
-
-      .page-header {
-        margin-bottom: 3rem;
+      .page-hero::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(147, 51, 234, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
       }
-
-      .page-header h1 {
-        font-size: 2.5rem;
+      .hero-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .feature-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #9333ea;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         margin-bottom: 1rem;
+      }
+      .feature-eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9333ea;
+        opacity: 0.6;
+      }
+      .page-hero h1 {
+        font-size: clamp(1.875rem, 4vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+      .page-hero p.lead {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        max-width: 620px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .hero-badge svg {
+        flex-shrink: 0;
+      }
+
+      /* ── Main Layout ── */
+      .main-content {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      /* ── Stat Row ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: box-shadow 180ms ease;
+      }
+      .stat-card:hover {
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.08);
+      }
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.375rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      /* ── Content Cards ── */
+      .content-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .content-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+      }
+
+      .card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #9333ea;
+        margin-bottom: 0.75rem;
+      }
+      .content-card h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .content-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+      .content-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ── Issue List ── */
+      .issue-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.25rem;
+      }
+      .issue-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(239, 68, 68, 0.04);
+        border-left: 3px solid rgba(239, 68, 68, 0.4);
+        border-radius: 0.375rem;
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .issue-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        color: #ef4444;
+      }
+      .issue-list strong {
         color: var(--text-primary);
       }
 
-      .page-header p {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-      }
-
-      .status-badge {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .content-section {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .content-section h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--primary);
-      }
-
-      .content-section p {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-        line-height: 1.8;
-      }
-
-      .issue-list {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .issue-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: var(--bg-tertiary);
-        border-left: 4px solid var(--danger);
-        border-radius: 0.5rem;
-      }
-
-      .issue-list strong {
-        color: var(--danger);
-      }
-
+      /* ── Solution List ── */
       .solution-list {
         list-style: none;
-        margin: 1.5rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.25rem;
       }
-
       .solution-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: rgba(90, 157, 126, 0.05);
-        border-left: 4px solid var(--success);
-        border-radius: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(16, 185, 129, 0.04);
+        border-left: 3px solid rgba(16, 185, 129, 0.4);
+        border-radius: 0.375rem;
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
       }
-
+      .fix-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        color: #10b981;
+      }
       .solution-list strong {
-        color: var(--success);
+        color: var(--text-primary);
       }
 
+      /* ── Checklist ── */
       .checklist {
-        margin: 1.5rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.25rem;
       }
-
       .checklist-item {
         display: flex;
         align-items: flex-start;
         gap: 1rem;
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: var(--bg-tertiary);
+        padding: 0.875rem 1rem;
+        background: #f8fafc;
         border-radius: 0.5rem;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: background 150ms ease;
       }
-
-      .checklist-checkbox {
+      .checklist-item:hover {
+        background: #f1f5f9;
+      }
+      .checkbox {
+        flex-shrink: 0;
         width: 20px;
         height: 20px;
-        border: 2px solid var(--primary);
-        border-radius: 0.25rem;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        cursor: pointer;
         transition: all 150ms ease;
+        margin-top: 1px;
+        background: var(--white);
       }
-
-      .checklist-checkbox:hover {
-        background: var(--primary);
-        color: white;
+      .checkbox svg {
+        display: none;
       }
-
-      .checklist-checkbox.checked {
-        background: var(--success);
-        border-color: var(--success);
-        color: white;
+      .checklist-item.checked .checkbox {
+        background: #10b981;
+        border-color: #10b981;
       }
-
+      .checklist-item.checked .checkbox svg {
+        display: block;
+      }
       .checklist-text {
+        font-size: 0.9375rem;
         color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .checklist-item.checked .checklist-text {
+        color: var(--text-muted);
+        text-decoration: line-through;
       }
 
-      .cta-section {
-        background: linear-gradient(
-          135deg,
-          var(--primary) 0%,
-          var(--primary-light) 100%
-        );
-        border-radius: 1rem;
+      /* ── CTA Section ── */
+      .cta-block {
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+        border-radius: 1.25rem;
         padding: 3rem 2rem;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-block::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -15%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .cta-block h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
         color: white;
-        margin-top: 3rem;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
       }
-
-      .cta-section h3 {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-
-      .cta-section p {
-        color: rgba(255, 255, 255, 0.9);
+      .cta-block p {
+        color: rgba(255, 255, 255, 0.85);
         margin-bottom: 2rem;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: white;
-        color: var(--primary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 150ms ease;
-        border: none;
-        cursor: pointer;
         font-size: 1rem;
+        line-height: 1.7;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 1;
       }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-      }
-
-      .stat-card {
-        background: var(--bg-tertiary);
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        text-align: center;
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      /* User Analysis Section */
-      .analysis-section {
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-        border-radius: 1.25rem;
-        padding: 2rem;
-        margin: 3rem 0;
-        border: 1px solid var(--border);
-      }
-
-      .analysis-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .analysis-icon {
-        font-size: 2rem;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(59, 91, 219, 0.1);
-        border-radius: 0.75rem;
-        color: var(--primary);
-      }
-
-      .analysis-header h3 {
-        margin: 0;
-        color: var(--text-primary);
-        font-size: 1.25rem;
-      }
-
-      .analysis-content {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-      }
-
-      .analysis-card {
-        background: var(--bg-primary);
-        padding: 1.25rem;
-        border-radius: 0.75rem;
-        border: 1px solid var(--border);
-        transition: all 150ms ease;
-      }
-
-      .analysis-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .analysis-card-title {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--primary);
-      }
-
-      .analysis-card-value {
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .analysis-card-description {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-      }
-
-      .analysis-badge {
+      .cta-btn {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.35rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 0.5rem;
+        background: white;
+        color: #7c3aed;
+        padding: 0.875rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 180ms ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      }
+      .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       }
 
-      .analysis-badge.warning {
-        background: rgba(212, 146, 95, 0.1);
-        color: var(--warning);
-      }
-
-      .analysis-badge.danger {
-        background: rgba(217, 119, 6, 0.1);
-        color: var(--danger);
-      }
-        .page-header h1 {
-          font-size: 1.75rem;
+      /* ── Responsive ── */
+      @media (max-width: 640px) {
+        .stats-row {
+          grid-template-columns: 1fr;
         }
-
         .main-content {
-          margin: 2rem auto;
+          margin: 2rem auto 4rem;
+          padding: 0 1rem;
         }
-
-        .content-section {
-          padding: 1.5rem;
+        .page-hero {
+          padding: 2.5rem 1rem 2rem;
         }
-
-        .cta-section {
-          padding: 2rem 1.5rem;
+        .header-inner {
+          padding: 1rem;
+        }
+        .cta-block {
+          padding: 2.5rem 1.5rem;
+        }
+        .cta-block h2 {
+          font-size: 1.5rem;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="header-content">
-        <div class="header-left">
-          <a href="/" class="logo">Career Assistant</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1.5rem">
-          <button
-            class="dark-mode-toggle"
-            id="darkModeToggle"
-            title="Toggle dark mode"
-          ></button>
-          <a href="/" class="back-button">← Back to Home</a>
+    <!-- Header -->
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="/" class="logo">CareerAssist</a>
+        <div style="display: flex; align-items: center; gap: 0.75rem">
+          <button class="dm-btn" id="dmBtn" aria-label="Toggle dark mode">
+            <svg
+              class="ic-moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              class="ic-sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <a href="/" class="back-link">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Home
+          </a>
         </div>
       </div>
     </header>
 
-    <div class="main-content">
-      <div class="page-header">
+    <!-- Hero -->
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div class="feature-eyebrow">
+          <span class="feature-eyebrow-dot"></span>
+          Critical Check
+        </div>
         <h1>ATS Killer Detection</h1>
-        <p>
-          Your resume passes through Applicant Tracking Systems (ATS) software
-          before any human sees it. We detect what kills your chances.
+        <p class="lead">
+          Your resume passes through automated screening software before any
+          human sees it. Most rejections happen here — not because you're
+          underqualified, but because the system couldn't read your file.
         </p>
-        <span class="status-badge">85% of resumes pass this check</span>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">40%</div>
-          <div class="stat-label">Of resumes fail ATS screening</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">6 sec</div>
-          <div class="stat-label">Average recruiter review time</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">100+</div>
-          <div class="stat-label">Possible ATS issues detected</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">100+</div>
-          <div class="stat-label">Possible ATS issues detected</div>
+        <div class="hero-badge">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          85% of resumes pass this check when properly formatted
         </div>
       </div>
+    </section>
 
-      <!-- User Analysis Section -->
-      <div class="analysis-section" id="analysisSection" style="display: none">
-        <div class="analysis-header">
-          <div class="analysis-icon">📊</div>
-          <h3>Your Resume Analysis</h3>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value">40%</div>
+          <div class="stat-label">
+            Of resumes are filtered out by ATS before a human sees them
+          </div>
         </div>
-        <div class="analysis-content">
-          <div class="analysis-card">
-            <div class="analysis-card-title">ATS Score</div>
-            <div class="analysis-card-value" id="atsScore">--</div>
-            <div class="analysis-card-description">
-              How well your resume parses
-            </div>
-            <div class="analysis-badge" id="atsStatus">Not scanned yet</div>
+        <div class="stat-card">
+          <div class="stat-value">6 sec</div>
+          <div class="stat-label">
+            Average time a recruiter spends on a resume that does reach them
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Critical Issues</div>
-            <div class="analysis-card-value" id="criticalCount">--</div>
-            <div class="analysis-card-description">
-              Must fix before applying
-            </div>
-            <div class="analysis-badge danger" id="criticalStatus">
-              None detected
-            </div>
-          </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Formatting Problems</div>
-            <div class="analysis-card-value" id="formatCount">--</div>
-            <div class="analysis-card-description">
-              Visual and layout issues
-            </div>
-            <div class="analysis-badge warning" id="formatStatus">
-              Check details
-            </div>
-          </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Keywords Found</div>
-            <div class="analysis-card-value" id="keywordCount">--</div>
-            <div class="analysis-card-description">
-              Match with job description
-            </div>
-            <div class="analysis-badge" id="keywordStatus">In progress</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">75%</div>
+          <div class="stat-label">
+            Of qualified candidates are eliminated at the ATS stage alone
           </div>
         </div>
       </div>
 
-      <div class="content-section">
-        <h2>What's the Problem?</h2>
+      <!-- What's the problem -->
+      <div class="content-card">
+        <div class="card-label">The Hidden Problem</div>
+        <h2>Why resumes fail before they're even read</h2>
         <p>
-          ATS systems are designed to parse resumes and extract key information.
-          They're not sophisticated—they stumble on formatting, images, tables,
-          and unusual fonts. If the ATS can't read your resume properly, it
-          never reaches a human recruiter, no matter how qualified you are.
+          ATS software isn't sophisticated. It reads resumes the way a plain
+          text parser would — top to bottom, left to right. Tables, graphics,
+          unusual columns, and custom fonts all break that flow. The system
+          marks those resumes as unreadable and moves on.
+        </p>
+        <p>
+          The frustrating part? Your qualifications were never the issue. The
+          file itself was the problem. That's what this check catches.
         </p>
 
-        <h3
-          style="
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-          "
-        >
-          Common ATS Killers:
-        </h3>
         <ul class="issue-list">
           <li>
-            <strong>Tables & complex layouts</strong> - ATS reads text
-            sequentially and gets confused
+            <svg
+              class="issue-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span
+              ><strong>Tables and multi-column layouts</strong> — ATS reads text
+              sequentially and gets scrambled by table cells</span
+            >
           </li>
           <li>
-            <strong>Images, graphics, or icons</strong> - Most ATS can't
-            interpret visual elements
+            <svg
+              class="issue-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span
+              ><strong>Images, logos, or headshots</strong> — Visual elements
+              are invisible to text parsers and create gaps in your
+              profile</span
+            >
           </li>
           <li>
-            <strong>Headers, footers, or sidebars</strong> - Information in
-            margins often gets lost
+            <svg
+              class="issue-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span
+              ><strong>Text in headers or footers</strong> — Contact information
+              placed in document headers is commonly lost entirely</span
+            >
           </li>
           <li>
-            <strong>Unusual fonts</strong> - Fancy typefaces fail to parse
-            correctly
+            <svg
+              class="issue-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span
+              ><strong>Decorative or non-standard fonts</strong> — Fancy
+              typefaces fail to parse correctly and may appear as garbled
+              characters</span
+            >
           </li>
           <li>
-            <strong>PDF formatting issues</strong> - Improper conversion
-            destroys structure
-          </li>
-          <li>
-            <strong>Missing keywords</strong> - ATS searches for specific terms;
-            if they're absent, you're invisible
+            <svg
+              class="issue-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span
+              ><strong>Missing job-specific keywords</strong> — ATS filters by
+              exact terms; if the language doesn't match, you're invisible</span
+            >
           </li>
         </ul>
       </div>
 
-      <div class="content-section">
-        <h2>Why This Matters</h2>
+      <!-- Why it matters -->
+      <div class="content-card">
+        <div class="card-label">Why It Matters</div>
+        <h2>A technical problem, not a qualification problem</h2>
         <p>
-          Imagine this: You're perfectly qualified for a role, but your resume
-          never reaches the hiring manager because the ATS couldn't parse it. A
-          technical failure, not a content one, ends your opportunity. This
-          happens to thousands of candidates every day.
+          The hardest part about an ATS rejection is that you'll never know it
+          happened. You send an application, hear nothing, and assume you
+          weren't qualified enough. In reality, your resume may have been
+          discarded in seconds — not because of your experience, but because of
+          how your file was structured.
         </p>
         <p>
-          <strong>The reality:</strong> Your resume must clear the ATS filter
-          before your qualifications even matter. It's a gatekeeper, and many
-          candidates don't realize they've already been filtered out.
+          Fixing ATS compatibility is the single highest-leverage change you can
+          make to your resume. Everything else — your bullet points, your
+          keywords, your achievements — only matters if your resume actually
+          gets read first.
         </p>
       </div>
 
-      <div class="content-section">
-        <h2>How to Fix It</h2>
+      <!-- How to fix it -->
+      <div class="content-card">
+        <div class="card-label">How to Fix It</div>
+        <h2>Simple changes that make a real difference</h2>
+        <p>
+          You don't need to redesign your resume from scratch. Most ATS issues
+          come down to a handful of structural choices that are easy to correct
+          once you know what to look for.
+        </p>
+
         <ul class="solution-list">
           <li>
-            <strong>Use a clean, simple format</strong> - Stick to bullet points
-            and standard margins
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Use a single-column layout</strong> — Bullet points and
+              clean section headings parse perfectly across all ATS
+              platforms</span
+            >
           </li>
           <li>
-            <strong>Remove images and icons</strong> - ATS software treats them
-            as blank space
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Remove all images and icons</strong> — Including profile
+              photos, skill bar graphics, and logo images</span
+            >
           </li>
           <li>
-            <strong>Use standard fonts</strong> - Arial, Calibri, or Times New
-            Roman are safest
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Choose standard fonts</strong> — Arial, Calibri, Georgia,
+              or Times New Roman are universally supported</span
+            >
           </li>
           <li>
-            <strong>Avoid tables</strong> - Use tabs and spaces instead to
-            organize information
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Put contact info in the body</strong> — Never in the
+              document header or footer, where parsers often skip it</span
+            >
           </li>
           <li>
-            <strong>Include relevant keywords</strong> - Mirror language from
-            the job description
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Mirror the job description's language</strong> — Use the
+              exact terms the employer uses, not synonyms</span
+            >
           </li>
           <li>
-            <strong>Save as .docx or .pdf</strong> - Avoid exotic file formats
+            <svg
+              class="fix-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Save as .docx or a clean .pdf</strong> — Both are
+              well-supported; avoid .pages or unusual export formats</span
+            >
           </li>
         </ul>
 
         <h3
           style="
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
           "
         >
-          Quick ATS Compatibility Checklist:
+          Quick ATS Compatibility Checklist
         </h3>
         <div class="checklist">
           <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">No images, logos, or graphics</div>
-          </div>
-          <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">No headers, footers, or text boxes</div>
-          </div>
-          <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">Standard font (size 10-12pt)</div>
-          </div>
-          <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">1-inch margins on all sides</div>
-          </div>
-          <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">No tables or complex layouts</div>
-          </div>
-          <div class="checklist-item">
-            <div class="checklist-checkbox">✓</div>
-            <div class="checklist-text">
-              Job keywords from description included
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
+            <span class="checklist-text"
+              >No images, logos, or any embedded graphics</span
+            >
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="checklist-text"
+              >No tables used for layout or skills sections</span
+            >
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="checklist-text"
+              >Contact details are in the document body, not the file
+              header</span
+            >
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="checklist-text"
+              >Standard font (11–12pt), consistent throughout</span
+            >
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="checklist-text"
+              >Keywords from the job posting appear in natural context</span
+            >
+          </div>
+          <div class="checklist-item">
+            <div class="checkbox">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="checklist-text"
+              >File saved as .docx or a text-selectable .pdf</span
+            >
           </div>
         </div>
       </div>
 
-      <div class="cta-section">
-        <h3>Ready to Check Your Resume?</h3>
+      <!-- CTA -->
+      <div class="cta-block">
+        <h2>Ready to check your resume?</h2>
         <p>
-          Upload your resume now and get instant feedback on ATS compatibility
-          and 5 other critical checks.
+          Upload your resume and get a full ATS compatibility report in under a
+          minute. We'll flag every issue and tell you exactly how to fix it.
         </p>
-        <a href="/resume" class="btn">Upload & Analyze</a>
+        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
       </div>
-    </div>
+    </main>
 
     <script>
-      // Dark mode functionality
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const html = document.documentElement;
-
-      // Check localStorage for dark mode preference
-      if (localStorage.getItem("darkMode") === "true") {
-        html.classList.add("dark-mode");
-      }
-
-      darkModeToggle.addEventListener("click", () => {
-        html.classList.toggle("dark-mode");
-        const isDarkMode = html.classList.contains("dark-mode");
-        localStorage.setItem("darkMode", isDarkMode);
+      // Header scroll shadow
+      const header = document.getElementById("siteHeader");
+      window.addEventListener("scroll", () => {
+        header.classList.toggle("scrolled", window.scrollY > 30);
       });
 
-      // Checklist functionality
-      document.querySelectorAll(".checklist-checkbox").forEach((checkbox) => {
-        checkbox.addEventListener("click", function () {
-          this.classList.toggle("checked");
+      // Interactive checklist
+      document.querySelectorAll(".checklist-item").forEach((item) => {
+        item.addEventListener("click", () => item.classList.toggle("checked"));
+      });
+
+      // Dark mode toggle
+      (function () {
+        var btn = document.getElementById("dmBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var curr = document.documentElement.getAttribute("data-theme");
+          var next = curr === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("careerassist-theme", next);
         });
-      });
-
-      // User Analysis Section - Simulate data from session/localStorage
-      function initializeAnalysis() {
-        // Simulate resume analysis data (in real app, this would come from backend)
-        const analysisData = {
-          atsScore: localStorage.getItem("atsScore") || null,
-          criticalCount: localStorage.getItem("criticalCount") || null,
-          formatCount: localStorage.getItem("formatCount") || null,
-          keywordCount: localStorage.getItem("keywordCount") || null,
-        };
-
-        // If we have analysis data, show the analysis section
-        if (Object.values(analysisData).some((val) => val !== null)) {
-          const analysisSection = document.getElementById("analysisSection");
-          analysisSection.style.display = "block";
-
-          if (analysisData.atsScore) {
-            document.getElementById("atsScore").textContent =
-              analysisData.atsScore + "%";
-            const atsStatus = document.getElementById("atsStatus");
-            const score = parseInt(analysisData.atsScore);
-            if (score >= 80) {
-              atsStatus.textContent = "Excellent";
-              atsStatus.className = "analysis-badge";
-            } else if (score >= 60) {
-              atsStatus.textContent = "Good";
-              atsStatus.className = "analysis-badge warning";
-            } else {
-              atsStatus.textContent = "Needs work";
-              atsStatus.className = "analysis-badge danger";
-            }
-          }
-
-          if (analysisData.criticalCount) {
-            document.getElementById("criticalCount").textContent =
-              analysisData.criticalCount;
-            const criticalStatus = document.getElementById("criticalStatus");
-            if (analysisData.criticalCount === "0") {
-              criticalStatus.textContent = "All clear ✓";
-            } else {
-              criticalStatus.textContent = "Fix required";
-            }
-          }
-
-          if (analysisData.formatCount) {
-            document.getElementById("formatCount").textContent =
-              analysisData.formatCount;
-          }
-
-          if (analysisData.keywordCount) {
-            document.getElementById("keywordCount").textContent =
-              analysisData.keywordCount;
-            const keywordStatus = document.getElementById("keywordStatus");
-            const keywords = parseInt(analysisData.keywordCount);
-            if (keywords > 15) {
-              keywordStatus.textContent = "Strong match";
-              keywordStatus.className = "analysis-badge";
-            } else if (keywords > 8) {
-              keywordStatus.textContent = "Good coverage";
-              keywordStatus.className = "analysis-badge";
-            } else {
-              keywordStatus.textContent = "Add more";
-              keywordStatus.className = "analysis-badge warning";
-            }
-          }
-        }
-      }
-
-      // Initialize analysis on page load
-      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+      })();
     </script>
   </body>
 </html>

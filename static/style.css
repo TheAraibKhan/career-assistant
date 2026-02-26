@@ -1,17 +1,16 @@
-/* Core Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ===== LEGACY COMPATIBILITY ===== */
+/* This file is maintained for backwards compatibility */
+/* New pages should use design_tokens.css + components.css + utilities.css */
 
+/* Import the new design system */
+@import url("design_tokens.css");
+
+/* Core Styles - now using design tokens */
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    sans-serif;
-  background: #fafbfc;
-  color: #1f2937;
-  line-height: 1.5;
+  font-family: var(--font-family);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: var(--line-height-base);
 }
 
 /* Typography */
@@ -19,25 +18,25 @@ h1 {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 h2 {
   font-size: 24px;
   font-weight: 600;
   margin: 24px 0 16px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 h3 {
   font-size: 18px;
   font-weight: 600;
   margin: 16px 0 12px;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 p {
-  color: #6b7280;
+  color: var(--text-muted);
   margin: 0 0 12px;
 }
 
@@ -50,16 +49,16 @@ p {
 
 .card {
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
 }
 
 .card:hover {
-  border-color: #d1d5db;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(147, 51, 234, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Forms */
@@ -67,7 +66,7 @@ label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -78,11 +77,11 @@ select,
 textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-family: inherit;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
 }
 
 input[type="text"]:focus,
@@ -91,45 +90,51 @@ input[type="password"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
 }
 
-/* Buttons */
+/* Buttons - Updated to purple theme */
 button,
 .btn {
   padding: 10px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
   display: inline-block;
   text-decoration: none;
   text-align: center;
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
+  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4);
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #6d28d9 100%);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background: #e5e7eb;
-  color: #374151;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-  background: #d1d5db;
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .btn-danger {
@@ -165,31 +170,31 @@ button,
 }
 
 .skill-tag {
-  background: #f0f9ff;
-  border: 1px solid #bfdbfe;
-  color: #1e40af;
+  background: rgba(147, 51, 234, 0.1);
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  color: var(--primary);
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 500;
 }
 
 .skill-tag.core {
-  background: #ecfdf5;
-  border-color: #86efac;
-  color: #166534;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--success);
 }
 
 .skill-tag.supporting {
-  background: #fef3c7;
-  border-color: #fde047;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: var(--warning);
 }
 
 .skill-tag.optional {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-  color: #6b7280;
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+  color: var(--text-muted);
 }
 
 /* Status Indicators */
@@ -202,18 +207,18 @@ button,
 }
 
 .status-high {
-  background: #dcfce7;
-  color: #166534;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
 }
 
 .status-medium {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
 }
 
 .status-low {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 /* Score Display */
@@ -222,51 +227,51 @@ button,
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #f8fafc;
-  border-radius: 6px;
-  border-left: 4px solid #3b82f6;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary);
 }
 
 .score-number {
   font-size: 28px;
   font-weight: 700;
-  color: #3b82f6;
+  color: var(--primary);
 }
 
 .score-label {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 /* Alerts & Messages */
 .alert {
   padding: 12px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   margin-bottom: 16px;
   border-left: 4px solid;
 }
 
 .alert-info {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1e40af;
+  background: rgba(147, 51, 234, 0.05);
+  border-color: var(--primary);
+  color: var(--primary-dark);
 }
 
 .alert-success {
-  background: #f0fdf4;
-  border-color: #22c55e;
+  background: rgba(16, 185, 129, 0.05);
+  border-color: var(--success);
   color: #166534;
 }
 
 .alert-warning {
-  background: #fffbeb;
-  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+  border-color: var(--warning);
   color: #92400e;
 }
 
 .alert-error {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.05);
   border-color: #ef4444;
   color: #991b1b;
 }
@@ -276,8 +281,8 @@ button,
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 2px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

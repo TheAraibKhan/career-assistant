@@ -1,9 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("careerassist-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Role-Specific Gap Analysis - Career Assistant</title>
+    <meta
+      name="description"
+      content="Compare your resume against real job descriptions. Find the exact skills and keywords that are missing for your target role."
+    />
+    <title>Role-Specific Gap Analysis — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,781 +26,938 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        --primary: #3b5bdb;
-        --primary-dark: #2f4cb3;
-        --primary-light: #6476f2;
-        --success: #5a9d7e;
-        --warning: #d4925f;
-        --danger: #d97706;
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-        --border: #e5e7eb;
-        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
-      }
-
-      html.dark-mode {
-        --primary: #60a5fa;
-        --primary-dark: #3b82f6;
-        --primary-light: #93c5fd;
-        --success: #4ade80;
-        --warning: #facc15;
-        --danger: #f97316;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --border: #334155;
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      }
-
-      * {
+      *,
+      *::before,
+      *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
+      :root {
+        --primary: #9333ea;
+        --primary-dark: #7c3aed;
+        --accent: #ec4899;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f8faff;
+        --white: #ffffff;
+      }
+      [data-theme="dark"] {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #2d3748;
+        --bg: #0f172a;
+        --white: #1e293b;
+      }
+      [data-theme="dark"] .site-header {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: #2d3748;
+      }
+      [data-theme="dark"] .stat-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .content-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .gap-track {
+        background: #2d3748;
+      }
+      [data-theme="dark"] .back-link {
+        border-color: #2d3748;
+        color: #94a3b8;
+      }
+      [data-theme="dark"] .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.08);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] body {
+        background: var(--bg);
+      }
+      [data-theme="dark"] .page-hero {
+        background: linear-gradient(
+          135deg,
+          #1a1040 0%,
+          #0f172a 50%,
+          #101828 100%
+        );
+        border-bottom-color: rgba(147, 51, 234, 0.15);
+      }
+      [data-theme="dark"] .page-hero h1 {
+        color: #f1f5f9;
+      }
+      [data-theme="dark"] .page-hero p.lead {
+        color: #cbd5e1;
+      }
+      [data-theme="dark"] .hero-badge {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] .cta-btn {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #f1f5f9 !important;
+      }
+      [data-theme="dark"] .cta-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
       html {
         scroll-behavior: smooth;
         font-size: 16px;
       }
-
       body {
         font-family:
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
+          "Segoe UI",
           sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
+        background: var(--bg);
         color: var(--text-primary);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 300ms ease,
+          color 300ms ease;
       }
 
-      header {
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
+      .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
-        transition: all 150ms ease;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition:
+          box-shadow 200ms ease,
+          background 300ms ease;
       }
-
-      .header-content {
-        max-width: 1200px;
+      .site-header.scrolled {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+      .header-inner {
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 0 2rem;
+        padding: 1rem 2rem;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
       }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
       .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-decoration: none;
       }
-
-      .dark-mode-toggle {
-        width: 48px;
-        height: 28px;
-        background: var(--border);
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        position: relative;
-        transition: background 150ms ease;
-        display: flex;
-        align-items: center;
-        padding: 0 2px;
-      }
-
-      .dark-mode-toggle:hover {
-        background: var(--primary);
-      }
-
-      .dark-mode-toggle::after {
-        content: "☀️";
-        font-size: 14px;
-        transition: all 200ms ease;
-        position: absolute;
-        left: 4px;
-      }
-
-      html.dark-mode .dark-mode-toggle {
-        background: var(--primary);
-      }
-
-      html.dark-mode .dark-mode-toggle::after {
-        content: "🌙";
-        left: auto;
-        right: 4px;
-      }
-
-      .back-button {
+      .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
         padding: 0.5rem 1rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        transition: all 150ms ease;
-      }
-
-      .back-button:hover {
-        background: var(--bg-tertiary);
-        color: var(--primary);
-      }
-
-      .main-content {
-        max-width: 900px;
-        margin: 3rem auto;
-        padding: 0 2rem;
-      }
-
-      .page-header {
-        margin-bottom: 3rem;
-      }
-
-      .page-header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
-
-      .page-header p {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-      }
-
-      .status-badge {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .content-section {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .content-section h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--primary);
-      }
-
-      .content-section p {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-        line-height: 1.8;
-      }
-
-      .gap-list {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .gap-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: var(--bg-tertiary);
-        border-left: 4px solid var(--warning);
-        border-radius: 0.5rem;
-      }
-
-      .gap-list strong {
-        color: var(--warning);
-      }
-
-      .solution-list {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .solution-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: rgba(90, 157, 126, 0.05);
-        border-left: 4px solid var(--success);
-        border-radius: 0.5rem;
-      }
-
-      .solution-list strong {
-        color: var(--success);
-      }
-
-      .skill-matrix {
-        margin: 1.5rem 0;
-        border-collapse: collapse;
-        width: 100%;
-      }
-
-      .skill-matrix th,
-      .skill-matrix td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .skill-matrix th {
-        background: var(--bg-tertiary);
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .skill-matrix tr:hover {
-        background: var(--bg-tertiary);
-      }
-
-      .skill-level {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .skill-bar {
-        flex: 1;
-        height: 6px;
-        background: var(--border);
-        border-radius: 3px;
-        overflow: hidden;
-      }
-
-      .skill-bar-fill {
-        height: 100%;
-        background: var(--success);
-        border-radius: 3px;
-        transition: width 300ms ease;
-      }
-
-      .gap-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-      }
-
-      .gap-indicator.missing {
-        background: var(--danger);
-      }
-
-      .gap-indicator.partial {
-        background: var(--warning);
-      }
-
-      .gap-indicator.strong {
-        background: var(--success);
-      }
-
-      .cta-section {
-        background: linear-gradient(
-          135deg,
-          var(--primary) 0%,
-          var(--primary-light) 100%
-        );
-        border-radius: 1rem;
-        padding: 3rem 2rem;
-        text-align: center;
-        color: white;
-        margin-top: 3rem;
-      }
-
-      .cta-section h3 {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-
-      .cta-section p {
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 2rem;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: white;
-        color: var(--primary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 150ms ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-      }
-
-      .stat-card {
-        background: var(--bg-tertiary);
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        text-align: center;
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      /* User Analysis Section */
-      .analysis-section {
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-        border-radius: 1.25rem;
-        padding: 2rem;
-        margin: 3rem 0;
         border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        transition: all 160ms ease;
       }
-
-      .analysis-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+      .back-link:hover {
+        color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.3);
+        background: rgba(147, 51, 234, 0.04);
       }
-
-      .analysis-icon {
-        font-size: 2rem;
-        width: 50px;
-        height: 50px;
+      .dm-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(59, 91, 219, 0.1);
-        border-radius: 0.75rem;
+        color: var(--text-muted);
+        transition: all 200ms ease;
+      }
+      .dm-btn:hover {
         color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.4);
+        background: rgba(147, 51, 234, 0.06);
+      }
+      .dm-btn .ic-sun {
+        display: block;
+      }
+      .dm-btn .ic-moon {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-sun {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-moon {
+        display: block;
       }
 
-      .analysis-header h3 {
-        margin: 0;
-        color: var(--text-primary);
-        font-size: 1.25rem;
+      .page-hero {
+        background: linear-gradient(
+          135deg,
+          #f5f3ff 0%,
+          #faf5ff 50%,
+          #f0f9ff 100%
+        );
+        border-bottom: 1px solid rgba(147, 51, 234, 0.08);
+        padding: 3.5rem 2rem 3rem;
+        position: relative;
+        overflow: hidden;
       }
-
-      .analysis-content {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+      .page-hero::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(147, 51, 234, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
       }
-
-      .analysis-card {
-        background: var(--bg-primary);
-        padding: 1.25rem;
-        border-radius: 0.75rem;
-        border: 1px solid var(--border);
-        transition: all 150ms ease;
+      .hero-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
       }
-
-      .analysis-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .analysis-card-title {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
+      .feature-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #9333ea;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--primary);
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
       }
-
-      .analysis-card-value {
-        font-size: 1.75rem;
+      .feature-eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9333ea;
+        opacity: 0.6;
+      }
+      .page-hero h1 {
+        font-size: clamp(1.875rem, 4vw, 2.75rem);
         font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
         color: var(--text-primary);
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .page-hero p.lead {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        max-width: 620px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(147, 51, 234, 0.08);
+        color: #7c3aed;
+        border: 1px solid rgba(147, 51, 234, 0.18);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
       }
 
-      .analysis-card-description {
+      .main-content {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: box-shadow 180ms ease;
+      }
+      .stat-card:hover {
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.08);
+      }
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.375rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .content-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .content-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+      }
+      .card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #9333ea;
+        margin-bottom: 0.75rem;
+      }
+      .content-card h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .content-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+      .content-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Gap visualizer */
+      .gap-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .gap-label {
         font-size: 0.875rem;
         color: var(--text-secondary);
+        min-width: 140px;
+        font-weight: 500;
+      }
+      .gap-track {
+        flex: 1;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .gap-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+        transition: width 0.8s ease;
+      }
+      .gap-pct {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #9333ea;
+        min-width: 36px;
+        text-align: right;
       }
 
-      .analysis-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.35rem;
-        font-size: 0.75rem;
+      /* Keyword pills */
+      .keywords-section {
+        margin-top: 1.5rem;
+      }
+      .keywords-title {
+        font-size: 0.875rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 0.5rem;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+      }
+      .keyword-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+      }
+      .pill.found {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .pill.missing {
+        background: rgba(239, 68, 68, 0.08);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.18);
+      }
+      .pill svg {
+        flex-shrink: 0;
       }
 
-      .analysis-badge.warning {
-        background: rgba(212, 146, 95, 0.1);
-        color: var(--warning);
+      .tip-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.25rem;
+      }
+      .tip-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(16, 185, 129, 0.04);
+        border-left: 3px solid rgba(16, 185, 129, 0.4);
+        border-radius: 0.375rem;
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .tip-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        color: #10b981;
+      }
+      .tip-list strong {
+        color: var(--text-primary);
       }
 
-      .analysis-badge.danger {
-        background: rgba(217, 119, 6, 0.1);
-        color: var(--danger);
+      .cta-block {
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+        border-radius: 1.25rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
       }
-        .page-header h1 {
-          font-size: 1.75rem;
+      .cta-block::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -15%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .cta-block h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: white;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+      }
+      .cta-block p {
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 1;
+      }
+      .cta-btn {
+        display: inline-block;
+        background: white;
+        color: #7c3aed;
+        padding: 0.875rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 180ms ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      }
+      .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 640px) {
+        .stats-row {
+          grid-template-columns: 1fr;
         }
-
         .main-content {
-          margin: 2rem auto;
+          margin: 2rem auto 4rem;
+          padding: 0 1rem;
         }
-
-        .content-section {
-          padding: 1.5rem;
+        .page-hero {
+          padding: 2.5rem 1rem 2rem;
         }
-
-        .cta-section {
-          padding: 2rem 1.5rem;
+        .header-inner {
+          padding: 1rem;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="header-content">
-        <div class="header-left">
-          <a href="/" class="logo">Career Assistant</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1.5rem">
-          <button
-            class="dark-mode-toggle"
-            id="darkModeToggle"
-            title="Toggle dark mode"
-          ></button>
-          <a href="/" class="back-button">← Back to Home</a>
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="/" class="logo">CareerAssist</a>
+        <div style="display: flex; align-items: center; gap: 0.75rem">
+          <button class="dm-btn" id="dmBtn" aria-label="Toggle dark mode">
+            <svg
+              class="ic-moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              class="ic-sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <a href="/" class="back-link">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Home
+          </a>
         </div>
       </div>
     </header>
 
-    <div class="main-content">
-      <div class="page-header">
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div class="feature-eyebrow">
+          <span class="feature-eyebrow-dot"></span>
+          Smart Matching
+        </div>
         <h1>Role-Specific Gap Analysis</h1>
-        <p>
-          Not all skills are equal. We analyze what's missing for your target
-          role and create a personalized roadmap.
+        <p class="lead">
+          Generic resumes get generic results. We compare your experience
+          directly against the job description to show you exactly what's
+          missing — and what to add next.
         </p>
-        <span class="status-badge">78% match to target roles</span>
+        <div class="hero-badge">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+          Targeted matching against real job descriptions
+        </div>
       </div>
+    </section>
 
-      <div class="stats-grid">
+    <main class="main-content">
+      <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-number">5-8</div>
-          <div class="stat-label">Key skills per role</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">23%</div>
-          <div class="stat-label">Average skill gap</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">6 mo</div>
-          <div class="stat-label">Time to close gap</div>
-        </div>
-      </div>
-
-      <!-- User Analysis Section -->
-      <div class="analysis-section" id="analysisSection" style="display: none">
-        <div class="analysis-header">
-          <div class="analysis-icon">📊</div>
-          <h3>Your Resume Analysis</h3>
-        </div>
-        <div class="analysis-content">
-          <div class="analysis-card">
-            <div class="analysis-card-title">Skill Match</div>
-            <div class="analysis-card-value" id="skillScore">--</div>
-            <div class="analysis-card-description">Match to target role</div>
-            <div class="analysis-badge" id="skillStatus">Not scanned yet</div>
+          <div class="stat-value">72%</div>
+          <div class="stat-label">
+            Average keyword match rate for candidates who don't tailor their
+            resume
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Gaps Identified</div>
-            <div class="analysis-card-value" id="gapCount">--</div>
-            <div class="analysis-card-description">Skills to develop</div>
-            <div class="analysis-badge warning" id="gapStatus">
-              Review details
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3×</div>
+          <div class="stat-label">
+            More callbacks when resume language aligns with the job posting
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8–12</div>
+          <div class="stat-label">
+            Key skills a typical job description requires; most resumes cover
+            6–7
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-label">How It Works</div>
+        <h2>We read the job the same way the ATS does</h2>
+        <p>
+          When you apply for a role, both the ATS and the recruiter are mentally
+          scanning for specific terms. Not similar terms — the exact words used
+          in the posting. "Agile methodology" and "agile development" can mean
+          the same thing to you, but an ATS might only score one of them.
+        </p>
+        <p>
+          We extract the keywords, required skills, and experience signals from
+          the job description, then map them against your resume. You see what's
+          covered, what's partially there, and what's missing entirely.
+        </p>
+
+        <div style="margin-top: 1.75rem">
+          <p
+            style="
+              font-size: 0.875rem;
+              font-weight: 600;
+              color: var(--text-primary);
+              margin-bottom: 1.25rem;
+            "
+          >
+            Sample skill coverage for a Software Engineer role:
+          </p>
+          <div class="gap-row">
+            <span class="gap-label">Python / Backend</span>
+            <div class="gap-track">
+              <div class="gap-fill" style="width: 90%"></div>
             </div>
+            <span class="gap-pct">90%</span>
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Growth Timeline</div>
-            <div class="analysis-card-value" id="timeline">--</div>
-            <div class="analysis-card-description">Months to close gaps</div>
-            <div class="analysis-badge" id="timelineStatus">Estimated</div>
+          <div class="gap-row">
+            <span class="gap-label">System Design</span>
+            <div class="gap-track">
+              <div class="gap-fill" style="width: 65%"></div>
+            </div>
+            <span class="gap-pct">65%</span>
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Readiness Level</div>
-            <div class="analysis-card-value" id="readiness">--</div>
-            <div class="analysis-card-description">For target role</div>
-            <div class="analysis-badge" id="readinessStatus">In progress</div>
+          <div class="gap-row">
+            <span class="gap-label">Cloud / AWS</span>
+            <div class="gap-track">
+              <div class="gap-fill" style="width: 40%"></div>
+            </div>
+            <span class="gap-pct">40%</span>
+          </div>
+          <div class="gap-row">
+            <span class="gap-label">CI/CD & DevOps</span>
+            <div class="gap-track">
+              <div class="gap-fill" style="width: 20%"></div>
+            </div>
+            <span class="gap-pct">20%</span>
+          </div>
+        </div>
+
+        <div class="keywords-section">
+          <div class="keywords-title">Keyword Status</div>
+          <div class="keyword-pills">
+            <span class="pill found">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Python
+            </span>
+            <span class="pill found">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              REST APIs
+            </span>
+            <span class="pill found">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              SQL
+            </span>
+            <span class="pill missing">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              Kubernetes
+            </span>
+            <span class="pill missing">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              AWS Lambda
+            </span>
+            <span class="pill missing">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              CI/CD pipelines
+            </span>
+            <span class="pill found">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Agile
+            </span>
           </div>
         </div>
       </div>
 
-      <div class="content-section">
-        <h2>What's the Problem?</h2>
+      <div class="content-card">
+        <div class="card-label">Why Tailoring Matters</div>
+        <h2>One resume doesn't fit all roles</h2>
         <p>
-          Job titles are deceiving. A "Software Engineer" at one company needs
-          different skills than at another. You might have strong technical
-          skills but lack what this specific role needs, and vice versa.
+          Hiring managers receive hundreds of applications. The ones that stand
+          out are the ones that speak directly to what the role actually needs.
+          When your resume uses the same language as the job posting, it signals
+          relevance — both to the ATS and to the person reviewing it.
         </p>
         <p>
-          Most candidates don't strategically align their resume with the role
-          they're targeting. This gap shows as "not quite right fit" in
-          recruiter feedback—even when you're qualified.
-        </p>
-
-        <h3
-          style="
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-          "
-        >
-          Example: Product Manager Role
-        </h3>
-        <table class="skill-matrix">
-          <thead>
-            <tr>
-              <th>Skill</th>
-              <th>Your Level</th>
-              <th>Required</th>
-              <th>Gap</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Product Strategy</td>
-              <td>
-                <div class="skill-level">
-                  <div class="skill-bar">
-                    <div class="skill-bar-fill" style="width: 40%"></div>
-                  </div>
-                  40%
-                </div>
-              </td>
-              <td>Expert</td>
-              <td><span class="gap-indicator missing"></span>Large Gap</td>
-            </tr>
-            <tr>
-              <td>Data Analysis</td>
-              <td>
-                <div class="skill-level">
-                  <div class="skill-bar">
-                    <div class="skill-bar-fill" style="width: 75%"></div>
-                  </div>
-                  75%
-                </div>
-              </td>
-              <td>Professional</td>
-              <td><span class="gap-indicator partial"></span>Small Gap</td>
-            </tr>
-            <tr>
-              <td>Cross-functional Communication</td>
-              <td>
-                <div class="skill-level">
-                  <div class="skill-bar">
-                    <div class="skill-bar-fill" style="width: 90%"></div>
-                  </div>
-                  90%
-                </div>
-              </td>
-              <td>Expert</td>
-              <td><span class="gap-indicator strong"></span>Strong</td>
-            </tr>
-            <tr>
-              <td>SQL/Analytics Tools</td>
-              <td>
-                <div class="skill-level">
-                  <div class="skill-bar">
-                    <div class="skill-bar-fill" style="width: 30%"></div>
-                  </div>
-                  30%
-                </div>
-              </td>
-              <td>Professional</td>
-              <td><span class="gap-indicator missing"></span>Large Gap</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="content-section">
-        <h2>Why This Matters</h2>
-        <p>
-          <strong>Recruiters screen resumes against role requirements.</strong>
-          If you're missing 2-3 key skills, your resume gets filtered. You might
-          be capable of learning them, but the initial screen doesn't account
-          for potential.
-        </p>
-        <p>
-          <strong>Your career trajectory depends on knowing:</strong> What do I
-          have? What does this role need? What's the fastest path to close the
-          gap?
+          A 15-minute tailoring session for each application increases your
+          callback rate more than most other optimizations combined. This
+          feature helps you spend that time on the right things.
         </p>
       </div>
 
-      <div class="content-section">
-        <h2>How to Close the Gap</h2>
-        <ul class="solution-list">
+      <div class="content-card">
+        <div class="card-label">How to Use This</div>
+        <h2>Close your gaps strategically</h2>
+
+        <ul class="tip-list">
           <li>
-            <strong>Identify your target role</strong> - Be specific (not just
-            "manager," but which type)
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Add the role's exact language</strong> — If the job says
+              "cross-functional collaboration," use that phrase, not "team
+              communication"</span
+            >
           </li>
           <li>
-            <strong>Extract required skills</strong> - Review job descriptions
-            for patterns
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Be honest about partial matches</strong> — If you've used
+              Kubernetes lightly, mention it with context rather than omitting
+              it</span
+            >
           </li>
           <li>
-            <strong>Highlight transferable skills</strong> - Show how existing
-            experience translates
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Lead with the strongest matches</strong> — Put your most
+              relevant experience near the top of each section</span
+            >
           </li>
           <li>
-            <strong>Plan skill development</strong> - Online courses, projects,
-            or on-the-job training
-          </li>
-          <li>
-            <strong>Quantify your progress</strong> - Show improvement through
-            metrics and examples
-          </li>
-          <li>
-            <strong>Reframe your narrative</strong> - Explain the gap as a
-            growth trajectory, not a weakness
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Prioritize must-haves over nice-to-haves</strong> — Job
+              descriptions list requirements in rough order of importance</span
+            >
           </li>
         </ul>
       </div>
 
-      <div class="content-section">
-        <h2>Smart Next Steps</h2>
+      <div class="cta-block">
+        <h2>See your real match score</h2>
         <p>
-          Instead of being discouraged by gaps, use them as a roadmap. The
-          fastest path to your target role is filling these specific, identified
-          gaps—not becoming an all-around generalist.
+          Paste your resume and a job description. We'll show you exactly which
+          keywords are missing and which experiences to highlight.
         </p>
-        <p>
-          <strong>Our system identifies your top 3 gaps</strong> and suggests
-          realistic paths to close them, including resources and timelines.
-        </p>
+        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
       </div>
-
-      <div class="cta-section">
-        <h3>Get Your Personalized Gap Analysis</h3>
-        <p>
-          Upload your resume and tell us your target role. We'll map your skills
-          against what's needed and create a growth plan.
-        </p>
-        <a href="/resume" class="btn">Upload & Analyze</a>
-      </div>
-    </div>
+    </main>
 
     <script>
-      // Dark mode functionality
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const html = document.documentElement;
-
-      // Check localStorage for dark mode preference
-      if (localStorage.getItem("darkMode") === "true") {
-        html.classList.add("dark-mode");
-      }
-
-      darkModeToggle.addEventListener("click", () => {
-        html.classList.toggle("dark-mode");
-        const isDarkMode = html.classList.contains("dark-mode");
-        localStorage.setItem("darkMode", isDarkMode);
+      const header = document.getElementById("siteHeader");
+      window.addEventListener("scroll", () => {
+        header.classList.toggle("scrolled", window.scrollY > 30);
       });
-
-      // User Analysis Section
-      function initializeAnalysis() {
-        const analysisData = {
-          skillScore: localStorage.getItem("skillScore") || null,
-          gapCount: localStorage.getItem("gapCount") || null,
-          timeline: localStorage.getItem("timeline") || null,
-          readiness: localStorage.getItem("readiness") || null,
-        };
-
-        if (Object.values(analysisData).some((val) => val !== null)) {
-          const analysisSection = document.getElementById("analysisSection");
-          analysisSection.style.display = "block";
-
-          if (analysisData.skillScore) {
-            document.getElementById("skillScore").textContent =
-              analysisData.skillScore + "%";
-            const skillStatus = document.getElementById("skillStatus");
-            const score = parseInt(analysisData.skillScore);
-            if (score >= 75) {
-              skillStatus.textContent = "Strong";
-              skillStatus.className = "analysis-badge";
-            } else if (score >= 50) {
-              skillStatus.textContent = "Moderate";
-              skillStatus.className = "analysis-badge warning";
-            } else {
-              skillStatus.textContent = "Needs work";
-              skillStatus.className = "analysis-badge danger";
-            }
-          }
-
-          if (analysisData.gapCount) {
-            document.getElementById("gapCount").textContent =
-              analysisData.gapCount;
-          }
-
-          if (analysisData.timeline) {
-            document.getElementById("timeline").textContent =
-              analysisData.timeline;
-          }
-
-          if (analysisData.readiness) {
-            document.getElementById("readiness").textContent =
-              analysisData.readiness + "%";
-          }
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+      (function () {
+        var btn = document.getElementById("dmBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var next =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("careerassist-theme", next);
+        });
+      })();
     </script>
   </body>
 </html>

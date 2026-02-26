@@ -1,0 +1,501 @@
+{% extends "base.html" %} {% block title %}Pricing - CareerAssist{% endblock %}
+{% block extra_css %}
+<style>
+  .pricing-hero {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    background: linear-gradient(135deg, #f8faff 0%, #f5f7fc 50%, #faf5ff 100%);
+  }
+
+  .pricing-hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .pricing-hero p {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .pricing-card {
+    background: white;
+    border: 2px solid rgba(229, 231, 235, 0.8);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .pricing-card:hover {
+    border-color: #9333ea;
+    box-shadow: 0 12px 32px rgba(147, 51, 234, 0.18);
+    transform: translateY(-6px);
+  }
+
+  .pricing-card.featured {
+    border-color: #9333ea;
+    box-shadow: 0 8px 24px rgba(147, 51, 234, 0.15);
+    background: linear-gradient(
+      135deg,
+      rgba(147, 51, 234, 0.02) 0%,
+      rgba(236, 72, 153, 0.02) 100%
+    );
+  }
+
+  .pricing-card.featured:hover {
+    box-shadow: 0 16px 40px rgba(147, 51, 234, 0.25);
+    transform: translateY(-8px);
+  }
+
+  .pricing-card.featured::before {
+    content: "Most Popular";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+    color: white;
+    padding: 0.375rem 1.25rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+  }
+
+  .pricing-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    letter-spacing: -0.02em;
+  }
+
+  .pricing-card .price {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 1rem 0;
+    line-height: 1;
+  }
+
+  .pricing-card .price span {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #9ca3af;
+  }
+
+  .pricing-card .description {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-size: 0.9375rem;
+  }
+
+  .pricing-features {
+    list-style: none;
+    margin-bottom: 2rem;
+  }
+
+  .pricing-features li {
+    padding: 0.75rem 0;
+    color: #4b5563;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pricing-features li:hover {
+    color: #1f2937;
+    transform: translateX(4px);
+  }
+
+  .pricing-features li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .pricing-cta {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+  }
+
+  .pricing-cta:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .pricing-cta:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.25);
+  }
+
+  .pricing-cta.secondary {
+    background: white;
+    color: #9333ea;
+    border: 2px solid #9333ea;
+    box-shadow: none;
+  }
+
+  .pricing-cta.secondary:hover {
+    background: rgba(147, 51, 234, 0.05);
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.15);
+  }
+
+  .faq-section {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .faq-section h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    color: #1f2937;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-item {
+    background: white;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 0.75rem;
+    padding: 0;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item:hover {
+    border-color: rgba(147, 51, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.08);
+  }
+
+  .faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-question:hover {
+    background: rgba(147, 51, 234, 0.02);
+  }
+
+  .faq-question h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .faq-icon {
+    width: 24px;
+    height: 24px;
+    color: #9333ea;
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+  }
+
+  .faq-item.active .faq-icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 500px;
+  }
+
+  .faq-answer p {
+    padding: 0 1.5rem 1.5rem;
+    color: #6b7280;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* Card click effect */
+  .pricing-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(147, 51, 234, 0.05) 0%,
+      rgba(236, 72, 153, 0.05) 100%
+    );
+  }
+
+  .pricing-card:hover::after {
+    opacity: 1;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .pricing-grid {
+      grid-template-columns: 1fr;
+      padding: 0 1rem 3rem;
+    }
+
+    .pricing-hero {
+      padding: 3rem 1rem 2rem;
+    }
+
+    .pricing-card {
+      padding: 2rem 1.5rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="pricing-hero">
+  <h1>Simple, Transparent Pricing</h1>
+  <p>
+    Choose the plan that works best for your career journey. No hidden fees,
+    cancel anytime.
+  </p>
+</div>
+
+<div class="pricing-grid">
+  <!-- Free Plan - Clickable Card -->
+  <a href="/auth/register" class="pricing-card">
+    <h3>Free</h3>
+    <div class="price">$0<span>/month</span></div>
+    <p class="description">Perfect for getting started with resume analysis</p>
+    <ul class="pricing-features">
+      <li>3 resume analyses per month</li>
+      <li>Basic ATS scoring</li>
+      <li>Skill gap identification</li>
+      <li>Email support</li>
+    </ul>
+    <span class="pricing-cta secondary">Get Started Free</span>
+  </a>
+
+  <!-- Pro Plan - Clickable Card (Featured) -->
+  <a href="/auth/register" class="pricing-card featured">
+    <h3>Pro</h3>
+    <div class="price">$9<span>/month</span></div>
+    <p class="description">For serious job seekers who want unlimited access</p>
+    <ul class="pricing-features">
+      <li>Unlimited resume analyses</li>
+      <li>Advanced ATS optimization</li>
+      <li>AI career guidance chatbot</li>
+      <li>Personalized career roadmap</li>
+      <li>Priority email support</li>
+      <li>Export detailed reports</li>
+    </ul>
+    <span class="pricing-cta">Start Pro Trial</span>
+  </a>
+
+  <!-- Enterprise Plan - Clickable Card -->
+  <a href="/contact" class="pricing-card">
+    <h3>Enterprise</h3>
+    <div class="price">Custom</div>
+    <p class="description">For universities and career centers</p>
+    <ul class="pricing-features">
+      <li>Everything in Pro</li>
+      <li>Dedicated account manager</li>
+      <li>Custom integrations</li>
+      <li>Bulk user management</li>
+      <li>Analytics dashboard</li>
+      <li>SLA guarantee</li>
+    </ul>
+    <span class="pricing-cta secondary">Contact Sales</span>
+  </a>
+</div>
+
+<div class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFAQ(this)">
+      <h3>Can I change plans later?</h3>
+      <svg
+        class="faq-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="faq-answer">
+      <p>
+        Yes! You can upgrade or downgrade your plan at any time. Changes take
+        effect immediately.
+      </p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFAQ(this)">
+      <h3>What payment methods do you accept?</h3>
+      <svg
+        class="faq-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="faq-answer">
+      <p>
+        We accept all major credit cards, debit cards, and PayPal for your
+        convenience.
+      </p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFAQ(this)">
+      <h3>Is there a free trial?</h3>
+      <svg
+        class="faq-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="faq-answer">
+      <p>
+        Yes! Pro plans come with a 7-day free trial. No credit card required to
+        start.
+      </p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFAQ(this)">
+      <h3>Can I cancel anytime?</h3>
+      <svg
+        class="faq-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="faq-answer">
+      <p>
+        Absolutely. You can cancel your subscription at any time with no
+        penalties or fees.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleFAQ(button) {
+    const faqItem = button.parentElement;
+    const isActive = faqItem.classList.contains("active");
+
+    // Close all FAQ items
+    document.querySelectorAll(".faq-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    // Open clicked item if it wasn't active
+    if (!isActive) {
+      faqItem.classList.add("active");
+    }
+  }
+
+  // Prevent card click when clicking CTA button
+  document.querySelectorAll(".pricing-cta").forEach((cta) => {
+    cta.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  });
+</script>
+{% endblock %}

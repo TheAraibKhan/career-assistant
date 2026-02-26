@@ -1,13 +1,67 @@
-{% extends "base.html" %} {% block title %}Dashboard - CareerOS Workspace{%
+{% extends "base.html" %} {% block title %}Dashboard - CareerAssist Workspace{%
 endblock %} {% block extra_css %}
 <style>
   /* WORKSPACE AESTHETIC - Dense, Utilitarian, Data-First */
 
   .dashboard-container {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 260px 1fr;
     gap: 0;
     min-height: calc(100vh - 200px);
+  }
+
+  /* SIDEBAR NAVIGATION */
+  .dashboard-sidebar {
+    background: var(--bg-primary);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    height: 100%;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 150ms ease;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-secondary);
+    color: var(--primary);
+  }
+
+  .nav-item.active {
+    background: var(--bg-secondary);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    font-weight: 600;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-section-title {
+    padding: 1.5rem 1.5rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   /* TOP ACTION BAR - Quick Access */
@@ -253,28 +307,48 @@ endblock %} {% block extra_css %}
   /* EMPTY STATE */
   .empty-state {
     text-align: center;
-    padding: 2rem;
+    padding: 3rem 2rem;
     color: var(--text-muted);
   }
 
   .empty-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 1.25rem;
+    opacity: 0.6;
+  }
+
+  .empty-state > div:not(.empty-icon) {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
   }
 
   .empty-cta {
     display: inline-block;
-    background: var(--primary);
+    background: linear-gradient(
+      135deg,
+      var(--primary) 0%,
+      var(--primary-dark) 100%
+    );
     color: white;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0.375rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
     text-decoration: none;
     font-weight: 600;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
   }
 
   .empty-cta:hover {
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #6d28d9 100%);
+    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .empty-cta:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.25);
   }
 
   /* QUICK LINKS GRID */
@@ -309,6 +383,14 @@ endblock %} {% block extra_css %}
   }
 
   @media (max-width: 768px) {
+    .dashboard-container {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-sidebar {
+      display: none;
+    }
+
     .dashboard-action-bar {
       grid-template-columns: 1fr;
       gap: 1rem;
@@ -339,163 +421,218 @@ endblock %} {% block extra_css %}
   }
 </style>
 {% endblock %} {% block content %}
+<script src="https://unpkg.com/lucide@latest"></script>
 <div class="dashboard-container">
-  <!-- ACTION BAR -->
-  <div class="dashboard-action-bar">
-    <div class="action-bar-welcome">
-      👋 Welcome back, <strong>{{ user.full_name or 'User' }}</strong>
-    </div>
-    <div class="action-bar-buttons">
-      <a href="/resume/upload" class="action-btn action-btn-primary"
-        >+ Upload Resume</a
-      >
-      <a href="/dashboard/career-roadmap" class="action-btn">🗺️ Roadmap</a>
-      <a href="/dashboard/skill-gap" class="action-btn">📊 Skills</a>
-      <a href="/dashboard/reports" class="action-btn">📈 Reports</a>
-    </div>
+  <!-- SIDEBAR NAVIGATION -->
+  <div class="dashboard-sidebar">
+    <nav class="sidebar-nav">
+      <a href="/dashboard/" class="nav-item active">
+        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/dashboard/profile" class="nav-item">
+        <i data-lucide="user" class="nav-icon"></i>
+        <span>Profile</span>
+      </a>
+
+      <div class="sidebar-section-title">Analysis</div>
+
+      <a href="/dashboard/resumes" class="nav-item">
+        <i data-lucide="file-text" class="nav-icon"></i>
+        <span>Resume History</span>
+      </a>
+      <a href="/dashboard/analyses" class="nav-item">
+        <i data-lucide="bar-chart-2" class="nav-icon"></i>
+        <span>Analyses</span>
+      </a>
+      <a href="/dashboard/skills" class="nav-item">
+        <i data-lucide="award" class="nav-icon"></i>
+        <span>Skills</span>
+      </a>
+
+      <div class="sidebar-section-title">Career Planning</div>
+
+      <a href="/dashboard/career-roadmap" class="nav-item">
+        <i data-lucide="map" class="nav-icon"></i>
+        <span>Career Roadmap</span>
+      </a>
+      <a href="/dashboard/skill-gap" class="nav-item">
+        <i data-lucide="target" class="nav-icon"></i>
+        <span>Skill Gap</span>
+      </a>
+      <a href="/dashboard/reports" class="nav-item">
+        <i data-lucide="file-bar-chart" class="nav-icon"></i>
+        <span>Reports</span>
+      </a>
+    </nav>
   </div>
 
-  <!-- STATS GRID -->
-  <div class="dashboard-content">
-    <div class="stat-card">
-      <div class="stat-label">📄 Total Resumes</div>
-      <div class="stat-value">{{ resume_count }}</div>
-      <div class="stat-subtext">uploaded & analyzed</div>
-      <div class="stat-trend">Track your progress →</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">⭐ Avg. Readiness</div>
-      <div class="stat-value">{{ avg_readiness_score }}%</div>
-      <div class="stat-subtext">Based on all analyses</div>
-      <div class="stat-trend">Goal: Reach 90%+</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-label">🔥 This Month</div>
-      <div class="stat-value">{{ analyses_used }}/{{ analyses_limit }}</div>
-      <div class="stat-subtext">analyses used</div>
-      <div class="stat-trend">{{ analyses_remaining }} remaining</div>
-    </div>
-  </div>
-
-  <!-- RECENT RESUMES -->
-  <div class="dashboard-section">
-    <div class="section-header">
-      <h2 class="section-title">Recent Resumes</h2>
-      <div class="section-actions">
-        <a href="/dashboard/resumes" class="btn-small"
-          >View All ({{ resume_count }})</a
+  <!-- MAIN CONTENT -->
+  <div>
+    <!-- ACTION BAR -->
+    <div class="dashboard-action-bar">
+      <div class="action-bar-welcome">
+        👋 Welcome back, <strong>{{ user.full_name or 'User' }}</strong>
+      </div>
+      <div class="action-bar-buttons">
+        <a href="/resume/upload" class="action-btn action-btn-primary"
+          >+ Upload Resume</a
         >
+        <a href="/dashboard/career-roadmap" class="action-btn">🗺️ Roadmap</a>
+        <a href="/dashboard/skill-gap" class="action-btn">📊 Skills</a>
+        <a href="/dashboard/reports" class="action-btn">📈 Reports</a>
       </div>
     </div>
 
-    {% if resumes %}
-    <ul class="item-list">
-      {% for resume in resumes[:8] %}
-      <li class="item-row">
-        <div>
-          <div class="item-name">📄 {{ resume.name }}</div>
-          <div class="item-date">{{ resume.created_at[:10] }}</div>
+    <!-- STATS GRID -->
+    <div class="dashboard-content">
+      <div class="stat-card">
+        <div class="stat-label">📄 Total Resumes</div>
+        <div class="stat-value">{{ resume_count }}</div>
+        <div class="stat-subtext">uploaded & analyzed</div>
+        <div class="stat-trend">Track your progress →</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">⭐ Avg. Readiness</div>
+        <div class="stat-value">{{ avg_readiness_score }}%</div>
+        <div class="stat-subtext">Based on all analyses</div>
+        <div class="stat-trend">Goal: Reach 90%+</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">🔥 This Month</div>
+        <div class="stat-value">{{ analyses_used }}/{{ analyses_limit }}</div>
+        <div class="stat-subtext">analyses used</div>
+        <div class="stat-trend">{{ analyses_remaining }} remaining</div>
+      </div>
+    </div>
+
+    <!-- RECENT RESUMES -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Recent Resumes</h2>
+        <div class="section-actions">
+          <a href="/dashboard/resumes" class="btn-small"
+            >View All ({{ resume_count }})</a
+          >
         </div>
-        {% if resume.readiness_score %} {% set score = resume.readiness_score |
-        int %} {% if score >= 80 %}
-        <span class="score-badge high">{{ score }}%</span>
-        {% elif score >= 60 %}
-        <span class="score-badge medium">{{ score }}%</span>
-        {% else %}
-        <span class="score-badge low">{{ score }}%</span>
-        {% endif %} {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-icon">📁</div>
-      <div>No resumes yet</div>
-      <a href="/resume/upload" class="empty-cta">Upload Your First Resume</a>
-    </div>
-    {% endif %}
-  </div>
+      </div>
 
-  <!-- ANALYSES TABLE -->
-  <div class="dashboard-section">
-    <div class="section-header">
-      <h2 class="section-title">Career Analyses</h2>
-      <div class="section-actions">
-        <a href="/dashboard/analyses" class="btn-small">View All</a>
+      {% if resumes %}
+      <ul class="item-list">
+        {% for resume in resumes[:8] %}
+        <li class="item-row">
+          <div>
+            <div class="item-name">📄 {{ resume.name }}</div>
+            <div class="item-date">{{ resume.created_at[:10] }}</div>
+          </div>
+          {% if resume.readiness_score %} {% set score = resume.readiness_score
+          | int %} {% if score >= 80 %}
+          <span class="score-badge high">{{ score }}%</span>
+          {% elif score >= 60 %}
+          <span class="score-badge medium">{{ score }}%</span>
+          {% else %}
+          <span class="score-badge low">{{ score }}%</span>
+          {% endif %} {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📁</div>
+        <div>No resumes yet</div>
+        <a href="/resume/upload" class="empty-cta">Upload Your First Resume</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ANALYSES TABLE -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Career Analyses</h2>
+        <div class="section-actions">
+          <a href="/dashboard/analyses" class="btn-small">View All</a>
+        </div>
+      </div>
+
+      {% if recent_analyses %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Analysis</th>
+            <th>ATS Score</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for analysis in recent_analyses[:10] %}
+          <tr>
+            <td>
+              <strong>{{ analysis.name }}</strong>
+              {% if analysis.recommendation %}
+              <br /><small style="color: var(--text-muted)"
+                >{{ analysis.recommendation[:50] }}</small
+              >
+              {% endif %}
+            </td>
+            <td>
+              {% if analysis.readiness_score %} {% set score =
+              analysis.readiness_score | int %} {% if score >= 80 %}
+              <span class="score-badge high">{{ score }}%</span>
+              {% elif score >= 60 %}
+              <span class="score-badge medium">{{ score }}%</span>
+              {% else %}
+              <span class="score-badge low">{{ score }}%</span>
+              {% endif %} {% else %}
+              <span class="score-badge">N/A</span>
+              {% endif %}
+            </td>
+            <td style="color: var(--text-muted); font-size: 0.85rem">
+              {{ analysis.created_at[:10] }}
+            </td>
+            <td>
+              <a href="/resume/{{ analysis.id }}/view" class="action-link"
+                >View →</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <div>No analyses yet</div>
+        <a href="/resume/upload" class="empty-cta">Start Your First Analysis</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">⚡ Quick Navigation</h2>
+      </div>
+      <div class="quick-links">
+        <a href="/dashboard/career-roadmap" class="quick-link"
+          >🗺️ Career Roadmap</a
+        >
+        <a href="/dashboard/skill-gap" class="quick-link">📊 Skill Gap</a>
+        <a href="/dashboard/skills" class="quick-link">🎯 Skills</a>
+        <a href="/dashboard/reports" class="quick-link">📈 Reports</a>
+        <a href="/user/profile" class="quick-link">👤 Profile</a>
+        <a href="/contact" class="quick-link">💬 Feedback</a>
       </div>
     </div>
-
-    {% if recent_analyses %}
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Analysis</th>
-          <th>ATS Score</th>
-          <th>Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for analysis in recent_analyses[:10] %}
-        <tr>
-          <td>
-            <strong>{{ analysis.name }}</strong>
-            {% if analysis.recommendation %}
-            <br /><small style="color: var(--text-muted)"
-              >{{ analysis.recommendation[:50] }}</small
-            >
-            {% endif %}
-          </td>
-          <td>
-            {% if analysis.readiness_score %} {% set score =
-            analysis.readiness_score | int %} {% if score >= 80 %}
-            <span class="score-badge high">{{ score }}%</span>
-            {% elif score >= 60 %}
-            <span class="score-badge medium">{{ score }}%</span>
-            {% else %}
-            <span class="score-badge low">{{ score }}%</span>
-            {% endif %} {% else %}
-            <span class="score-badge">N/A</span>
-            {% endif %}
-          </td>
-          <td style="color: var(--text-muted); font-size: 0.85rem">
-            {{ analysis.created_at[:10] }}
-          </td>
-          <td>
-            <a href="/resume/{{ analysis.id }}/view" class="action-link"
-              >View →</a
-            >
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-icon">📊</div>
-      <div>No analyses yet</div>
-      <a href="/resume/upload" class="empty-cta">Start Your First Analysis</a>
-    </div>
-    {% endif %}
   </div>
 
-  <!-- QUICK LINKS -->
-  <div class="dashboard-section">
-    <div class="section-header">
-      <h2 class="section-title">⚡ Quick Navigation</h2>
-    </div>
-    <div class="quick-links">
-      <a href="/dashboard/career-roadmap" class="quick-link"
-        >🗺️ Career Roadmap</a
-      >
-      <a href="/dashboard/skill-gap" class="quick-link">📊 Skill Gap</a>
-      <a href="/dashboard/skills" class="quick-link">🎯 Skills</a>
-      <a href="/dashboard/reports" class="quick-link">📈 Reports</a>
-      <a href="/user/profile" class="quick-link">👤 Profile</a>
-      <a href="/contact" class="quick-link">💬 Feedback</a>
-    </div>
-  </div>
+  <script>
+    // Initialize Lucide icons
+    if (typeof lucide !== "undefined") {
+      lucide.createIcons();
+    }
+  </script>
+  {% endblock %}
 </div>
-{% endblock %}

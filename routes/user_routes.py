@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, jsonify
+from flask import Blueprint, render_template, request, session, jsonify, url_for
 from services.analysis import analyze_profile
 from services.roadmap import get_roadmap
 from services.readiness import calculate_readiness
@@ -217,3 +217,110 @@ def get_role_skills_api():
         return jsonify({'error': 'Role not found'}), 404
     
     return jsonify(skills)
+
+
+@user_bp.route("/api/analyze-resume", methods=["POST"])
+def analyze_resume_text():
+    """Analyze resume text from front page form."""
+    try:
+        data = request.get_json()
+        resume_text = data.get('resumeText', '').strip()
+        role_text = data.get('roleText', '').strip()
+        
+        if not resume_text and not role_text:
+            return jsonify({
+                'success': False,
+                'message': 'Please provide resume text or target role'
+            }), 400
+        
+        # Get or create user session
+        user_id = session.get('user_id')
+        if not user_id:
+            user_id = str(uuid.uuid4())
+            session['user_id'] = user_id
+        
+        # Parse resume for basic info
+        from services.resume_parser import parse_resume_text
+        parsed = parse_resume_text(resume_text) if resume_text else {
+            'name': 'Guest User',
+            'skills': [],
+            'interest': 'tech',
+            'level': 'intermediate'
+        }
+        
+        # Determine interest and level
+        interest = parsed.get('interest', 'tech')
+        level = parsed.get('level', 'intermediate')
+        skills = parsed.get('skills', [])
+        
+        # Get recommendation
+        career_rec = get_career_recommendation(interest, level)
+        role = career_rec['role'] if career_rec else (role_text or 'Software Engineer')
+        tier = career_rec.get('tier', 'Entry') if career_rec else 'Entry'
+        
+        # Calculate readiness
+        readiness_data = calculate_readiness(role, skills)
+        readiness_score = readiness_data.get('readiness_score', 0)
+        confidence = calculate_career_confidence(interest, level, skills)
+        strengths = readiness_data.get('strengths', [])
+        gaps = readiness_data.get('gaps', [])
+        
+        # Save to database
+        submission_id = insert_submission(
+            user_id=user_id,
+            name=parsed.get('name', 'Guest User'),
+            email=session.get('email', ''),
+            interest=interest,
+            level=level,
+            known_skills=", ".join(skills) if skills else None,
+            recommendation=role,
+            readiness_score=readiness_score,
+            confidence_score=confidence,
+            recommended_role_tier=tier,
+            strengths=strengths,
+            gaps=gaps,
+            resume_file_path=None,
+            resume_parsed_skills=skills
+        )
+        
+        if submission_id:
+            # Increment usage after successful analysis
+            increment_usage(user_id, 'career_analyses_used')
+            
+            # Store analysis result in session for display
+            session['analysis_result'] = {
+                'success': True,
+                'role': role,
+                'readiness_score': readiness_score,
+                'confidence': confidence,
+                'strengths': strengths[:5],
+                'gaps': gaps[:5],
+                'skills': skills,
+                'submission_id': submission_id
+            }
+            
+            return jsonify({
+                'success': True,
+                'data': {
+                    'submission_id': submission_id,
+                    'role': role,
+                    'readiness_score': readiness_score,
+                    'confidence': confidence,
+                    'strengths': strengths[:5],
+                    'gaps': gaps[:5],
+                    'redirect': url_for('dashboard.index')
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to save analysis'
+            }), 500
+            
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Analysis error: {str(e)}'
+        }), 500
+

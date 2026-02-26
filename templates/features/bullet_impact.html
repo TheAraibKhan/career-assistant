@@ -1,9 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("careerassist-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bullet Point Impact Scoring - Career Assistant</title>
+    <meta
+      name="description"
+      content="Every bullet point on your resume gets scored on specificity, power verbs, quantified impact, and ATS keyword fit. See exactly which ones are weak."
+    />
+    <title>Bullet Point Impact Scoring — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,812 +26,844 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        --primary: #3b5bdb;
-        --primary-dark: #2f4cb3;
-        --primary-light: #6476f2;
-        --success: #5a9d7e;
-        --warning: #d4925f;
-        --danger: #d97706;
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-        --border: #e5e7eb;
-        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
-      }
-
-      html.dark-mode {
-        --primary: #60a5fa;
-        --primary-dark: #3b82f6;
-        --primary-light: #93c5fd;
-        --success: #4ade80;
-        --warning: #facc15;
-        --danger: #f97316;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --border: #334155;
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      }
-
-      * {
+      *,
+      *::before,
+      *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
+      :root {
+        --primary: #9333ea;
+        --primary-dark: #7c3aed;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f8faff;
+        --white: #ffffff;
+      }
+      [data-theme="dark"] {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #2d3748;
+        --bg: #0f172a;
+        --white: #1e293b;
+      }
+      [data-theme="dark"] .site-header {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: #2d3748;
+      }
+      [data-theme="dark"] .stat-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .content-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .score-item {
+        background: #162032;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .bullet-row.weak {
+        background: rgba(239, 68, 68, 0.06);
+      }
+      [data-theme="dark"] .bullet-row.strong {
+        background: rgba(16, 185, 129, 0.06);
+      }
+      [data-theme="dark"] .back-link {
+        border-color: #2d3748;
+        color: #94a3b8;
+      }
+      [data-theme="dark"] .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.08);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] body {
+        background: var(--bg);
+      }
+      [data-theme="dark"] .page-hero {
+        background: linear-gradient(
+          135deg,
+          #1a1040 0%,
+          #0f172a 50%,
+          #101828 100%
+        );
+        border-bottom-color: rgba(147, 51, 234, 0.15);
+      }
+      [data-theme="dark"] .page-hero h1 {
+        color: #f1f5f9;
+      }
+      [data-theme="dark"] .page-hero p.lead {
+        color: #cbd5e1;
+      }
+      [data-theme="dark"] .hero-badge {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] .cta-btn {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #f1f5f9 !important;
+      }
+      [data-theme="dark"] .cta-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
       html {
         scroll-behavior: smooth;
         font-size: 16px;
       }
-
       body {
         font-family:
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
           sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
+        background: var(--bg);
         color: var(--text-primary);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 300ms ease,
+          color 300ms ease;
       }
 
-      header {
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
+      .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
-        transition: all 150ms ease;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition:
+          box-shadow 200ms ease,
+          background 300ms ease;
       }
-
-      .header-content {
-        max-width: 1200px;
+      .site-header.scrolled {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+      .header-inner {
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 0 2rem;
+        padding: 1rem 2rem;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
       }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
       .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-decoration: none;
       }
-
-      .dark-mode-toggle {
-        width: 48px;
-        height: 28px;
-        background: var(--border);
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        position: relative;
-        transition: background 150ms ease;
-        display: flex;
-        align-items: center;
-        padding: 0 2px;
-      }
-
-      .dark-mode-toggle:hover {
-        background: var(--primary);
-      }
-
-      .dark-mode-toggle::after {
-        content: "☀️";
-        font-size: 14px;
-        transition: all 200ms ease;
-        position: absolute;
-        left: 4px;
-      }
-
-      html.dark-mode .dark-mode-toggle {
-        background: var(--primary);
-      }
-
-      html.dark-mode .dark-mode-toggle::after {
-        content: "🌙";
-        left: auto;
-        right: 4px;
-      }
-
-      .back-button {
+      .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
         padding: 0.5rem 1rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        transition: all 150ms ease;
-      }
-
-      .back-button:hover {
-        background: var(--bg-tertiary);
-        color: var(--primary);
-      }
-
-      .main-content {
-        max-width: 900px;
-        margin: 3rem auto;
-        padding: 0 2rem;
-      }
-
-      .page-header {
-        margin-bottom: 3rem;
-      }
-
-      .page-header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
-
-      .page-header p {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-      }
-
-      .status-badge {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .content-section {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .content-section h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--primary);
-      }
-
-      .content-section p {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-        line-height: 1.8;
-      }
-
-      .comparison {
-        margin: 1.5rem 0;
-      }
-
-      .comparison-item {
-        margin-bottom: 1.5rem;
-      }
-
-      .comparison-label {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        color: var(--text-muted);
-      }
-
-      .weak-bullet {
-        padding: 1rem;
-        background: rgba(217, 119, 6, 0.05);
-        border-left: 4px solid var(--warning);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .strong-bullet {
-        padding: 1rem;
-        background: rgba(90, 157, 126, 0.05);
-        border-left: 4px solid var(--success);
-        border-radius: 0.5rem;
-      }
-
-      .impact-score {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 0.5rem;
-        font-size: 0.875rem;
-      }
-
-      .score-bar {
-        flex: 1;
-        height: 8px;
-        background: var(--border);
-        border-radius: 4px;
-        overflow: hidden;
-      }
-
-      .score-bar-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 300ms ease;
-      }
-
-      .score-bar-fill.weak {
-        background: var(--warning);
-        width: 35%;
-      }
-
-      .score-bar-fill.strong {
-        background: var(--success);
-        width: 85%;
-      }
-
-      .score-text {
-        font-weight: 600;
-        min-width: 50px;
-        text-align: right;
-      }
-
-      .score-text.weak {
-        color: var(--warning);
-      }
-
-      .score-text.strong {
-        color: var(--success);
-      }
-
-      .solution-list {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .solution-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: rgba(90, 157, 126, 0.05);
-        border-left: 4px solid var(--success);
-        border-radius: 0.5rem;
-      }
-
-      .solution-list strong {
-        color: var(--success);
-      }
-
-      .bullet-formula {
-        background: var(--bg-tertiary);
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        margin: 1.5rem 0;
-        border-left: 4px solid var(--primary);
-      }
-
-      .formula-part {
-        margin-bottom: 0.75rem;
-      }
-
-      .formula-part strong {
-        color: var(--primary);
-      }
-
-      .cta-section {
-        background: linear-gradient(
-          135deg,
-          var(--primary) 0%,
-          var(--primary-light) 100%
-        );
-        border-radius: 1rem;
-        padding: 3rem 2rem;
-        text-align: center;
-        color: white;
-        margin-top: 3rem;
-      }
-
-      .cta-section h3 {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-
-      .cta-section p {
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 2rem;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: white;
-        color: var(--primary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 150ms ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-      }
-
-      .stat-card {
-        background: var(--bg-tertiary);
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        text-align: center;
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      .analysis-section {
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
-        border-radius: 1.25rem;
-        padding: 2rem;
-        margin: 3rem 0;
         border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        transition: all 160ms ease;
       }
-
-      .analysis-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+      .back-link:hover {
+        color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.3);
+        background: rgba(147, 51, 234, 0.04);
       }
-
-      .analysis-icon {
-        font-size: 2rem;
-        width: 50px;
-        height: 50px;
+      .dm-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(59, 91, 219, 0.1);
-        border-radius: 0.75rem;
+        color: var(--text-muted);
+        transition: all 200ms ease;
+      }
+      .dm-btn:hover {
         color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.4);
+        background: rgba(147, 51, 234, 0.06);
+      }
+      .dm-btn .ic-sun {
+        display: block;
+      }
+      .dm-btn .ic-moon {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-sun {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-moon {
+        display: block;
       }
 
-      .analysis-header h3 {
-        margin: 0;
+      .page-hero {
+        background: linear-gradient(
+          135deg,
+          #f5f3ff 0%,
+          #faf5ff 50%,
+          #f0f9ff 100%
+        );
+        border-bottom: 1px solid rgba(147, 51, 234, 0.08);
+        padding: 3.5rem 2rem 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .page-hero::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(147, 51, 234, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .hero-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .feature-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #9333ea;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
+      }
+      .eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9333ea;
+        opacity: 0.6;
+      }
+      .page-hero h1 {
+        font-size: clamp(1.875rem, 4vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
         color: var(--text-primary);
-        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .page-hero p.lead {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        max-width: 620px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(147, 51, 234, 0.08);
+        color: #7c3aed;
+        border: 1px solid rgba(147, 51, 234, 0.18);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
       }
 
-      .analysis-content {
+      .main-content {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      .stats-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.375rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
       }
 
-      .analysis-card {
-        background: var(--bg-primary);
+      .content-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .content-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+      }
+      .card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #9333ea;
+        margin-bottom: 0.75rem;
+      }
+      .content-card h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .content-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+
+      /* Score breakdown */
+      .score-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.25rem;
+      }
+      .score-item {
         padding: 1.25rem;
+        background: #f8fafc;
         border-radius: 0.75rem;
         border: 1px solid var(--border);
-        transition: all 150ms ease;
       }
-
-      .analysis-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .analysis-card-title {
+      .score-item-title {
+        font-size: 0.875rem;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--primary);
+      }
+      .score-item-desc {
+        font-size: 0.8375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
       }
 
-      .analysis-card-value {
+      /* Bullet examples */
+      .bullet-example {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+      }
+      .bullet-row {
+        padding: 1rem 1.25rem;
+        border-radius: 0.625rem;
+        border: 1px solid;
+      }
+      .bullet-row.weak {
+        background: rgba(239, 68, 68, 0.04);
+        border-color: rgba(239, 68, 68, 0.18);
+      }
+      .bullet-row.strong {
+        background: rgba(16, 185, 129, 0.04);
+        border-color: rgba(16, 185, 129, 0.18);
+      }
+      .bullet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .bullet-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .bullet-row.weak .bullet-tag {
+        color: #dc2626;
+      }
+      .bullet-row.strong .bullet-tag {
+        color: #059669;
+      }
+      .bullet-score {
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+      .bullet-row.weak .bullet-score {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+      }
+      .bullet-row.strong .bullet-score {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+      }
+      .bullet-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+
+      .tip-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.25rem;
+      }
+      .tip-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(16, 185, 129, 0.04);
+        border-left: 3px solid rgba(16, 185, 129, 0.4);
+        border-radius: 0.375rem;
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .tip-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        color: #10b981;
+      }
+      .tip-list strong {
+        color: var(--text-primary);
+      }
+
+      .cta-block {
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+        border-radius: 1.25rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-block::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -15%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .cta-block h2 {
         font-size: 1.75rem;
         font-weight: 800;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
+        color: white;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+        letter-spacing: -0.02em;
       }
-
-      .analysis-card-description {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
+      .cta-block p {
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 1;
       }
-
-      .analysis-badge {
+      .cta-btn {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.35rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 0.5rem;
+        background: white;
+        color: #7c3aed;
+        padding: 0.875rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 180ms ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      }
+      .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       }
 
-      .analysis-badge.warning {
-        background: rgba(212, 146, 95, 0.1);
-        color: var(--warning);
-      }
-
-      .analysis-badge.danger {
-        background: rgba(217, 119, 6, 0.1);
-        color: var(--danger);
-      }
-
-      @media (max-width: 768px) {
-        .page-header h1 {
-          font-size: 1.75rem;
+      @media (max-width: 640px) {
+        .stats-row,
+        .score-grid {
+          grid-template-columns: 1fr;
         }
-
         .main-content {
-          margin: 2rem auto;
+          margin: 2rem auto 4rem;
+          padding: 0 1rem;
         }
-
-        .content-section {
-          padding: 1.5rem;
+        .page-hero {
+          padding: 2.5rem 1rem 2rem;
         }
-
-        .cta-section {
-          padding: 2rem 1.5rem;
+        .header-inner {
+          padding: 1rem;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="header-content">
-        <div class="header-left">
-          <a href="/" class="logo">Career Assistant</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1.5rem">
-          <button
-            class="dark-mode-toggle"
-            id="darkModeToggle"
-            title="Toggle dark mode"
-          ></button>
-          <a href="/" class="back-button">← Back to Home</a>
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="/" class="logo">CareerAssist</a>
+        <div style="display: flex; align-items: center; gap: 0.75rem">
+          <button class="dm-btn" id="dmBtn" aria-label="Toggle dark mode">
+            <svg
+              class="ic-moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              class="ic-sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <a href="/" class="back-link">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Home
+          </a>
         </div>
       </div>
     </header>
 
-    <div class="main-content">
-      <div class="page-header">
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div class="feature-eyebrow">
+          <span class="eyebrow-dot"></span>Smart Optimization
+        </div>
         <h1>Bullet Point Impact Scoring</h1>
-        <p>
-          Not all bullet points are created equal. We score each one for impact,
-          clarity, and relevance.
+        <p class="lead">
+          Most resumes have a mix of strong and weak bullets — and most people
+          can't tell the difference. We score each one individually so you know
+          exactly which lines need work.
         </p>
-        <span class="status-badge">Average score improvement: 47%</span>
+        <div class="hero-badge">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          Per-bullet scoring on 4 dimensions
+        </div>
+      </div>
+    </section>
+
+    <main class="main-content">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value">6.8</div>
+          <div class="stat-label">
+            Average bullet impact score out of 10 across resumes we review
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">40%</div>
+          <div class="stat-label">
+            Of bullets on most resumes lack quantified results of any kind
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">2–3×</div>
+          <div class="stat-label">
+            More recruiter engagement with resumes whose bullets lead with
+            results
+          </div>
+        </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">52%</div>
-          <div class="stat-label">Weak bullet points</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">3.2</div>
-          <div class="stat-label">Impact score per bullet</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">47%</div>
-          <div class="stat-label">Avg improvement</div>
+      <div class="content-card">
+        <div class="card-label">How We Score</div>
+        <h2>What makes a bullet strong — and what doesn't</h2>
+        <p>
+          We break each bullet point into four components that predict whether a
+          recruiter will actually read it or skim past it. Each dimension gets a
+          score from 1 to 10, and you see the total for every line.
+        </p>
+
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-title">Specificity of Results</div>
+            <div class="score-item-desc">
+              Does this bullet describe a concrete outcome? "Improved
+              performance" scores low; "reduced load time by 40%" scores high.
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">Verb Strength</div>
+            <div class="score-item-desc">
+              "Led," "built," and "launched" signal ownership. "Helped,"
+              "assisted," and "worked on" signal participation. Recruiters
+              notice the difference.
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">Quantified Impact</div>
+            <div class="score-item-desc">
+              Numbers make impact real and memorable. Team size, revenue,
+              timelines, percentages — any measurable signal counts.
+            </div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-title">ATS Keyword Fit</div>
+            <div class="score-item-desc">
+              Does this bullet contain language that matches your target role?
+              Relevance to the job description affects whether the resume passes
+              screening.
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="content-section">
-        <h2>The Problem: Weak Bullet Points</h2>
+      <div class="content-card">
+        <div class="card-label">In Practice</div>
+        <h2>The difference a rewrite makes</h2>
         <p>
-          "Responsible for managing projects." "Contributed to team success."
-          "Helped with various tasks." If you've written bullets like these,
-          you're not alone—and you're hurting your chances.
+          Here's how the same experience reads at different impact levels. The
+          underlying facts don't change — just how they're presented.
         </p>
-        <p>Weak bullets:</p>
-        <ul
-          style="
-            margin-top: 1rem;
-            margin-left: 2rem;
-            color: var(--text-secondary);
-          "
-        >
-          <li>Don't show clear impact</li>
-          <li>Are vague and generic</li>
-          <li>Don't explain WHY this matters</li>
-          <li>Waste recruiter time</li>
-          <li>Blend in with competitors' resumes</li>
+
+        <div class="bullet-example">
+          <div class="bullet-row weak">
+            <div class="bullet-header">
+              <span class="bullet-tag">Low Impact</span>
+              <span class="bullet-score">3.2 / 10</span>
+            </div>
+            <div class="bullet-text">
+              Worked on improvements to the dashboard and helped ensure things
+              ran more smoothly for users
+            </div>
+          </div>
+          <div class="bullet-row weak">
+            <div class="bullet-header">
+              <span class="bullet-tag">Medium Impact</span>
+              <span class="bullet-score">6.1 / 10</span>
+            </div>
+            <div class="bullet-text">
+              Improved dashboard performance and resolved several user-reported
+              issues across multiple releases
+            </div>
+          </div>
+          <div class="bullet-row strong">
+            <div class="bullet-header">
+              <span class="bullet-tag">High Impact</span>
+              <span class="bullet-score">9.0 / 10</span>
+            </div>
+            <div class="bullet-text">
+              Rebuilt core dashboard rendering, cutting page load time by 54%
+              and reducing user-reported bugs by 31% over two sprints
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-label">How to Improve Your Scores</div>
+        <h2>Practical rewrites that raise the bar</h2>
+        <ul class="tip-list">
+          <li>
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong
+                >Rewrite every bullet that starts with "helped" or
+                "assisted"</strong
+              >
+              — You did the work; claim it with a direct verb</span
+            >
+          </li>
+          <li>
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Add at least one number per role</strong> — Even rough
+              estimates ("served 200+ customers") are better than no
+              numbers</span
+            >
+          </li>
+          <li>
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Use the CAR format</strong> — Context, Action, Result
+              keeps bullets focused and scannable</span
+            >
+          </li>
+          <li>
+            <svg
+              class="tip-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Cut bullets scoring below 5</strong> — If you can't
+              strengthen them, remove them; weak bullets dilute your strong
+              ones</span
+            >
+          </li>
         </ul>
-
-        <h3
-          style="
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-          "
-        >
-          See the Difference:
-        </h3>
-
-        <div class="comparison">
-          <div class="comparison-item">
-            <div class="comparison-label">❌ Weak (2.1/10)</div>
-            <div class="weak-bullet">
-              Managed social media accounts for the company
-            </div>
-            <div class="impact-score">
-              <div class="score-bar">
-                <div class="score-bar-fill weak"></div>
-              </div>
-              <div class="score-text weak">2.1/10</div>
-            </div>
-          </div>
-
-          <div class="comparison-item">
-            <div class="comparison-label">✓ Strong (8.6/10)</div>
-            <div class="strong-bullet">
-              Grew Instagram followers from 12K to 68K (+467%) in 6 months by
-              developing weekly content strategy, increasing engagement rate
-              from 2% to 8%, and driving 340 sales directly from social links
-            </div>
-            <div class="impact-score">
-              <div class="score-bar">
-                <div class="score-bar-fill strong"></div>
-              </div>
-              <div class="score-text strong">8.6/10</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="comparison">
-          <div class="comparison-item">
-            <div class="comparison-label">❌ Weak (3.4/10)</div>
-            <div class="weak-bullet">
-              Worked with sales team on customer projects
-            </div>
-            <div class="impact-score">
-              <div class="score-bar">
-                <div class="score-bar-fill weak"></div>
-              </div>
-              <div class="score-text weak">3.4/10</div>
-            </div>
-          </div>
-
-          <div class="comparison-item">
-            <div class="comparison-label">✓ Strong (7.9/10)</div>
-            <div class="strong-bullet">
-              Partnered with VP of Sales to close 8 enterprise deals ($2.3M ARR)
-              by designing custom product demos and negotiating contract terms
-              within 30 days
-            </div>
-            <div class="impact-score">
-              <div class="score-bar">
-                <div class="score-bar-fill strong"></div>
-              </div>
-              <div class="score-text strong">7.9/10</div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div class="content-section">
-        <h2>The Bullet Point Impact Formula</h2>
-        <div class="bullet-formula">
-          <div class="formula-part">
-            <strong>Action Verb</strong> (delivered, grew, designed, built) +
-            <strong>What You Did</strong> (the work) +
-            <strong>Measurable Result</strong> (the impact) +
-            <strong>Context</strong> (scope/business value)
-          </div>
-          <hr
-            style="
-              margin: 1rem 0;
-              border: none;
-              border-top: 1px solid var(--border);
-            "
-          />
-          <div class="formula-part" style="margin-bottom: 0">
-            <strong>Example:</strong> "Designed and launched mobile app that
-            reduced checkout time by 64% (from 3.2min to 1.1min), increasing
-            conversion rate by 28% and generating $1.2M in additional revenue"
-          </div>
-        </div>
-      </div>
-
-      <div class="content-section">
-        <h2>Why This Matters</h2>
+      <div class="cta-block">
+        <h2>Score your resume's bullets now</h2>
         <p>
-          Your bullets are your main sales pitch. Recruiters scan them to
-          answer: "Did this person achieve results?" Weak bullets force them to
-          infer impact—and they usually infer the worst.
+          Upload your resume and get an individual score for every bullet point
+          — with specific guidance on which ones to rewrite first.
         </p>
-        <p>
-          <strong>Strong bullets make your resume undeniable.</strong> They
-          show, don't tell. They prove value.
-        </p>
+        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
       </div>
-
-      <div class="content-section">
-        <h2>How to Score Higher</h2>
-        <ul class="solution-list">
-          <li>
-            <strong>Start with strong action verbs</strong> - "Achieved,"
-            "Delivered," "Transformed," not "Helped" or "Assisted"
-          </li>
-          <li>
-            <strong>Include at least one metric</strong> - Percentage growth,
-            revenue, time saved, customers won
-          </li>
-          <li>
-            <strong>Explain the business impact</strong> - Why does this result
-            matter?
-          </li>
-          <li>
-            <strong>Use the job description</strong> - Mirror language where you
-            have matching accomplishments
-          </li>
-          <li>
-            <strong>Keep to 1-2 lines</strong> - Concise > detailed for resume
-            bullets
-          </li>
-          <li>
-            <strong>Remove generic language</strong> - "Team player,"
-            "self-starter," "detail-oriented" add zero value on a resume
-          </li>
-        </ul>
-      </div>
-
-      <div class="analysis-section" id="analysisSection" style="display: none">
-        <div class="analysis-header">
-          <div class="analysis-icon">📊</div>
-          <h3>Your Resume Analysis</h3>
-        </div>
-        <div class="analysis-content">
-          <div class="analysis-card">
-            <div class="analysis-card-title">Impact Score</div>
-            <div class="analysis-card-value" id="impactScore">--</div>
-            <div class="analysis-card-description">Overall bullet quality</div>
-            <div class="analysis-badge" id="impactStatus">Not scanned yet</div>
-          </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Weak Bullets</div>
-            <div class="analysis-card-value" id="weakBullets">--</div>
-            <div class="analysis-card-description">Needing improvement</div>
-            <div class="analysis-badge warning" id="weakStatus">
-              Review details
-            </div>
-          </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Strong Bullets</div>
-            <div class="analysis-card-value" id="strongBullets">--</div>
-            <div class="analysis-card-description">Well-crafted impact</div>
-            <div class="analysis-badge" id="strongStatus">Excellent</div>
-          </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Potential Gain</div>
-            <div class="analysis-card-value" id="improvementCount">--</div>
-            <div class="analysis-card-description">Expected improvement %</div>
-            <div class="analysis-badge" id="improvementStatus">Achievable</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cta-section">
-        <h3>Get Your Bullet Point Scores</h3>
-        <p>
-          Upload your resume and see which bullets are strong and which ones
-          need work. We'll score each one and suggest improvements.
-        </p>
-        <a href="/resume" class="btn">Upload & Analyze</a>
-      </div>
-    </div>
+    </main>
 
     <script>
-      // Dark mode functionality
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const html = document.documentElement;
-
-      // Check localStorage for dark mode preference
-      if (localStorage.getItem("darkMode") === "true") {
-        html.classList.add("dark-mode");
-      }
-
-      darkModeToggle.addEventListener("click", () => {
-        html.classList.toggle("dark-mode");
-        const isDarkMode = html.classList.contains("dark-mode");
-        localStorage.setItem("darkMode", isDarkMode);
+      const header = document.getElementById("siteHeader");
+      window.addEventListener("scroll", () => {
+        header.classList.toggle("scrolled", window.scrollY > 30);
       });
-
-      // User Analysis Section
-      function initializeAnalysis() {
-        const analysisData = {
-          impactScore: localStorage.getItem("impactScore") || null,
-          weakBullets: localStorage.getItem("weakBullets") || null,
-          strongBullets: localStorage.getItem("strongBullets") || null,
-          improvementCount: localStorage.getItem("improvementCount") || null,
-        };
-
-        if (Object.values(analysisData).some((val) => val !== null)) {
-          const analysisSection = document.getElementById("analysisSection");
-          analysisSection.style.display = "block";
-
-          if (analysisData.impactScore) {
-            document.getElementById("impactScore").textContent =
-              analysisData.impactScore + "%";
-            const impactStatus = document.getElementById("impactStatus");
-            const score = parseInt(analysisData.impactScore);
-            if (score >= 75) {
-              impactStatus.textContent = "Strong";
-              impactStatus.className = "analysis-badge";
-            } else if (score >= 50) {
-              impactStatus.textContent = "Moderate";
-              impactStatus.className = "analysis-badge warning";
-            } else {
-              impactStatus.textContent = "Needs work";
-              impactStatus.className = "analysis-badge danger";
-            }
-          }
-
-          if (analysisData.weakBullets) {
-            document.getElementById("weakBullets").textContent =
-              analysisData.weakBullets;
-          }
-
-          if (analysisData.strongBullets) {
-            document.getElementById("strongBullets").textContent =
-              analysisData.strongBullets;
-          }
-
-          if (analysisData.improvementCount) {
-            document.getElementById("improvementCount").textContent =
-              analysisData.improvementCount + "%";
-          }
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+      (function () {
+        var btn = document.getElementById("dmBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var next =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("careerassist-theme", next);
+        });
+      })();
     </script>
   </body>
 </html>

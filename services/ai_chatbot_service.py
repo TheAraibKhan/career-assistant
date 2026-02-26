@@ -1,4 +1,4 @@
-"""Career chatbot service."""
+# Career chatbot service with rule-based responses
 import requests
 import json
 from datetime import datetime
@@ -7,107 +7,73 @@ from database.db import get_db
 
 
 class CareerChatbot:
-    """Career guidance chatbot."""
     
     def __init__(self, user_id=None, session_id=None):
         self.user_id = user_id
         self.session_id = session_id or datetime.utcnow().isoformat()
-        self.api_mode = 'fallback'  # fallback, huggingface, or local
     
-    def build_system_prompt(self, user_context=None):
-        """Build the system prompt with user context."""
-        system = """You are an AI career advisor with expertise in helping people choose and advance their careers.
-
-Your role:
-- Give personalized, actionable career guidance
-- Explain reasoning behind recommendations
-- Help with resume improvement and interview prep
-- Be encouraging but realistic
-- Ask clarifying questions when needed
-
-When discussing careers:
-- Match recommendations to user's skills and interests
-- Provide specific next steps
-- Mention learning resources when relevant
-- Be concise and focus on 1-2 key points per response
-
-Guidelines:
-- Keep responses to 2-3 short paragraphs
-- Use clear language, avoid jargon
-- Be empathetic and supportive
-- Reference user's specific situation when possible"""
+    def build_context(self, user_context):
+        if not user_context:
+            return ""
         
-        if user_context:
-            system += f"""
-
-Current User Context:
-- Interest: {user_context.get('interest', 'Unknown')}
-- Level: {user_context.get('level', 'Unknown')}
-- Skills: {user_context.get('skills', 'Not provided')}
-- Current Role Goal: {user_context.get('goal', 'Not specified')}"""
+        interest = user_context.get('interest', '')
+        level = user_context.get('level', '')
+        skills = user_context.get('skills', '')
+        goal = user_context.get('goal', '')
         
-        return system
+        return f"User Context: {interest} ({level} level), Skills: {skills}, Goal: {goal}"
     
     def generate_response(self, user_message, user_context=None):
-        """
-        Generate a chatbot response.
-        Uses intelligent fallback system for free API limits.
+        # Validate input
+        if not user_message or len(user_message.strip()) < 2:
+            return {
+                'response': "Could you provide more details? I'm here to help with your career questions.",
+                'success': True
+            }
         
-        Args:
-            user_message: The user's question/message
-            user_context: User's career profile (optional)
+        # Check for nonsense/gibberish (no letters)
+        if not any(c.isalpha() for c in user_message):
+            return {
+                'response': "I didn't quite understand that. Try asking about careers, skills, resumes, or interviews.",
+                'success': True
+            }
         
-        Returns:
-            dict with 'response' and 'success' keys
-        """
         try:
-            # Try to use AI API (future integration)
-            response = self._query_ai_api(user_message, user_context)
-            if response.get('success'):
-                return response
-            
             return self._get_response(user_message, user_context)
-        
         except Exception as e:
-            return self._get_response(user_message, user_context)
+            print(f"Error generating response: {e}")
+            return {
+                'response': "I encountered an error. Please rephrase your question and try again.",
+                'success': True
+            }
     
-    def _query_ai_api(self, user_message, user_context):
-        """Try to query an external AI API (placeholder for integration)."""
-        return {'success': False}
+
     
     def _get_response(self, user_message, user_context=None):
-        """Rule-based responses for career guidance."""
         message_lower = user_message.lower()
         
         interest = user_context.get('interest', '').lower() if user_context else ''
         level = user_context.get('level', '').lower() if user_context else ''
         skills = user_context.get('skills', '').lower() if user_context else ''
+        
         if any(word in message_lower for word in ['what career', 'recommend', 'best for me', 'suitable']):
             return self._handle_career_recommendation(interest, level, skills)
-        
         elif any(word in message_lower for word in ['improve', 'ready', 'prepare', 'readiness', 'gap']):
             return self._handle_readiness_question(interest, level, skills)
-        
         elif any(word in message_lower for word in ['learn', 'study', 'course', 'skill', 'training']):
             return self._handle_learning_path(interest, level, skills)
-        
         elif any(word in message_lower for word in ['salary', 'pay', 'income', 'money', 'cost']):
             return self._handle_salary_question(interest)
-        
         elif any(word in message_lower for word in ['resume', 'cv', 'cover', 'application']):
             return self._handle_resume_question(interest)
-        
         elif any(word in message_lower for word in ['interview', 'question', 'prepare', 'tips']):
             return self._handle_interview_question(interest)
-        
         elif any(word in message_lower for word in ['switch', 'change', 'transition', 'pivot']):
             return self._handle_career_switch(interest, level, skills)
-        
         else:
             return self._handle_general_question(message_lower)
     
     def _handle_career_recommendation(self, interest, level, skills):
-        """Handle "What career is best for me" questions."""
         if not interest:
             return {
                 'response': """To give you a great career recommendation, I need to know more about you. Could you tell me:
@@ -115,31 +81,26 @@ Current User Context:
 2. What's your current level? (Beginner, Intermediate, Advanced)
 3. What are your key skills?
 
-Once I know these, I can guide you toward roles that match your profile.""",
+Once I know these facts, I can guide you toward roles that match your profile.""",
                 'success': True
             }
         
-        level_text = "starting your career" if level in ["beginner", "student"] else "advancing in your role" if level == "intermediate" else "taking on leadership challenges"
-        
-        response = f"""Based on your interest in **{interest.title()}** and your {level} level, here are some paths:
+        response = f"""Based on your interest in {interest.title()} and {level} level:
 
 **Immediate opportunities:**
-- Look for entry-level or mid-level roles in your interest area
+- Look for entry to mid-level roles in {interest}
 - Build 2-3 key technical or domain skills
-- Contribute to 1-2 projects to build portfolio/experience
+- Create 1-2 projects for your portfolio
 
 **Next steps:**
-1. Take 1 focused online course (Udemy, Coursera, Codecademy)
-2. Build a portfolio project or portfolio update
-3. Apply to 5-10 roles that match your goals
-4. Network with people in your target role
+1. Take 1 focused online course (Udemy, Coursera)
+2. Build a portfolio project
+3. Apply to 5-10 matching roles
+4. Network with people in your target field
 
-Do you want help with a specific part of this plan?""",
+Need help with a specific part of this plan?"""
         
-        return {
-            'response': response,
-            'success': True
-        }
+        return {'response': response, 'success': True}
     
     def _handle_readiness_question(self, interest, level, skills):
         """Handle readiness and skill gap questions."""

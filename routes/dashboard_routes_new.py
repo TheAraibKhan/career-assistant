@@ -19,9 +19,18 @@ def login_required(f):
 @dashboard_bp.route('/')
 @login_required
 def index():
-    """Main dashboard with real user data."""
+    """Main dashboard view."""
     user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+    
     db = get_db()
+    
+    # Force commit any pending transactions to ensure fresh data
+    try:
+        db.commit()
+    except:
+        pass
     
     # Get user profile
     user = db.execute(
@@ -113,7 +122,32 @@ def profile():
         'user': user,
     }
     
-    return render_template('auth/profile_real.html', **profile_data)
+    return render_template('auth/profile.html', user=user)
+
+@dashboard_bp.route('/api/track-time', methods=['POST'])
+@login_required
+def track_time():
+    """Track user session time on pages."""
+    try:
+        data = request.get_json()
+        user_id = session.get('user_id')
+        page = data.get('page', 'unknown')
+        duration = data.get('duration', 0)
+        
+        db = get_db()
+        now = datetime.now(UTC).isoformat()
+        
+        # Track as user interaction
+        db.execute('''
+            INSERT INTO user_interactions (user_id, interaction_type, metadata, timestamp)
+            VALUES (?, 'page_view', ?, ?)
+        ''', (user_id, json.dumps({'page': page, 'duration': duration}), now))
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Time tracking error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # UPDATE PROFILE
 @dashboard_bp.route('/profile/update', methods=['POST'])

@@ -259,3 +259,63 @@ def get_cached_parse(file_hash):
             'education': json.loads(result['parsed_education'])
         }
     return None
+
+
+def parse_resume_text(text):
+    """Parse resume text directly (for front page form submissions)."""
+    if not text:
+        return {
+            'name': 'Guest User',
+            'skills': [],
+            'interest': 'tech',
+            'level': 'intermediate'
+        }
+    
+    result = {
+        'name': 'Guest User',
+        'skills': [],
+        'interest': 'tech',
+        'level': 'intermediate'
+    }
+    
+    # Extract name (usually first line or first capitalized phrase)
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    if lines:
+        first_line = lines[0][:50]
+        # Check if it looks like a name (not too long, mostly letters)
+        import re
+        if len(first_line.split()) <= 4 and re.match(r'^[A-Za-z\s\.]+$', first_line):
+            result['name'] = first_line
+    
+    # Extract skills using existing function
+    skills = extract_skills_from_text(text)
+    result['skills'] = skills
+    
+    # Determine interest from skills
+    ml_skills = {'Machine Learning', 'Deep Learning', 'TensorFlow', 'PyTorch', 'NLP', 'Computer Vision'}
+    data_skills = {'SQL', 'Pandas', 'NumPy', 'Tableau', 'Power BI', 'Excel', 'Spark'}
+    web_skills = {'React', 'Vue', 'Angular', 'Node.js', 'HTML', 'CSS', 'JavaScript'}
+    design_skills = {'Figma', 'Adobe XD', 'Photoshop', 'Illustrator'}
+    
+    if any(s in skills for s in ml_skills):
+        result['interest'] = 'ai'
+    elif any(s in skills for s in data_skills):
+        result['interest'] = 'data'
+    elif any(s in skills for s in web_skills):
+        result['interest'] = 'tech'
+    elif any(s in skills for s in design_skills):
+        result['interest'] = 'design'
+    
+    # Determine level from experience mentions
+    import re
+    text_lower = text.lower()
+    if re.search(r'\b(senior|lead|principal|architect|manager)\b', text_lower):
+        result['level'] = 'advanced'
+    elif re.search(r'\b([5-9]|\d{2})\+?\s*years?\b', text_lower):
+        result['level'] = 'advanced'
+    elif re.search(r'\b(intern|student|graduate|entry|junior|fresher)\b', text_lower):
+        result['level'] = 'beginner'
+    elif re.search(r'\b([2-4])\s*years?\b', text_lower):
+        result['level'] = 'intermediate'
+    
+    return result

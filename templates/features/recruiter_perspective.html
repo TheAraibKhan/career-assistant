@@ -1,9 +1,24 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("careerassist-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Recruiter's Perspective - Career Assistant</title>
+    <meta
+      name="description"
+      content="See your resume the way a recruiter does. We analyze what stands out in 6 seconds and what gets overlooked."
+    />
+    <title>Recruiter's Perspective Mode — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,781 +26,824 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        --primary: #3b5bdb;
-        --primary-dark: #2f4cb3;
-        --primary-light: #6476f2;
-        --success: #5a9d7e;
-        --warning: #d4925f;
-        --danger: #d97706;
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-        --border: #e5e7eb;
-        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
-      }
-
-      html.dark-mode {
-        --primary: #60a5fa;
-        --primary-dark: #3b82f6;
-        --primary-light: #93c5fd;
-        --success: #4ade80;
-        --warning: #facc15;
-        --danger: #f97316;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --border: #334155;
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      }
-
-      * {
+      *,
+      *::before,
+      *::after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
+      :root {
+        --primary: #9333ea;
+        --primary-dark: #7c3aed;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f8faff;
+        --white: #ffffff;
+      }
+      [data-theme="dark"] {
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #2d3748;
+        --bg: #0f172a;
+        --white: #1e293b;
+      }
+      [data-theme="dark"] .site-header {
+        background: rgba(15, 23, 42, 0.97);
+        border-bottom-color: #2d3748;
+      }
+      [data-theme="dark"] .stat-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .content-card {
+        background: #1e293b;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .scan-area {
+        background: #162032;
+        border-color: #2d3748;
+      }
+      [data-theme="dark"] .example-box.before {
+        background: rgba(239, 68, 68, 0.06);
+      }
+      [data-theme="dark"] .example-box.after {
+        background: rgba(16, 185, 129, 0.06);
+      }
+      [data-theme="dark"] .back-link {
+        border-color: #2d3748;
+        color: #94a3b8;
+      }
+      [data-theme="dark"] .back-link:hover {
+        color: var(--primary);
+        background: rgba(147, 51, 234, 0.08);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] body {
+        background: var(--bg);
+      }
+      [data-theme="dark"] .page-hero {
+        background: linear-gradient(
+          135deg,
+          #1a1040 0%,
+          #0f172a 50%,
+          #101828 100%
+        );
+        border-bottom-color: rgba(147, 51, 234, 0.15);
+      }
+      [data-theme="dark"] .page-hero h1 {
+        color: #f1f5f9;
+      }
+      [data-theme="dark"] .page-hero p.lead {
+        color: #cbd5e1;
+      }
+      [data-theme="dark"] .hero-badge {
+        background: rgba(147, 51, 234, 0.15);
+        border-color: rgba(147, 51, 234, 0.3);
+      }
+      [data-theme="dark"] .cta-btn {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #f1f5f9 !important;
+      }
+      [data-theme="dark"] .cta-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
       html {
         scroll-behavior: smooth;
         font-size: 16px;
       }
-
       body {
         font-family:
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
           sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
+        background: var(--bg);
         color: var(--text-primary);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 300ms ease,
+          color 300ms ease;
       }
 
-      header {
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
+      .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
-        transition: all 150ms ease;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        transition:
+          box-shadow 200ms ease,
+          background 300ms ease;
       }
-
-      .header-content {
-        max-width: 1200px;
+      .site-header.scrolled {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+      .header-inner {
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 0 2rem;
+        padding: 1rem 2rem;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
       }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
       .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-decoration: none;
       }
-
-      .dark-mode-toggle {
-        width: 48px;
-        height: 28px;
-        background: var(--border);
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        position: relative;
-        transition: background 150ms ease;
-        display: flex;
-        align-items: center;
-        padding: 0 2px;
-      }
-
-      .dark-mode-toggle:hover {
-        background: var(--primary);
-      }
-
-      .dark-mode-toggle::after {
-        content: "☀️";
-        font-size: 14px;
-        transition: all 200ms ease;
-        position: absolute;
-        left: 4px;
-      }
-
-      html.dark-mode .dark-mode-toggle {
-        background: var(--primary);
-      }
-
-      html.dark-mode .dark-mode-toggle::after {
-        content: "🌙";
-        left: auto;
-        right: 4px;
-      }
-
-      .back-button {
+      .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
         padding: 0.5rem 1rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        transition: all 150ms ease;
-      }
-
-      .back-button:hover {
-        background: var(--bg-tertiary);
-        color: var(--primary);
-      }
-
-      .main-content {
-        max-width: 900px;
-        margin: 3rem auto;
-        padding: 0 2rem;
-      }
-
-      .page-header {
-        margin-bottom: 3rem;
-      }
-
-      .page-header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
-
-      .page-header p {
-        font-size: 1.125rem;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-      }
-
-      .status-badge {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .content-section {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .content-section h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--primary);
-      }
-
-      .content-section p {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-        line-height: 1.8;
-      }
-
-      .timeline {
-        list-style: none;
-        margin: 1.5rem 0;
-        position: relative;
-        padding-left: 2rem;
-      }
-
-      .timeline::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--primary);
-      }
-
-      .timeline li {
-        margin-bottom: 1.5rem;
-        position: relative;
-      }
-
-      .timeline li::before {
-        content: "";
-        position: absolute;
-        left: -2.75rem;
-        top: 0.25rem;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: var(--primary);
-        border: 3px solid white;
-        box-shadow: 0 0 0 2px var(--primary);
-      }
-
-      .timeline-time {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 0.25rem;
-      }
-
-      .timeline-content {
-        color: var(--text-secondary);
-      }
-
-      .insight-box {
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-        background: rgba(217, 119, 6, 0.05);
-        border-left: 4px solid var(--warning);
-        border-radius: 0.5rem;
-      }
-
-      .insight-box strong {
-        color: var(--warning);
-      }
-
-      .solution-list {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .solution-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: rgba(90, 157, 126, 0.05);
-        border-left: 4px solid var(--success);
-        border-radius: 0.5rem;
-      }
-
-      .solution-list strong {
-        color: var(--success);
-      }
-
-      .red-flags {
-        list-style: none;
-        margin: 1.5rem 0;
-      }
-
-      .red-flags li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background: rgba(217, 119, 6, 0.05);
-        border-left: 4px solid var(--danger);
-        border-radius: 0.5rem;
-      }
-
-      .red-flags strong {
-        color: var(--danger);
-      }
-
-      .cta-section {
-        background: linear-gradient(
-          135deg,
-          var(--primary) 0%,
-          var(--primary-light) 100%
-        );
-        border-radius: 1rem;
-        padding: 3rem 2rem;
-        text-align: center;
-        color: white;
-        margin-top: 3rem;
-      }
-
-      .cta-section h3 {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-
-      .cta-section p {
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 2rem;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: white;
-        color: var(--primary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 150ms ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-      }
-
-      .stat-card {
-        background: var(--bg-tertiary);
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        text-align: center;
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      .analysis-section {
-        background: linear-gradient(
-          135deg,
-          var(--bg-secondary) 0%,
-          var(--bg-tertiary) 100%
-        );
-        border-radius: 1.25rem;
-        padding: 2rem;
-        margin: 3rem 0;
         border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        transition: all 160ms ease;
       }
-
-      .analysis-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+      .back-link:hover {
+        color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.3);
+        background: rgba(147, 51, 234, 0.04);
       }
-
-      .analysis-icon {
-        font-size: 2rem;
-        width: 50px;
-        height: 50px;
+      .dm-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(59, 91, 219, 0.1);
-        border-radius: 0.75rem;
+        color: var(--text-muted);
+        transition: all 200ms ease;
+      }
+      .dm-btn:hover {
         color: var(--primary);
+        border-color: rgba(147, 51, 234, 0.4);
+        background: rgba(147, 51, 234, 0.06);
+      }
+      .dm-btn .ic-sun {
+        display: block;
+      }
+      .dm-btn .ic-moon {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-sun {
+        display: none;
+      }
+      [data-theme="dark"] .dm-btn .ic-moon {
+        display: block;
       }
 
-      .analysis-header h3 {
-        margin: 0;
-        color: var(--text-primary);
-        font-size: 1.25rem;
+      .page-hero {
+        background: linear-gradient(
+          135deg,
+          #f5f3ff 0%,
+          #faf5ff 50%,
+          #f0f9ff 100%
+        );
+        border-bottom: 1px solid rgba(147, 51, 234, 0.08);
+        padding: 3.5rem 2rem 3rem;
+        position: relative;
+        overflow: hidden;
       }
-
-      .analysis-content {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+      .page-hero::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(147, 51, 234, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
       }
-
-      .analysis-card {
-        background: var(--bg-primary);
-        padding: 1.25rem;
-        border-radius: 0.75rem;
-        border: 1px solid var(--border);
-        transition: all 150ms ease;
+      .hero-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
       }
-
-      .analysis-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .analysis-card-title {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
+      .feature-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #9333ea;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--primary);
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
+      }
+      .eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9333ea;
+        opacity: 0.6;
+      }
+      .page-hero h1 {
+        font-size: clamp(1.875rem, 4vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+      .page-hero p.lead {
+        font-size: 1.125rem;
+        line-height: 1.75;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        max-width: 620px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
       }
 
-      .analysis-card-value {
-        font-size: 1.75rem;
+      .main-content {
+        max-width: 800px;
+        margin: 3rem auto 5rem;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 2rem;
         font-weight: 800;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.375rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .content-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .content-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+      }
+      .card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #9333ea;
+        margin-bottom: 0.75rem;
+      }
+      .content-card h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
         color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .content-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+
+      .scan-areas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+      .scan-area {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: #f8fafc;
+        border-radius: 0.675rem;
+        border: 1px solid var(--border);
+      }
+      .scan-num {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #9333ea, #ec4899);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+        margin-top: 1px;
+      }
+      .scan-text {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+        line-height: 1.5;
+      }
+      .scan-text strong {
+        color: var(--text-primary);
+      }
+
+      .example-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+      }
+      .example-box {
+        padding: 1rem;
+        border-radius: 0.625rem;
+      }
+      .example-box.before {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+      }
+      .example-box.after {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+      }
+      .example-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         margin-bottom: 0.5rem;
       }
-
-      .analysis-card-description {
+      .example-box.before .example-tag {
+        color: #dc2626;
+      }
+      .example-box.after .example-tag {
+        color: #059669;
+      }
+      .example-text {
         font-size: 0.875rem;
         color: var(--text-secondary);
+        line-height: 1.55;
       }
 
-      .analysis-badge {
+      .imp-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        margin-top: 1.5rem;
+      }
+      .imp-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        padding: 0.875rem 1rem;
+        background: rgba(16, 185, 129, 0.04);
+        border-left: 3px solid rgba(16, 185, 129, 0.4);
+        border-radius: 0.375rem;
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .imp-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        color: #10b981;
+      }
+      .imp-list strong {
+        color: var(--text-primary);
+      }
+
+      .cta-block {
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+        border-radius: 1.25rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-block::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -15%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .cta-block h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: white;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+      }
+      .cta-block p {
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 1;
+      }
+      .cta-btn {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(90, 157, 126, 0.1);
-        color: var(--success);
-        border-radius: 0.35rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 0.5rem;
+        background: white;
+        color: #7c3aed;
+        padding: 0.875rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        transition: all 180ms ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      }
+      .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       }
 
-      .analysis-badge.warning {
-        background: rgba(212, 146, 95, 0.1);
-        color: var(--warning);
-      }
-
-      .analysis-badge.danger {
-        background: rgba(217, 119, 6, 0.1);
-        color: var(--danger);
-      }
-
-      @media (max-width: 768px) {
-        .page-header h1 {
-          font-size: 1.75rem;
+      @media (max-width: 640px) {
+        .stats-row {
+          grid-template-columns: 1fr;
         }
-
+        .example-pair {
+          grid-template-columns: 1fr;
+        }
         .main-content {
-          margin: 2rem auto;
+          margin: 2rem auto 4rem;
+          padding: 0 1rem;
         }
-
-        .content-section {
-          padding: 1.5rem;
+        .page-hero {
+          padding: 2.5rem 1rem 2rem;
         }
-
-        .cta-section {
-          padding: 2rem 1.5rem;
+        .header-inner {
+          padding: 1rem;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="header-content">
-        <div class="header-left">
-          <a href="/" class="logo">Career Assistant</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1.5rem">
-          <button
-            class="dark-mode-toggle"
-            id="darkModeToggle"
-            title="Toggle dark mode"
-          ></button>
-          <a href="/" class="back-button">← Back to Home</a>
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="/" class="logo">CareerAssist</a>
+        <div style="display: flex; align-items: center; gap: 0.75rem">
+          <button class="dm-btn" id="dmBtn" aria-label="Toggle dark mode">
+            <svg
+              class="ic-moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              class="ic-sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <a href="/" class="back-link">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Home
+          </a>
         </div>
       </div>
     </header>
 
-    <div class="main-content">
-      <div class="page-header">
-        <h1>Recruiter's Perspective: The 6-Second Screen</h1>
-        <p>
-          See your resume through a recruiter's eyes. In 6 seconds, what stands
-          out—and what gets missed?
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div class="feature-eyebrow">
+          <span class="eyebrow-dot"></span>Human Factor
+        </div>
+        <h1>Recruiter's Perspective Mode</h1>
+        <p class="lead">
+          A recruiter's first scan lasts about 6 seconds. In that time, they're
+          not reading — they're pattern-matching for signals. We show you what
+          they see and what they miss.
         </p>
-        <span class="status-badge">Average recruiter review: 6 seconds</span>
+        <div class="hero-badge">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          6 seconds to make your first impression count
+        </div>
       </div>
+    </section>
 
-      <div class="stats-grid">
+    <main class="main-content">
+      <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-number">6 sec</div>
-          <div class="stat-label">Average review time</div>
+          <div class="stat-value">6 sec</div>
+          <div class="stat-label">
+            Average initial review time before a recruiter decides to read
+            further
+          </div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">40%</div>
-          <div class="stat-label">Rejected in first screen</div>
+          <div class="stat-value">Top ⅓</div>
+          <div class="stat-label">
+            Of the page is where recruiter attention is concentrated on first
+            glance
+          </div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">3</div>
-          <div class="stat-label">Seconds to grab attention</div>
+          <div class="stat-value">76%</div>
+          <div class="stat-label">
+            Of recruiters cite lack of quantified achievements as a top
+            rejection reason
+          </div>
         </div>
       </div>
 
-      <div class="content-section">
-        <h2>The Harsh Reality</h2>
+      <div class="content-card">
+        <div class="card-label">The Reality</div>
+        <h2>What actually happens in those 6 seconds</h2>
         <p>
-          Recruiters are human. They're also overworked. When a job posting gets
-          200 applications, they spend 6 seconds per resume deciding: "Possible
-          fit" or "No." This isn't malice—it's triage.
+          Recruiters aren't reading on first glance — they're scanning for
+          visual anchors: your name, most recent role, company names, and
+          whether the layout makes key information findable in seconds.
         </p>
-        <p>In those 6 seconds, they scan (not read) looking for:</p>
-        <ul style="margin-top: 1rem; color: var(--text-secondary)">
-          <li>Name, title, years of experience</li>
-          <li>Obvious red flags or yellow flags</li>
-          <li>Keywords matching the job</li>
-          <li>Recent, relevant experience</li>
-          <li>Any reason to say "no"</li>
-        </ul>
-
-        <h3
-          style="
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-          "
-        >
-          What Happens in 6 Seconds:
-        </h3>
-        <ul class="timeline">
-          <li>
-            <span class="timeline-time">0-1 sec</span>
-            <div class="timeline-content">
-              <strong>Scan header</strong> - Name, title, location
-            </div>
-          </li>
-          <li>
-            <span class="timeline-time">1-3 sec</span>
-            <div class="timeline-content">
-              <strong>Check experience</strong> - Most recent role, company
-              names, tenure
-            </div>
-          </li>
-          <li>
-            <span class="timeline-time">3-5 sec</span>
-            <div class="timeline-content">
-              <strong>Look for keywords</strong> - Do I see "Python," "Google,"
-              or other job requirements?
-            </div>
-          </li>
-          <li>
-            <span class="timeline-time">5-6 sec</span>
-            <div class="timeline-content">
-              <strong>Make decision</strong> - Yes, maybe, or reject pile
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="content-section">
-        <h2>Red Flags That Kill Your Resume Instantly</h2>
-        <ul class="red-flags">
-          <li>
-            <strong>Resume is 3+ pages</strong> - Recruiters assume you can't be
-            concise
-          </li>
-          <li>
-            <strong>Vague job titles</strong> - "Team Member," "Associate"
-            without context
-          </li>
-          <li>
-            <strong>No metrics or results</strong> - Generic descriptions signal
-            weak impact
-          </li>
-          <li>
-            <strong>Outdated design or formatting</strong> - Looks
-            unprofessional or uses outdated software
-          </li>
-          <li>
-            <strong>Missing job keywords</strong> - Doesn't match job
-            description language
-          </li>
-          <li>
-            <strong>Employment gaps without explanation</strong> - Raises
-            questions
-          </li>
-          <li>
-            <strong>Typos or grammatical errors</strong> - Signals carelessness
-          </li>
-        </ul>
-
-        <div class="insight-box">
-          <strong>💡 Pro Tip:</strong> Your resume is a marketing document, not
-          a biography. Every word should answer "Why are you great for this
-          job?"
-        </div>
-      </div>
-
-      <div class="content-section">
-        <h2>How to Win the 6-Second Screen</h2>
-        <ul class="solution-list">
-          <li>
-            <strong>Lead with your best fit</strong> - Put most relevant
-            experience first
-          </li>
-          <li>
-            <strong>Use the job description as a cheat sheet</strong> - Mirror
-            language where honest
-          </li>
-          <li>
-            <strong>Make metrics visible</strong> - "Increased revenue 40%"
-            beats "managed initiatives"
-          </li>
-          <li>
-            <strong>Master the headline</strong> - Job title + years experience
-            + key specialty
-          </li>
-          <li>
-            <strong>Cut ruthlessly</strong> - Keep to 1 page if possible, max 2
-            pages
-          </li>
-          <li>
-            <strong>Bold important keywords</strong> - Makes scanning easier for
-            recruiter eyes
-          </li>
-          <li>
-            <strong>Test with a friend</strong> - Can they tell you your fit in
-            6 seconds?
-          </li>
-        </ul>
-      </div>
-
-      <div class="content-section">
-        <h2>The Transformation</h2>
         <p>
-          <strong>Before:</strong> "Responsible for managing team projects and
-          contributing to company goals"
+          If those things don't surface immediately, the resume gets set aside —
+          not because of your experience, but because the presentation didn't do
+          its job. This check identifies exactly those weak spots.
         </p>
-        <p style="margin-top: 1rem">
-          <strong>After:</strong> "Led cross-functional team of 5 to deliver Q3
-          project 2 weeks early, saving $50K in costs"
-        </p>
-        <p style="margin-top: 1rem; color: var(--text-muted)">
-          Same person, different framing. The second one survives the 6-second
-          screen.
-        </p>
-      </div>
-
-      <div class="analysis-section" id="analysisSection" style="display: none">
-        <div class="analysis-header">
-          <div class="analysis-icon">📊</div>
-          <h3>Your Resume Analysis</h3>
-        </div>
-        <div class="analysis-content">
-          <div class="analysis-card">
-            <div class="analysis-card-title">Recruiter Score</div>
-            <div class="analysis-card-value" id="recruiterScore">--</div>
-            <div class="analysis-card-description">6-second impact</div>
-            <div class="analysis-badge" id="recruiterStatus">
-              Not scanned yet
+        <div class="scan-areas">
+          <div class="scan-area">
+            <div class="scan-num">1</div>
+            <div class="scan-text">
+              <strong>Header and contact info</strong> — Is your name prominent?
+              Is your current city visible? Is your LinkedIn link easy to spot?
             </div>
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Six-Second Test</div>
-            <div class="analysis-card-value" id="sixSecondImpact">--</div>
-            <div class="analysis-card-description">Quick scan results</div>
-            <div class="analysis-badge warning" id="sixSecondStatus">
-              Evaluate
+          <div class="scan-area">
+            <div class="scan-num">2</div>
+            <div class="scan-text">
+              <strong>Most recent role</strong> — What company, what title, how
+              long? These answer "is this person roughly right?" in under 2
+              seconds.
             </div>
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Pass Threshold</div>
-            <div class="analysis-card-value" id="passThreshold">--</div>
-            <div class="analysis-card-description">Moves to next round</div>
-            <div class="analysis-badge" id="passStatus">Checking</div>
+          <div class="scan-area">
+            <div class="scan-num">3</div>
+            <div class="scan-text">
+              <strong>Achievement bullets</strong> — Do they lead with impact?
+              Numbers and results catch the eye; vague responsibilities get
+              skipped.
+            </div>
           </div>
-          <div class="analysis-card">
-            <div class="analysis-card-title">Quality Score</div>
-            <div class="analysis-card-value" id="resumeQuality">--</div>
-            <div class="analysis-card-description">Overall presentation</div>
-            <div class="analysis-badge" id="qualityStatus">Assessing</div>
+          <div class="scan-area">
+            <div class="scan-num">4</div>
+            <div class="scan-text">
+              <strong>Visual clarity</strong> — Is this easy to read? Dense text
+              and poor spacing move a resume to the "later" pile that never gets
+              revisited.
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="cta-section">
-        <h3>Optimize Your Resume for Recruiters</h3>
+      <div class="content-card">
+        <div class="card-label">Writing for the 6-Second Scan</div>
+        <h2>Small wording changes, big visible difference</h2>
         <p>
-          Get instant feedback on how your resume performs in the recruiter's
-          6-second scan.
+          The difference between resumes that get callbacks often comes down to
+          how the first line of each bullet reads. Weak verbs and vague language
+          are invisible; strong, specific openings make recruiters slow down.
         </p>
-        <a href="/resume" class="btn">Upload & Analyze</a>
+
+        <div class="example-pair">
+          <div class="example-box before">
+            <div class="example-tag">Before</div>
+            <div class="example-text">
+              Helped with development of features for the team's main product
+              and assisted in supporting users
+            </div>
+          </div>
+          <div class="example-box after">
+            <div class="example-tag">After</div>
+            <div class="example-text">
+              Built 3 core product features shipped to 14,000 users, reducing
+              support tickets by 22%
+            </div>
+          </div>
+        </div>
+
+        <ul class="imp-list">
+          <li>
+            <svg
+              class="imp-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Start every bullet with a strong verb</strong> — Built,
+              reduced, led, launched — not "helped" or "assisted with"</span
+            >
+          </li>
+          <li>
+            <svg
+              class="imp-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Add one number per bullet where you can</strong> — Scale,
+              percentage, timeframe, team size — any figure adds instant
+              credibility</span
+            >
+          </li>
+          <li>
+            <svg
+              class="imp-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Put your strongest bullet first</strong> — Recruiters
+              rarely read all bullets; the first one carries the most
+              weight</span
+            >
+          </li>
+          <li>
+            <svg
+              class="imp-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span
+              ><strong>Keep bullets to one or two lines</strong> — Long
+              paragraphs get skimmed or skipped entirely in the 6-second
+              window</span
+            >
+          </li>
+        </ul>
       </div>
-    </div>
+
+      <div class="cta-block">
+        <h2>Find out what recruiters notice first</h2>
+        <p>
+          Upload your resume and we'll walk you through exactly what stands out
+          — and what needs to be rewritten to make the most of that first
+          glance.
+        </p>
+        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
+      </div>
+    </main>
 
     <script>
-      // Dark mode functionality
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const html = document.documentElement;
-
-      // Check localStorage for dark mode preference
-      if (localStorage.getItem("darkMode") === "true") {
-        html.classList.add("dark-mode");
-      }
-
-      darkModeToggle.addEventListener("click", () => {
-        html.classList.toggle("dark-mode");
-        const isDarkMode = html.classList.contains("dark-mode");
-        localStorage.setItem("darkMode", isDarkMode);
+      const header = document.getElementById("siteHeader");
+      window.addEventListener("scroll", () => {
+        header.classList.toggle("scrolled", window.scrollY > 30);
       });
-
-      // User Analysis Section
-      function initializeAnalysis() {
-        const analysisData = {
-          recruiterScore: localStorage.getItem("recruiterScore") || null,
-          sixSecondImpact: localStorage.getItem("sixSecondImpact") || null,
-          passThreshold: localStorage.getItem("passThreshold") || null,
-          resumeQuality: localStorage.getItem("resumeQuality") || null,
-        };
-
-        if (Object.values(analysisData).some((val) => val !== null)) {
-          const analysisSection = document.getElementById("analysisSection");
-          analysisSection.style.display = "block";
-
-          if (analysisData.recruiterScore) {
-            document.getElementById("recruiterScore").textContent =
-              analysisData.recruiterScore + "%";
-            const recruiterStatus = document.getElementById("recruiterStatus");
-            const score = parseInt(analysisData.recruiterScore);
-            if (score >= 80) {
-              recruiterStatus.textContent = "Outstanding";
-              recruiterStatus.className = "analysis-badge";
-            } else if (score >= 60) {
-              recruiterStatus.textContent = "Good";
-              recruiterStatus.className = "analysis-badge warning";
-            } else {
-              recruiterStatus.textContent = "Needs work";
-              recruiterStatus.className = "analysis-badge danger";
-            }
-          }
-
-          if (analysisData.sixSecondImpact) {
-            document.getElementById("sixSecondImpact").textContent =
-              analysisData.sixSecondImpact;
-          }
-
-          if (analysisData.passThreshold) {
-            document.getElementById("passThreshold").textContent =
-              analysisData.passThreshold + "%";
-          }
-
-          if (analysisData.resumeQuality) {
-            document.getElementById("resumeQuality").textContent =
-              analysisData.resumeQuality + "%";
-          }
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", initializeAnalysis);
+      (function () {
+        var btn = document.getElementById("dmBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var next =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("careerassist-theme", next);
+        });
+      })();
     </script>
   </body>
 </html>

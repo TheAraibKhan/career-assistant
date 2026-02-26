@@ -3,46 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Career Coach - Career Assistant</title>
-    <style>
-      :root {
-        --primary: #3b5bdb;
-        --primary-dark: #2f4cb3;
-        --primary-light: #6476f2;
-        --success: #5a9d7e;
-        --warning: #d4925f;
-        --danger: #d97706;
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --border: #e5e7eb;
-        --border-light: #f3f4f6;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-        --shadow-sm: 0 1px 2px 0 rgba(59, 91, 219, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(59, 91, 219, 0.08);
-        --shadow-lg: 0 10px 15px -3px rgba(59, 91, 219, 0.1);
-      }
+    <title>AI Career Coach - CareerAssist</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='design_tokens.css') }}"
+    />
+
+    <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
 
-      html {
-        scroll-behavior: smooth;
-      }
-
       body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
+        font-family: var(--font-family);
         background: var(--bg-secondary);
         color: var(--text-primary);
         line-height: 1.6;
@@ -54,7 +36,7 @@
         padding: 0 2rem;
       }
 
-      /* ===== HEADER ===== */
+      /* Header */
       .chat-header {
         background: var(--bg-primary);
         border-bottom: 1px solid var(--border);
@@ -73,8 +55,11 @@
       .logo {
         font-size: 1.25rem;
         font-weight: 700;
-        color: var(--primary);
         text-decoration: none;
+        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .nav-links {
@@ -87,13 +72,13 @@
         padding: 0.625rem 1.25rem;
         border: 1px solid var(--border);
         background: var(--bg-primary);
-        border-radius: 0.5rem;
+        border-radius: var(--radius-lg);
         font-weight: 500;
         font-size: 0.9rem;
         cursor: pointer;
         text-decoration: none;
         color: var(--text-secondary);
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
       }
 
       .btn-secondary:hover {
@@ -101,7 +86,7 @@
         color: var(--primary);
       }
 
-      /* ===== MAIN LAYOUT ===== */
+      /* Main Layout */
       .chat-container {
         display: grid;
         grid-template-columns: 280px 1fr;
@@ -110,7 +95,7 @@
         min-height: calc(100vh - 80px);
       }
 
-      /* ===== SIDEBAR ===== */
+      /* Sidebar */
       .chat-sidebar {
         background: var(--bg-primary);
         border-radius: 1rem;
@@ -142,12 +127,12 @@
         margin-bottom: 0.5rem;
         background: var(--bg-tertiary);
         border: 1px solid transparent;
-        border-radius: 0.5rem;
+        border-radius: var(--radius-lg);
         color: var(--text-secondary);
         text-decoration: none;
         font-weight: 500;
         font-size: 0.9rem;
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
         cursor: pointer;
         text-align: left;
       }
@@ -162,21 +147,26 @@
       .new-chat-btn {
         width: 100%;
         padding: 0.75rem 1rem;
-        background: var(--primary);
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
         color: white;
         border: none;
-        border-radius: 0.5rem;
+        border-radius: var(--radius-lg);
         font-weight: 600;
         cursor: pointer;
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
         margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
       }
 
       .new-chat-btn:hover {
-        background: var(--primary-dark);
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        transform: translateY(-2px);
       }
 
-      /* ===== CHAT AREA ===== */
+      /* Chat Area */
       .chat-main {
         background: var(--bg-primary);
         border-radius: 1rem;
@@ -193,6 +183,8 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        min-height: 500px;
+        max-height: calc(100vh - 280px);
       }
 
       .chat-messages::-webkit-scrollbar {
@@ -214,9 +206,11 @@
         padding: 4rem 2rem 2rem;
       }
 
-      .chat-welcome-emoji {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
+      .chat-welcome-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1rem;
+        color: var(--primary);
       }
 
       .chat-welcome h2 {
@@ -241,12 +235,15 @@
         padding: 1rem;
         background: var(--bg-tertiary);
         border: 1px solid var(--border);
-        border-radius: 0.625rem;
+        border-radius: var(--radius-lg);
         cursor: pointer;
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
         text-align: left;
         font-size: 0.9rem;
         color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .question-card:hover {
@@ -255,7 +252,13 @@
         color: var(--primary);
       }
 
-      /* Chat Messages */
+      .question-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      /* Messages */
       .message {
         display: flex;
         gap: 1rem;
@@ -288,7 +291,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
         flex-shrink: 0;
       }
 
@@ -299,13 +301,20 @@
 
       .message.assistant .message-avatar {
         background: var(--bg-tertiary);
+        color: var(--primary);
+      }
+
+      .message-avatar-icon {
+        width: 18px;
+        height: 18px;
       }
 
       .message-content {
         max-width: 70%;
         padding: 1rem;
-        border-radius: 0.625rem;
+        border-radius: var(--radius-lg);
         word-wrap: break-word;
+        white-space: pre-wrap;
       }
 
       .message.user .message-content {
@@ -319,7 +328,53 @@
         border: 1px solid var(--border);
       }
 
-      /* ===== INPUT AREA ===== */
+      .message.error .message-content {
+        background: rgba(239, 68, 68, 0.05);
+        border-color: rgba(239, 68, 68, 0.2);
+        color: #991b1b;
+      }
+
+      .loading-message {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .loading-dots {
+        display: flex;
+        gap: 4px;
+      }
+
+      .loading-dots span {
+        width: 6px;
+        height: 6px;
+        background: var(--primary);
+        border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out both;
+      }
+
+      .loading-dots span:nth-child(1) {
+        animation-delay: -0.32s;
+      }
+
+      .loading-dots span:nth-child(2) {
+        animation-delay: -0.16s;
+      }
+
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+
+      /* Input Area */
       .chat-input-area {
         border-top: 1px solid var(--border);
         padding: 1.5rem;
@@ -335,33 +390,38 @@
         flex: 1;
         padding: 0.875rem 1.25rem;
         border: 1px solid var(--border);
-        border-radius: 0.625rem;
+        border-radius: var(--radius-lg);
         font-family: inherit;
         font-size: 0.95rem;
         color: var(--text-primary);
         background: var(--bg-primary);
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
       }
 
       .chat-input:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.1);
+        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+      }
+
+      .chat-input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
       .send-btn {
         padding: 0.875rem 1.5rem;
-        background: var(--primary);
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
         color: white;
         border: none;
-        border-radius: 0.625rem;
+        border-radius: var(--radius-lg);
         font-weight: 600;
         cursor: pointer;
-        transition: all 150ms ease;
+        transition: all var(--transition-base);
       }
 
-      .send-btn:hover {
-        background: var(--primary-dark);
+      .send-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
         transform: translateY(-2px);
       }
 
@@ -374,7 +434,7 @@
         cursor: not-allowed;
       }
 
-      /* ===== RESPONSIVE ===== */
+      /* Responsive */
       @media (max-width: 768px) {
         .chat-container {
           grid-template-columns: 1fr;
@@ -396,11 +456,10 @@
     </style>
   </head>
   <body>
-    <!-- Header -->
     <div class="chat-header">
       <div class="container">
         <div class="header-content">
-          <a href="/" class="logo">Career Assistant</a>
+          <a href="/" class="logo">CareerAssist</a>
           <div class="nav-links">
             <a href="/resume/upload" class="btn-secondary">Resume Analysis</a>
             <a href="/dashboard" class="btn-secondary">Dashboard</a>
@@ -409,12 +468,13 @@
       </div>
     </div>
 
-    <!-- Main Chat Container -->
     <div class="container">
       <div class="chat-container">
-        <!-- Sidebar -->
         <div class="chat-sidebar">
-          <button class="new-chat-btn">+ New Conversation</button>
+          <button class="new-chat-btn" onclick="startNewChat()">
+            <i data-lucide="plus" style="width: 18px; height: 18px"></i>
+            New Conversation
+          </button>
 
           <div class="sidebar-section">
             <div class="sidebar-title">Recent Chats</div>
@@ -432,12 +492,12 @@
           </div>
         </div>
 
-        <!-- Chat Main Area -->
         <div class="chat-main">
-          <!-- Messages Area -->
           <div class="chat-messages" id="chatMessages">
             <div class="chat-welcome">
-              <div class="chat-welcome-emoji">🤖</div>
+              <div class="chat-welcome-icon">
+                <i data-lucide="bot" style="width: 64px; height: 64px"></i>
+              </div>
               <h2>Career Coach AI</h2>
               <p>
                 Get personalized guidance on your resume, interview prep, and
@@ -449,7 +509,8 @@
                   class="question-card"
                   onclick="sendQuestion('How can I improve my ATS score?')"
                 >
-                  📊 How can I improve my ATS score?
+                  <i data-lucide="bar-chart-3" class="question-icon"></i>
+                  How can I improve my ATS score?
                 </button>
                 <button
                   class="question-card"
@@ -457,27 +518,27 @@
                     sendQuestion('What are the biggest resume mistakes?')
                   "
                 >
-                  ❌ Biggest resume mistakes
+                  <i data-lucide="alert-circle" class="question-icon"></i>
+                  Biggest resume mistakes
                 </button>
                 <button
                   class="question-card"
                   onclick="sendQuestion('How do I write better bullet points?')"
                 >
-                  ✨ Better bullet points
+                  <i data-lucide="sparkles" class="question-icon"></i>
+                  Better bullet points
                 </button>
                 <button
                   class="question-card"
-                  onclick="
-                    sendQuestion('What skills should I highlight for my role?')
-                  "
+                  onclick="sendQuestion('What skills should I highlight?')"
                 >
-                  🎯 Skills to highlight
+                  <i data-lucide="target" class="question-icon"></i>
+                  Skills to highlight
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Input Area -->
           <div class="chat-input-area">
             <div class="input-wrapper">
               <input
@@ -487,19 +548,23 @@
                 placeholder="Ask your career question..."
                 onkeypress="handleKeyPress(event)"
               />
-              <button class="send-btn" onclick="sendMessage()">Send</button>
+              <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                Send
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
       const chatMessages = document.getElementById("chatMessages");
       const chatInput = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendBtn");
       let sessionId = null;
+      let isProcessing = false;
 
-      // Initialize chat session
       function initializeChat() {
         fetch("/api/chat/start", {
           method: "POST",
@@ -514,6 +579,45 @@
           .catch((err) => console.error("Failed to start session:", err));
       }
 
+      function startNewChat() {
+        chatMessages.innerHTML = "";
+        initializeChat();
+        const welcome = createWelcomeScreen();
+        chatMessages.appendChild(welcome);
+        lucide.createIcons();
+      }
+
+      function createWelcomeScreen() {
+        const div = document.createElement("div");
+        div.className = "chat-welcome";
+        div.innerHTML = `
+          <div class="chat-welcome-icon">
+            <i data-lucide="bot" style="width: 64px; height: 64px;"></i>
+          </div>
+          <h2>Career Coach AI</h2>
+          <p>Get personalized guidance on your resume, interview prep, and career growth. Ask me anything!</p>
+          <div class="quick-questions">
+            <button class="question-card" onclick="sendQuestion('How can I improve my ATS score?')">
+              <i data-lucide="bar-chart-3" class="question-icon"></i>
+              How can I improve my ATS score?
+            </button>
+            <button class="question-card" onclick="sendQuestion('What are the biggest resume mistakes?')">
+              <i data-lucide="alert-circle" class="question-icon"></i>
+              Biggest resume mistakes
+            </button>
+            <button class="question-card" onclick="sendQuestion('How do I write better bullet points?')">
+              <i data-lucide="sparkles" class="question-icon"></i>
+              Better bullet points
+            </button>
+            <button class="question-card" onclick="sendQuestion('What skills should I highlight?')">
+              <i data-lucide="target" class="question-icon"></i>
+              Skills to highlight
+            </button>
+          </div>
+        `;
+        return div;
+      }
+
       function sendQuestion(question) {
         chatInput.value = question;
         sendMessage();
@@ -521,21 +625,22 @@
 
       function sendMessage() {
         const message = chatInput.value.trim();
-        if (!message) return;
+        if (!message || isProcessing) return;
 
-        // Clear input
         chatInput.value = "";
+        isProcessing = true;
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
 
-        // Remove welcome screen if it exists
         const welcome = chatMessages.querySelector(".chat-welcome");
         if (welcome) {
           welcome.remove();
         }
 
-        // Add user message
         addMessage(message, "user");
 
-        // Send to API
+        const loadingId = addLoadingMessage();
+
         fetch("/api/chat/message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -547,51 +652,124 @@
         })
           .then((res) => res.json())
           .then((data) => {
+            removeLoadingMessage(loadingId);
             if (data.success && data.response) {
               addMessage(data.response, "assistant");
             } else if (data.error) {
-              addMessage(`Error: ${data.error}`, "assistant");
+              addMessage(data.error, "assistant", true);
+            } else {
+              addMessage(
+                "I encountered an issue. Please try again.",
+                "assistant",
+                true,
+              );
             }
           })
           .catch((err) => {
-            console.error("Error sending message:", err);
+            console.error("Error:", err);
+            removeLoadingMessage(loadingId);
             addMessage(
-              "Sorry, I encountered an error. Please try again.",
+              "Connection error. Please check your internet and try again.",
               "assistant",
+              true,
             );
+          })
+          .finally(() => {
+            isProcessing = false;
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.focus();
           });
       }
 
-      function addMessage(text, sender) {
+      function addMessage(text, sender, isError = false) {
         const messageDiv = document.createElement("div");
-        messageDiv.className = `message ${sender}`;
+        messageDiv.className = `message ${sender}${isError ? " error" : ""}`;
 
         const avatar = document.createElement("div");
         avatar.className = "message-avatar";
-        avatar.textContent = sender === "user" ? "👤" : "🤖";
+        avatar.innerHTML =
+          sender === "user"
+            ? '<i data-lucide="user" class="message-avatar-icon"></i>'
+            : '<i data-lucide="bot" class="message-avatar-icon"></i>';
 
         const content = document.createElement("div");
         content.className = "message-content";
         content.textContent = text;
 
+        if (sender === "user") {
+          messageDiv.appendChild(content);
+          messageDiv.appendChild(avatar);
+        } else {
+          messageDiv.appendChild(avatar);
+          messageDiv.appendChild(content);
+        }
+
+        chatMessages.appendChild(messageDiv);
+        lucide.createIcons();
+
+        requestAnimationFrame(() => {
+          chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: "smooth",
+          });
+        });
+      }
+
+      function addLoadingMessage() {
+        const loadingId = "loading-" + Date.now();
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message assistant";
+        messageDiv.id = loadingId;
+
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        avatar.innerHTML =
+          '<i data-lucide="bot" class="message-avatar-icon"></i>';
+
+        const content = document.createElement("div");
+        content.className = "message-content loading-message";
+        content.innerHTML = `
+          <span>Thinking</span>
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        `;
+
         messageDiv.appendChild(avatar);
         messageDiv.appendChild(content);
         chatMessages.appendChild(messageDiv);
+        lucide.createIcons();
 
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        requestAnimationFrame(() => {
+          chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: "smooth",
+          });
+        });
+
+        return loadingId;
+      }
+
+      function removeLoadingMessage(loadingId) {
+        const loading = document.getElementById(loadingId);
+        if (loading) {
+          loading.remove();
+        }
       }
 
       function handleKeyPress(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
+        if (event.key === "Enter" && !event.shiftKey && !isProcessing) {
           event.preventDefault();
           sendMessage();
         }
       }
 
-      // Initialize on load
       window.addEventListener("load", () => {
         initializeChat();
+        lucide.createIcons();
         chatInput.focus();
       });
     </script>
