@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Resume Lab — CareerAssist</title>
+    <meta
+      name="description"
+      content="Upload, analyze, and optimize your resume with AI-powered feedback and ATS scoring."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <style>
+      .upload-zone {
+        background: var(--bg-glass);
+        border: 2px dashed rgba(139, 92, 246, 0.3);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .upload-zone:hover,
+      .upload-zone.dragover {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.06);
+        box-shadow: var(--shadow-glow-sm);
+      }
+      .upload-zone.uploading {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+      .upload-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+      .upload-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.35rem;
+      }
+      .upload-subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+      }
+      .upload-btn {
+        padding: 0.75rem 2rem;
+        border-radius: var(--radius-full);
+        background: var(--grad-primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .upload-btn:hover {
+        box-shadow: var(--shadow-glow-sm);
+        transform: scale(1.03);
+      }
+      .upload-progress {
+        display: none;
+        margin-top: 1rem;
+      }
+      .upload-progress.active {
+        display: block;
+      }
+      .progress-bar-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: var(--grad-primary);
+        border-radius: var(--radius-full);
+        transition: width 0.3s;
+        width: 0%;
+      }
+      .progress-text {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+      }
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(139, 92, 246, 0.08);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 0.85rem 1rem;
+        margin-bottom: 1.5rem;
+        display: none;
+      }
+      .file-info.visible {
+        display: flex;
+      }
+      .file-info .file-icon {
+        font-size: 1.5rem;
+      }
+      .file-info .file-details {
+        flex: 1;
+      }
+      .file-info .file-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .file-info .file-size {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+      .file-info .file-remove {
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.25rem;
+      }
+      .file-info .file-remove:hover {
+        color: #ef4444;
+      }
+      .analyze-btn {
+        width: 100%;
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        background: var(--grad-primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: none;
+        margin-bottom: 1.5rem;
+      }
+      .analyze-btn.visible {
+        display: block;
+      }
+      .analyze-btn:hover {
+        box-shadow: var(--shadow-glow-md);
+        transform: translateY(-2px);
+      }
+      .analyze-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .results-container {
+        display: none;
+      }
+      .results-container.visible {
+        display: block;
+        animation: slideIn 0.5s var(--ease-smooth);
+      }
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .score-card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s;
+      }
+      .score-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--border-glow);
+      }
+      .score-val {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.2rem;
+      }
+      .score-val.good {
+        background: var(--grad-success);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .score-val.medium {
+        background: var(--grad-warning);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .score-val.low {
+        background: linear-gradient(135deg, #ef4444, #f97316);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .score-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+      .feedback-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .feedback-panel {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+      }
+      .feedback-panel h3 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .fb-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        padding: 0.6rem 0;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-glass);
+      }
+      .fb-item:last-child {
+        border-bottom: none;
+      }
+      .fb-icon {
+        font-size: 0.75rem;
+        margin-top: 2px;
+      }
+      .fb-icon.good {
+        color: var(--neon-green);
+      }
+      .fb-icon.warn {
+        color: var(--neon-gold);
+      }
+      .fb-icon.bad {
+        color: #ef4444;
+      }
+      .skills-found {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 1.5rem;
+      }
+      .skills-found .skill-tag {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        background: rgba(139, 92, 246, 0.12);
+        color: var(--neon-purple);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+      .tips-section {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+      }
+      .tips-section h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+      .tip-card {
+        background: rgba(139, 92, 246, 0.05);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s;
+      }
+      .tip-card:hover {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.08);
+      }
+      .tip-card:last-child {
+        margin-bottom: 0;
+      }
+      .tip-card h4 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.3rem;
+      }
+      .tip-card p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+      .error-msg {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        display: none;
+      }
+      .error-msg.visible {
+        display: block;
+      }
+      @media (max-width: 768px) {
+        .score-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .feedback-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/app" class="sidebar-logo"
+            ><div
+              class="logo-icon"
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              CA
+            </div>
+            <div>
+              <div class="logo-text">CareerAssist</div>
+              <div class="logo-tagline">From Confusion to Clarity</div>
+            </div></a
+          >
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a href="/app" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">D</span>
+            Dashboard</a
+          >
+          <a href="/app/journey" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">J</span> Journey</a
+          >
+          <a href="/app/roadmap" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">R</span> Roadmap</a
+          >
+          <a href="/app/projects" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">P</span>
+            Projects</a
+          >
+          <div class="nav-section-label" style="margin-top: 0.75rem">Tools</div>
+          <a href="/app/resume-lab" class="nav-item active"
+            ><span class="nav-icon" style="font-weight: 700">RL</span> Resume
+            Lab</a
+          >
+          <a href="/app/insights" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">I</span>
+            Insights</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user" onclick="window.location = '/app/profile'">
+            <div class="user-avatar">
+              {{ (current_user.name or 'A')[0] | upper }}
+            </div>
+            <div class="user-info">
+              <div class="user-name">{{ current_user.name or 'Profile' }}</div>
+              <div class="user-role">
+                {% if onboarding and onboarding.phase == 'pre-college'
+                %}Pre-College{% elif onboarding and onboarding.phase ==
+                'college' %}College{% elif onboarding and onboarding.phase ==
+                'post-college' %}Post-College{% else %}Member{% endif %}
+              </div>
+            </div>
+            <span style="color: var(--text-dim); font-size: 0.75rem">⚙️</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" style="margin-right: 0">
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>Resume Lab 📄</h1>
+            <p>
+              Upload your resume and get instant AI-powered ATS scoring,
+              analysis, and optimization tips
+            </p>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Upload Zone -->
+        <div
+          class="upload-zone"
+          id="dropZone"
+          ondragover="
+            event.preventDefault();
+            this.classList.add('dragover');
+          "
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="handleDrop(event)"
+        >
+          <div class="upload-icon">📤</div>
+          <div class="upload-title">
+            Drop your resume here, or click to upload
+          </div>
+          <div class="upload-subtitle">
+            Supports PDF, DOC, DOCX · Max 5MB · Your data stays private
+          </div>
+          <button
+            class="upload-btn"
+            onclick="document.getElementById('fileInput').click()"
+          >
+            Choose File
+          </button>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".pdf,.doc,.docx"
+            style="display: none"
+            onchange="handleFile(this)"
+          />
+          <div class="upload-progress" id="uploadProgress">
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Uploading...</div>
+          </div>
+        </div>
+
+        <!-- File info -->
+        <div class="file-info" id="fileInfo">
+          <span class="file-icon">📎</span>
+          <div class="file-details">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-size" id="fileSize"></div>
+          </div>
+          <button class="file-remove" onclick="removeFile()" title="Remove">
+            ✕
+          </button>
+        </div>
+
+        <!-- Analyze Button -->
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeResume()">
+          🔍 Analyze My Resume
+        </button>
+
+        <!-- Results Container -->
+        <div class="results-container" id="resultsContainer">
+          <!-- Primary Score Grid -->
+          <div class="score-grid" id="scoreGrid">
+            <div class="score-card">
+              <div class="score-val good" id="overallScore">—</div>
+              <div class="score-label">Overall Score</div>
+            </div>
+            <div class="score-card">
+              <div class="score-val medium" id="atsScore">—</div>
+              <div class="score-label">ATS Compatibility</div>
+            </div>
+            <div class="score-card">
+              <div class="score-val good" id="qualityScore">—</div>
+              <div class="score-label">Content Quality</div>
+            </div>
+            <div class="score-card">
+              <div class="score-val medium" id="skillsCount">—</div>
+              <div class="score-label">Professional Level</div>
+            </div>
+          </div>
+
+          <!-- Multi-Category Scores Breakdown -->
+          <div
+            style="
+              background: var(--bg-glass);
+              border: 1px solid var(--border-glass);
+              border-radius: var(--radius-lg);
+              padding: 1.25rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h3
+              style="
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+              "
+            >
+              Score Breakdown
+            </h3>
+            <div id="scoresBreakdown"></div>
+          </div>
+
+          <!-- Section-wise Analysis -->
+          <div
+            style="
+              background: var(--bg-glass);
+              border: 1px solid var(--border-glass);
+              border-radius: var(--radius-lg);
+              padding: 1.25rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h3
+              style="
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+              "
+            >
+              Section Analysis
+            </h3>
+            <div id="sectionAnalysis"></div>
+          </div>
+
+          <!-- Skills Found -->
+          <div style="margin-bottom: 1.5rem">
+            <h3
+              style="
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 0.75rem;
+              "
+            >
+              Detected Skills
+            </h3>
+            <div class="skills-found" id="skillsList"></div>
+          </div>
+
+          <!-- Insights Panel -->
+          <div
+            style="
+              background: var(--bg-glass);
+              border: 1px solid var(--border-glass);
+              border-radius: var(--radius-lg);
+              padding: 1.25rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h3
+              style="
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+              "
+            >
+              Key Insights
+            </h3>
+            <div id="insightsPanel"></div>
+          </div>
+
+          <!-- Professional Level & Readiness -->
+          <div class="feedback-grid">
+            <div class="feedback-panel">
+              <h3>Professional Level</h3>
+              <div id="professionalLevel"></div>
+            </div>
+            <div class="feedback-panel">
+              <h3>Resume Readiness</h3>
+              <div id="readinessInfo"></div>
+            </div>
+          </div>
+
+          <!-- Resume Evolution -->
+          <div
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(147, 51, 234, 0.1),
+                rgba(59, 130, 246, 0.1)
+              );
+              border: 1px solid rgba(139, 92, 246, 0.25);
+              border-radius: var(--radius-lg);
+              padding: 1.25rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h3
+              style="
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+              "
+            >
+              Resume Evolution Path
+            </h3>
+            <div id="evolutionPath"></div>
+          </div>
+
+          <!-- Feedback -->
+          <div class="feedback-grid">
+            <div class="feedback-panel">
+              <h3>✅ Strengths</h3>
+              <div id="strengthsList"></div>
+            </div>
+            <div class="feedback-panel">
+              <h3>💡 Improvements</h3>
+              <div id="weaknessesList"></div>
+            </div>
+          </div>
+
+          <!-- Resume Builder Section -->
+          <div
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(34, 197, 94, 0.08),
+                rgba(59, 130, 246, 0.08)
+              );
+              border: 2px dashed rgba(34, 197, 94, 0.3);
+              border-radius: var(--radius-lg);
+              padding: 1.5rem;
+              margin-bottom: 1.5rem;
+              text-align: center;
+            "
+          >
+            <h3
+              style="
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 0.5rem;
+              "
+            >
+              Ready to Build Your Resume?
+            </h3>
+            <p
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+              "
+            >
+              Use our resume builder to create a professional, ATS-optimized
+              resume from scratch.
+            </p>
+            <button
+              onclick="toggleResumeBuilder()"
+              style="
+                padding: 0.75rem 1.5rem;
+                border-radius: var(--radius-full);
+                background: var(--grad-success);
+                color: #fff;
+                font-weight: 700;
+                font-size: 0.85rem;
+                border: none;
+                cursor: pointer;
+              "
+            >
+              Build Resume
+            </button>
+          </div>
+
+          <!-- Personalized Recommendations -->
+          <div class="tips-section">
+            <h3>Personalized Action Items</h3>
+            <div id="tipsList"></div>
+          </div>
+
+          <!-- Resume Builder Modal -->
+          <div
+            id="resumeBuilderModal"
+            style="
+              display: none;
+              background: rgba(0, 0, 0, 0.7);
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 1000;
+              overflow-y: auto;
+            "
+          >
+            <div
+              style="
+                background: var(--bg-secondary);
+                border-radius: var(--radius-lg);
+                max-width: 900px;
+                margin: 2rem auto;
+                padding: 2rem;
+                position: relative;
+              "
+            >
+              <button
+                onclick="toggleResumeBuilder()"
+                style="
+                  position: absolute;
+                  top: 1rem;
+                  right: 1rem;
+                  background: none;
+                  border: none;
+                  color: var(--text-dim);
+                  font-size: 1.5rem;
+                  cursor: pointer;
+                "
+              >
+                ✕
+              </button>
+              <h2
+                style="
+                  font-size: 1.5rem;
+                  font-weight: 700;
+                  color: var(--text-primary);
+                  margin-bottom: 1.5rem;
+                "
+              >
+                Resume Builder
+              </h2>
+              <div id="resumeBuilderContent"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let selectedFile = null;
+
+      function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById("dropZone").classList.remove("dragover");
+        if (e.dataTransfer.files.length > 0)
+          selectFile(e.dataTransfer.files[0]);
+      }
+      function handleFile(input) {
+        if (input.files.length > 0) selectFile(input.files[0]);
+      }
+      function selectFile(file) {
+        const ext = file.name.split(".").pop().toLowerCase();
+        if (!["pdf", "doc", "docx"].includes(ext)) {
+          showError("Please upload a PDF, DOC, or DOCX file.");
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          showError("File size must be under 5MB.");
+          return;
+        }
+        selectedFile = file;
+        document.getElementById("fileName").textContent = file.name;
+        document.getElementById("fileSize").textContent =
+          (file.size / 1024).toFixed(1) + " KB";
+        document.getElementById("fileInfo").classList.add("visible");
+        document.getElementById("analyzeBtn").classList.add("visible");
+        document.getElementById("dropZone").style.display = "none";
+        hideError();
+      }
+      function removeFile() {
+        selectedFile = null;
+        document.getElementById("fileInfo").classList.remove("visible");
+        document.getElementById("analyzeBtn").classList.remove("visible");
+        document.getElementById("dropZone").style.display = "";
+        document.getElementById("fileInput").value = "";
+        document.getElementById("resultsContainer").classList.remove("visible");
+      }
+      function showError(msg) {
+        const el = document.getElementById("errorMsg");
+        el.textContent = msg;
+        el.classList.add("visible");
+      }
+      function hideError() {
+        document.getElementById("errorMsg").classList.remove("visible");
+      }
+
+      async function analyzeResume() {
+        if (!selectedFile) return;
+        const btn = document.getElementById("analyzeBtn");
+        btn.disabled = true;
+        btn.textContent = "⏳ Analyzing...";
+
+        const progress = document.getElementById("uploadProgress");
+        const fill = document.getElementById("progressFill");
+        const ptext = document.getElementById("progressText");
+        document.getElementById("dropZone").style.display = "";
+        progress.classList.add("active");
+        document.getElementById("dropZone").classList.add("uploading");
+
+        // Simulate progress
+        let pct = 0;
+        const iv = setInterval(() => {
+          pct = Math.min(pct + Math.random() * 15, 90);
+          fill.style.width = pct + "%";
+          ptext.textContent = "Analyzing... " + Math.round(pct) + "%";
+        }, 400);
+
+        try {
+          const fd = new FormData();
+          fd.append("resume", selectedFile);
+          const res = await fetch("/resume/api/extract", {
+            method: "POST",
+            body: fd,
+          });
+          const data = await res.json();
+          clearInterval(iv);
+          fill.style.width = "100%";
+          ptext.textContent = "Done!";
+
+          if (data.success) {
+            setTimeout(() => {
+              progress.classList.remove("active");
+              document.getElementById("dropZone").classList.remove("uploading");
+              document.getElementById("dropZone").style.display = "none";
+              showResults(data);
+            }, 500);
+          } else {
+            showError(data.error || data.message || "Failed to analyze resume");
+            progress.classList.remove("active");
+            document.getElementById("dropZone").classList.remove("uploading");
+            document.getElementById("dropZone").style.display = "none";
+          }
+        } catch (err) {
+          clearInterval(iv);
+          showError("Network error. Please try again.");
+          progress.classList.remove("active");
+          document.getElementById("dropZone").classList.remove("uploading");
+          document.getElementById("dropZone").style.display = "none";
+        }
+        btn.disabled = false;
+        btn.textContent = "🔍 Analyze My Resume";
+      }
+
+      function showResults(data) {
+        const skills = data.skills || [];
+        const sections = data.sections || {};
+        const scores = data.scores || {
+          overall: 0,
+          format: 0,
+          keywords: 0,
+          completeness: 0,
+          content_quality: 0,
+        };
+        const insights = data.insights || [];
+        const evolution = data.evolution || {};
+        const professional_level = data.professional_level || "Beginner";
+        const suggestions = data.suggestions || [];
+        const overall = scores.overall || 0;
+        const ats = scores.overall || 0;
+        const quality = scores.content_quality || 0;
+
+        function scoreClass(v) {
+          return v >= 70 ? "good" : v >= 45 ? "medium" : "low";
+        }
+
+        // Main scores
+        document.getElementById("overallScore").textContent = overall;
+        document.getElementById("overallScore").className =
+          "score-val " + scoreClass(overall);
+        document.getElementById("atsScore").textContent = ats;
+        document.getElementById("atsScore").className =
+          "score-val " + scoreClass(ats);
+        document.getElementById("qualityScore").textContent = quality;
+        document.getElementById("qualityScore").className =
+          "score-val " + scoreClass(quality);
+        document.getElementById("skillsCount").textContent = professional_level;
+        document.getElementById("skillsCount").className =
+          "score-val " +
+          (professional_level === "Advanced"
+            ? "good"
+            : professional_level === "Intermediate"
+              ? "medium"
+              : "medium");
+
+        // Score Breakdown
+        const scoresHtml = [
+          "format",
+          "keywords",
+          "completeness",
+          "content_quality",
+        ]
+          .map((key) => {
+            const label =
+              key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " ");
+            const value = scores[key] || 0;
+            const cls = scoreClass(value);
+            const bgColor =
+              cls === "good"
+                ? "rgba(34, 197, 94, 0.1)"
+                : cls === "medium"
+                  ? "rgba(217, 119, 6, 0.1)"
+                  : "rgba(239, 68, 68, 0.1)";
+            return `
+            <div style="background: ${bgColor}; border-radius: var(--radius-md); padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center">
+              <span style="font-size: 0.8rem; color: var(--text-secondary)">${label}</span>
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary)">${value}/100</span>
+            </div>
+          `;
+          })
+          .join("");
+        document.getElementById("scoresBreakdown").innerHTML = scoresHtml;
+
+        // Section-wise Analysis
+        const sectionAnalysisHtml = [
+          "education",
+          "skills",
+          "experience",
+          "projects",
+          "achievements",
+        ]
+          .map((section) => {
+            const sec = sections[section] || {};
+            const status = sec.status || "unknown";
+            const statusColor =
+              (status === "strong" || status === "complete" || status === "found")
+                ? "var(--neon-green)"
+                : status === "good"
+                  ? "var(--neon-gold)"
+                  : (status === "missing" || status === "needs_work")
+                    ? "#ef4444"
+                    : "var(--neon-purple)";
+            return `
+            <div style="background: var(--bg-secondary); border-left: 3px solid ${statusColor}; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem">
+                <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); text-transform: capitalize">${section}</h4>
+                <span style="font-size: 0.7rem; font-weight: 600; color: ${statusColor}; text-transform: uppercase">${status}</span>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem">${sec.explanation || "No explanation"}</p>
+              ${sec.tips && sec.tips.length > 0 ? `<div style="font-size: 0.7rem; color: var(--text-dim)"><strong>Tips:</strong> ${sec.tips[0]}</div>` : ""}
+            </div>
+          `;
+          })
+          .join("");
+        document.getElementById("sectionAnalysis").innerHTML =
+          sectionAnalysisHtml;
+
+        // Skills
+        const skillsHtml = skills.length
+          ? skills.map((s) => `<span class="skill-tag">${s}</span>`).join("")
+          : '<span style="font-size:0.8rem;color:var(--text-muted);">No skills detected. Try a different format.</span>';
+        document.getElementById("skillsList").innerHTML = skillsHtml;
+
+        // Insights
+        const insightsHtml = insights
+          .slice(0, 5)
+          .map((insight) => {
+            const icon =
+              insight.type === "strength"
+                ? "✓"
+                : insight.type === "gap"
+                  ? "!"
+                  : "→";
+            const color =
+              insight.type === "strength"
+                ? "var(--neon-green)"
+                : insight.type === "gap"
+                  ? "#ef4444"
+                  : "var(--neon-gold)";
+            const bgColor =
+              insight.type === "strength"
+                ? "rgba(34, 197, 94, 0.1)"
+                : insight.type === "gap"
+                  ? "rgba(239, 68, 68, 0.1)"
+                  : "rgba(217, 119, 6, 0.1)";
+            return `
+            <div style="background: ${bgColor}; border-left: 2px solid ${color}; border-radius: var(--radius-md); padding: 0.75rem; margin-bottom: 0.75rem">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; text-transform: capitalize">${insight.type || 'Info'}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary)">${insight.message}</div>
+            </div>
+          `;
+          })
+          .join("");
+        document.getElementById("insightsPanel").innerHTML =
+          insightsHtml ||
+          '<p style="font-size: 0.75rem; color: var(--text-muted);">No specific insights at this time.</p>';
+
+        // Professional Level
+        const levelColor =
+          professional_level === "Advanced"
+            ? "var(--neon-green)"
+            : professional_level === "Intermediate"
+              ? "var(--neon-gold)"
+              : "var(--neon-purple)";
+        document.getElementById("professionalLevel").innerHTML = `
+          <div style="font-size: 1.25rem; font-weight: 700; color: ${levelColor}; margin-bottom: 0.5rem">${professional_level}</div>
+          <p style="font-size: 0.75rem; color: var(--text-muted)">Based on your experience, skills, and overall presentation</p>
+        `;
+
+        // Readiness
+        const readiness = data.readiness_for_role || {};
+        const isReady = readiness.ready || false;
+        const readinessPercentage = isReady ? 75 : (overall >= 50 ? 50 : 25);
+        const readinessMsg = readiness.message || "Upload resume to assess";
+        document.getElementById("readinessInfo").innerHTML = `
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem">Role Readiness</div>
+          <div style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.06); border-radius: var(--radius-full); overflow: hidden; margin-bottom: 0.5rem">
+            <div style="height: 100%; background: var(--grad-primary); width: ${readinessPercentage}%; border-radius: var(--radius-full)"></div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600">${readinessPercentage}% - ${readinessMsg}</div>
+        `;
+
+        // Evolution
+        const evolutionHtml = `
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem">Current Level: ${evolution.current_level || professional_level || "N/A"} → ${evolution.next_level || "Next"}</div>
+          <div style="margin-bottom: 0.75rem">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem">Next Steps:</div>
+            ${(evolution.steps || evolution.next_steps || []).map((step) => `<div style="font-size:0.75rem;color:var(--text-muted);padding:0.35rem 0;border-bottom:1px solid var(--border-glass)">→ ${step}</div>`).join("")}
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim)"><strong>Goal:</strong> Reach ${evolution.next_level || "next"} level</div>
+        `;
+        document.getElementById("evolutionPath").innerHTML = evolutionHtml;
+
+        // Strengths
+        const strengthsSet = new Set();
+        insights
+          .filter((i) => i.type === "strength")
+          .forEach((i) => strengthsSet.add(i.message));
+        if (strengthsSet.size === 0) {
+          if (data.has_experience)
+            strengthsSet.add("Work experience section detected");
+          if ((data.education || []).length)
+            strengthsSet.add("Education section is present");
+          if (skills.length >= 5)
+            strengthsSet.add(
+              skills.length + " skills detected — solid skill section",
+            );
+        }
+        const strengthsHtml = Array.from(strengthsSet)
+          .map(
+            (s) =>
+              `<div class="fb-item"><span class="fb-icon good">●</span>${s}</div>`,
+          )
+          .join("");
+        document.getElementById("strengthsList").innerHTML =
+          strengthsHtml ||
+          '<div style="font-size:0.75rem;color:var(--text-muted)">Resume successfully analyzed</div>';
+
+        // Weaknesses/Improvements
+        const weaknessesSet = new Set();
+        insights
+          .filter((i) => i.type === "gap" || i.type === "improvement")
+          .forEach((i) => weaknessesSet.add(i.message));
+        const improvementsHtml = Array.from(weaknessesSet)
+          .slice(0, 5)
+          .map(
+            (w) =>
+              `<div class="fb-item"><span class="fb-icon warn">●</span>${w}</div>`,
+          )
+          .join("");
+        document.getElementById("weaknessesList").innerHTML =
+          improvementsHtml ||
+          '<div style="font-size:0.75rem;color:var(--text-muted)">Great work! Minor optimizations available.</div>';
+
+        // Personalized Recommendations
+        const icons = ["🎯", "📊", "🔧", "💡"];
+        const tipsHtml =
+          suggestions
+            .map(
+              (tip, idx) => {
+                const title = typeof tip === 'string' ? tip : (tip.title || '');
+                const desc = typeof tip === 'string' ? '' : (tip.description || '');
+                return `
+          <div class="tip-card">
+            <h4>${icons[idx % icons.length]} ${title}</h4>
+            ${desc ? `<p>${desc}</p>` : ''}
+          </div>
+        `;
+              },
+            )
+            .join("") ||
+          '<div style="font-size:0.75rem;color:var(--text-muted)">No additional recommendations at this time.</div>';
+        document.getElementById("tipsList").innerHTML = tipsHtml;
+
+        // Initialize Resume Builder
+        updateResumeBuilder(data);
+
+        document.getElementById("resultsContainer").classList.add("visible");
+      }
+
+      function toggleResumeBuilder() {
+        const modal = document.getElementById("resumeBuilderModal");
+        modal.style.display = modal.style.display === "none" ? "block" : "none";
+      }
+
+      function updateResumeBuilder(data) {
+        const templates = [
+          { name: "Modern", color: "rgba(139, 92, 246, 0.1)" },
+          { name: "Professional", color: "rgba(59, 130, 246, 0.1)" },
+          { name: "Minimal", color: "rgba(34, 197, 94, 0.1)" },
+        ];
+
+        const templateHtml = `
+          <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem">Choose a Template</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem">
+            ${templates
+              .map(
+                (t) => `
+              <div onclick="selectTemplate('${t.name}')" style="background: ${t.color}; border: 2px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 120px; display: flex; flex-direction: column; justify-content: center">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem">${t.name === "Modern" ? "✨" : t.name === "Professional" ? "💼" : "📄"}</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary)" >${t.name}</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem">Clean & ATS-friendly</div>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+          <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem">Personal Information</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem">
+            <input type="text" placeholder="Full Name" id="resumeName" style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem">
+            <input type="email" placeholder="Email" id="resumeEmail" style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem">
+            <input type="text" placeholder="Phone" id="resumePhone" style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem">
+            <input type="text" placeholder="LinkedIn URL (optional)" id="resumeLinkedin" style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem">
+          </div>
+          <div style="text-align: center">
+            <button onclick="previewResume()" style="padding: 0.75rem 2rem; border-radius: var(--radius-full); background: var(--grad-primary); color: #fff; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; margin-right: 0.5rem">
+              Preview Resume
+            </button>
+            <button onclick="downloadResume()" style="padding: 0.75rem 2rem; border-radius: var(--radius-full); background: rgba(139, 92, 246, 0.2); color: var(--neon-purple); font-weight: 700; font-size: 0.85rem; border: 1px solid var(--neon-purple); cursor: pointer">
+              Download PDF
+            </button>
+          </div>
+        `;
+        document.getElementById("resumeBuilderContent").innerHTML =
+          templateHtml;
+      }
+
+      function selectTemplate(name) {
+        console.log("Selected template:", name);
+      }
+
+      function previewResume() {
+        alert("Resume preview feature coming soon!");
+      }
+
+      function downloadResume() {
+        alert("PDF download feature coming soon!");
+      }
+    </script>
+  </body>
+</html>

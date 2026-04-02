@@ -37,6 +37,10 @@
       href="{{ url_for('static', filename='utilities.css') }}"
     />
 
+    <!-- Tailwind v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+
     <style>
       /* NAVBAR - Premium & Professional */
       .navbar {
@@ -381,33 +385,28 @@
         <!-- LOGGED IN NAVBAR -->
         <div class="navbar-nav">
           <a
-            href="/dashboard"
-            class="{% if request.path == '/dashboard' %}active{% endif %}"
+            href="/app"
+            class="{% if '/app' in request.path %}active{% endif %}"
             >Dashboard</a
           >
           <a
-            href="/resume/upload"
-            class="{% if '/resume' in request.path %}active{% endif %}"
-            >Resume Analysis</a
+            href="/app/journey"
+            class="{% if 'journey' in request.path %}active{% endif %}"
+            >Journey</a
           >
           <a
-            href="/career-roadmap"
-            class="{% if 'roadmap' in request.path %}active{% endif %}"
-            >Career Roadmap</a
+            href="/app/resume-lab"
+            class="{% if 'resume' in request.path %}active{% endif %}"
+            >Resume Lab</a
           >
           <a
-            href="/skill-gap"
-            class="{% if 'skill-gap' in request.path %}active{% endif %}"
-            >Skill Gap</a
-          >
-          <a
-            href="/reports"
-            class="{% if 'reports' in request.path %}active{% endif %}"
-            >Reports</a
+            href="/app/insights"
+            class="{% if 'insights' in request.path %}active{% endif %}"
+            >Insights</a
           >
           <a
             href="/contact"
-            class="{% if request.path == '/contact' %}active{% endif %}"
+            class="{% if request.path.startswith('/contact') %}active{% endif %}"
             >Contact</a
           >
         </div>
@@ -421,7 +420,7 @@
           <a href="/#features">Features</a>
           <a
             href="/contact"
-            class="{% if request.path == '/contact' %}active{% endif %}"
+            class="{% if request.path.startswith('/contact') %}active{% endif %}"
             >Contact</a
           >
         </div>
@@ -445,7 +444,7 @@
         </div>
         {% else %}
         <a href="/auth/login" class="btn btn-secondary">Sign In</a>
-        <a href="/resume/upload" class="btn btn-primary">Analyze Free</a>
+        <a href="/auth/register" class="btn btn-primary">Get Started</a>
         {% endif %}
         <!-- Dark mode toggle — always visible -->
         <button
@@ -510,7 +509,7 @@
     <!-- FOOTER -->
     <footer class="footer">
       <p>
-        &copy; 2026 CareerAssist. Your AI-powered career assistant. All rights
+        &copy; 2026 CareerAssist. Your career guidance platform. All rights
         reserved.
       </p>
     </footer>

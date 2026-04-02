@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Roadmap — CareerAssist</title>
+    <meta
+      name="description"
+      content="Your personalized career roadmap with milestones, XP rewards, and timeline visualization."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <style>
+      .roadmap-hero {
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.08),
+          rgba(59, 130, 246, 0.06)
+        );
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .roadmap-hero-stats {
+        display: flex;
+        gap: 1.5rem;
+      }
+      .rh-stat {
+        text-align: center;
+      }
+      .rh-stat-val {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 800;
+        background: var(--grad-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .rh-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+      }
+      .roadmap-full {
+        position: relative;
+        padding-left: 3rem;
+        margin-top: 1.25rem;
+      }
+      .roadmap-full::before {
+        display: none !important;
+      }
+      .rm-item {
+        position: relative;
+        padding-bottom: 1.75rem;
+        padding-left: 0.5rem;
+      }
+      .rm-dot {
+        position: absolute;
+        left: -3rem;
+        top: 4px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        z-index: 2;
+        transition: all 0.3s;
+      }
+      .rm-dot.done {
+        background: var(--neon-green);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+      }
+      .rm-dot.active {
+        background: var(--neon-purple);
+        color: #fff;
+        box-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+        animation: pulse 2s infinite;
+      }
+      .rm-dot.locked {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-dim);
+        border: 2px solid rgba(255, 255, 255, 0.12);
+      }
+      .rm-card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .rm-card:hover {
+        border-color: var(--border-glow);
+        box-shadow: var(--shadow-glow-sm);
+        transform: translateX(4px);
+      }
+      .rm-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .rm-card h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .rm-card p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 0.65rem;
+      }
+      .rm-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+      .rm-tag {
+        font-size: 0.6rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--neon-purple);
+      }
+      .rm-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-top: 0.65rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid var(--border-glass);
+      }
+      .rm-meta span {
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/app" class="sidebar-logo"
+            ><div
+              class="logo-icon"
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              CA
+            </div>
+            <div>
+              <div class="logo-text">CareerAssist</div>
+              <div class="logo-tagline">From Confusion to Clarity</div>
+            </div></a
+          >
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a href="/app" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">D</span>
+            Dashboard</a
+          >
+          <a href="/app/journey" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">J</span> Journey</a
+          >
+          <a href="/app/roadmap" class="nav-item active"
+            ><span class="nav-icon" style="font-weight: 700">R</span> Roadmap</a
+          >
+          <a href="/app/projects" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">P</span>
+            Projects</a
+          >
+          <div class="nav-section-label" style="margin-top: 0.75rem">Tools</div>
+          <a href="/app/resume-lab" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">RL</span> Resume
+            Lab</a
+          >
+          <a href="/app/insights" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">I</span>
+            Insights</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <div class="user-name">{{ current_user.name or 'Profile' }}</div>
+              <div class="user-role">
+                {% if onboarding and onboarding.phase == 'pre-college'
+                %}Pre-College{% elif onboarding and onboarding.phase ==
+                'college' %}College{% elif onboarding and onboarding.phase ==
+                'post-college' %}Post-College{% else %}Member{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" style="margin-right: 0">
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>Career Roadmap</h1>
+            <p>Your personalized path to career success</p>
+          </div>
+        </div>
+
+        <div class="roadmap-hero">
+          <div style="flex: 1">
+            <h2
+              style="
+                font-family: var(--font-display);
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 0.35rem;
+              "
+            >
+              Your Progress Overview
+            </h2>
+            <p
+              id="heroDescription"
+              style="font-size: 0.85rem; color: var(--text-secondary)"
+            >
+              Loading your personalized roadmap...
+            </p>
+          </div>
+          <div class="roadmap-hero-stats">
+            <div class="rh-stat">
+              <div class="rh-stat-val" id="milestoneStat">0/5</div>
+              <div class="rh-stat-label">Milestones Done</div>
+            </div>
+            <div class="rh-stat">
+              <div class="rh-stat-val" id="xpStat">0</div>
+              <div class="rh-stat-label">XP Earned</div>
+            </div>
+            <div class="rh-stat">
+              <div class="rh-stat-val" id="completeStat">0%</div>
+              <div class="rh-stat-label">Complete</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-full" id="roadmapContainer">
+          <!-- Dynamic content loaded here -->
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Load & render real roadmap based on user's onboarding choices
+      async function loadRoadmap() {
+        try {
+          // Fetch both roadmap and stats in parallel
+          const [roadmapRes, profileRes] = await Promise.all([
+            fetch("/api/roadmap"),
+            fetch("/api/user-profile"),
+          ]);
+
+          if (!roadmapRes.ok || !profileRes.ok)
+            throw new Error("Failed to fetch data");
+
+          const roadmapData = await roadmapRes.json();
+          const profileData = await profileRes.json();
+
+          const roadmap = roadmapData.roadmap || [];
+          const stats = profileData.stats || {};
+
+          const container = document.getElementById("roadmapContainer");
+          container.innerHTML = "";
+
+          if (roadmap.length === 0) {
+            container.innerHTML =
+              '<p style="color: var(--text-muted); padding: 2rem; text-align: center;">Complete onboarding to see your personalized roadmap</p>';
+            return;
+          }
+
+          // Calculate completion stats from career readiness
+          const totalXP = roadmap.reduce(
+            (sum, item) => sum + (item.xp || 0),
+            0,
+          );
+          const completedXP = stats.total_xp || 0;
+          const completePercentage =
+            totalXP > 0 ? Math.round((completedXP / totalXP) * 100) : 0;
+
+          // Determine how many items are completed based on readiness
+          const completedCount = Math.floor((stats.career_readiness || 0) / 40); // Rough mapping
+
+          // Update hero stats
+          document.getElementById("milestoneStat").textContent =
+            `${completedCount}/${roadmap.length}`;
+          document.getElementById("xpStat").textContent =
+            completedXP.toString();
+          document.getElementById("completeStat").textContent =
+            completePercentage + "%";
+          document.getElementById("heroDescription").textContent =
+            `You're on your learning journey through ${roadmap.length} skill milestones. Keep pushing! ${completePercentage}% complete.`;
+
+          // Render roadmap items
+          roadmap.forEach((item, idx) => {
+            // Determine status based on completion count
+            let status, dotIcon, badgeClass, badge;
+
+            if (idx < completedCount) {
+              status = "done";
+              dotIcon = "✓";
+              badgeClass = "badge-done";
+              badge = "Completed";
+            } else if (idx === completedCount) {
+              status = "active";
+              dotIcon = "▶";
+              badgeClass = "badge-progress";
+              const weeks = parseInt(item.duration.split(" ")[0]) || 4;
+              const progressPercent = Math.min(
+                75,
+                Math.floor(Math.random() * 75) + 10,
+              ); // Random 10-75%
+              badge = `In Progress · ${progressPercent}% done`;
+            } else {
+              status = "locked";
+              dotIcon = "🔒";
+              badgeClass = "badge-locked";
+              badge = "Locked";
+            }
+
+            const rmItem = document.createElement("div");
+            rmItem.className = "rm-item";
+            rmItem.innerHTML = `
+          <div class="rm-dot ${status}">${dotIcon}</div>
+          <div class="rm-card" ${status === "active" ? 'style="border-color:rgba(139,92,246,0.3);"' : ""}>
+            <div class="rm-card-head">
+              <h4>${item.title}</h4>
+              <span class="timeline-badge ${badgeClass}">${badge}</span>
+            </div>
+            <p>${item.description}</p>
+            <div class="rm-tags">
+              ${item.title
+                .split(" ")
+                .slice(0, 3)
+                .map((tag) => `<span class="rm-tag">${tag}</span>`)
+                .join("")}
+            </div>
+            <div class="rm-meta">
+              <span>📅 ${item.duration}</span>
+              <span>⚡ +${item.xp} XP</span>
+              <span>${status === "done" ? "✅ All tasks done" : status === "active" ? "📊 In progress" : "🔒 Locked"}</span>
+            </div>
+          </div>
+        `;
+            container.appendChild(rmItem);
+          });
+        } catch (error) {
+          console.error("Error loading roadmap:", error);
+          document.getElementById("roadmapContainer").innerHTML =
+            '<p style="color: red; padding: 2rem;">Error loading roadmap. Please refresh the page.</p>';
+        }
+      }
+
+      // Load roadmap on page load
+      window.addEventListener("load", loadRoadmap);
+    </script>
+  </body>
+</html>

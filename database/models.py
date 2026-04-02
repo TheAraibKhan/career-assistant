@@ -147,6 +147,62 @@ def create_table():
         )
     ''')
     
+    # User Stats & Activity Tracking
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS user_stats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT UNIQUE NOT NULL,
+            total_xp INTEGER DEFAULT 0,
+            current_streak INTEGER DEFAULT 0,
+            longest_streak INTEGER DEFAULT 0,
+            tasks_completed INTEGER DEFAULT 0,
+            career_readiness INTEGER DEFAULT 0,
+            skills_tracked INTEGER DEFAULT 1,
+            last_activity_date TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    
+    # Activity Log - Track all user actions
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS activity_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            activity_type TEXT NOT NULL,
+            task_id TEXT,
+            xp_earned INTEGER DEFAULT 0,
+            description TEXT,
+            created_at TEXT NOT NULL
+        )
+    ''')
+    
+    # Task Completion - Track which tasks user completed
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS task_completion (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            task_title TEXT NOT NULL,
+            xp_earned INTEGER DEFAULT 0,
+            completed_at TEXT NOT NULL,
+            roadmap_item TEXT
+        )
+    ''')
+    
+    # Skill Progress - Track progress per skill
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS skill_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            skill_name TEXT NOT NULL,
+            proficiency_level INTEGER DEFAULT 0,
+            tasks_completed INTEGER DEFAULT 0,
+            total_xp INTEGER DEFAULT 0,
+            last_updated TEXT,
+            UNIQUE(user_id, skill_name)
+        )
+    ''')
+
     # User Interactions for UX Analytics
     db.execute('''
         CREATE TABLE IF NOT EXISTS user_interactions (
@@ -339,7 +395,7 @@ def create_table():
             market_alignment INTEGER,
             overall_score INTEGER,
             trend TEXT DEFAULT 'stable',
-            last_updated TEXT,
+            updated_at TEXT,
             created_at TEXT NOT NULL
         )
     ''')
@@ -431,6 +487,102 @@ def create_table():
         )
     ''')
     
+    # Student Profile - Initial discovery & intake
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS student_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL UNIQUE,
+            education_level TEXT,
+            interests TEXT,
+            current_skills TEXT,
+            career_goals TEXT,
+            experience_level TEXT,
+            confusion_areas TEXT,
+            learning_style TEXT,
+            available_hours_per_week INTEGER,
+            target_timeline_months INTEGER,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    
+    # Learning Paths - Structured, prioritized learning directions
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS learning_paths (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            skill_area TEXT NOT NULL,
+            priority INTEGER,
+            skill_category TEXT,
+            skill_description TEXT,
+            why_matters TEXT,
+            learning_order INTEGER,
+            estimated_weeks INTEGER,
+            resources TEXT,
+            completed INTEGER DEFAULT 0,
+            started_at TEXT,
+            completed_at TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(user_id, skill_area)
+        )
+    ''')
+    
+    # Resume Evolution Plans - How their resume should grow
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS resume_evolution_plans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL UNIQUE,
+            current_resume_level TEXT,
+            target_resume_level TEXT,
+            timeline_months INTEGER,
+            phase_1_description TEXT,
+            phase_1_target_date TEXT,
+            phase_1_actions TEXT,
+            phase_2_description TEXT,
+            phase_2_target_date TEXT,
+            phase_2_actions TEXT,
+            phase_3_description TEXT,
+            phase_3_target_date TEXT,
+            phase_3_actions TEXT,
+            proof_and_projects TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    
+    # Action Plans - What to do today/week/month
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS action_plans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            action_category TEXT NOT NULL,
+            action_title TEXT NOT NULL,
+            action_description TEXT,
+            time_commitment TEXT,
+            priority TEXT DEFAULT 'medium',
+            target_date TEXT,
+            status TEXT DEFAULT 'pending',
+            completed_date TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    
+    # Guidance Sessions - Track student interactions with guidance
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS guidance_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            session_type TEXT NOT NULL,
+            stage TEXT,
+            data TEXT,
+            insights TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    
     # Indexes for performance (wrapped in try-except for migration safety)
     indexes = [
         'CREATE INDEX IF NOT EXISTS idx_submissions_user_id ON submissions(user_id)',
@@ -446,7 +598,78 @@ def create_table():
             db.execute(idx)
         except:
             pass  # Index might already exist
-    
+
+    # Unified User Profile - Onboarding & Progress Data
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS user_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT UNIQUE NOT NULL,
+            skills TEXT,
+            interests TEXT,
+            phase TEXT,
+            goals TEXT,
+            daily_time INTEGER DEFAULT 1,
+            primary_skill TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+
+    # User Roadmap - Generated learning roadmap items
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS user_roadmap (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT,
+            duration TEXT,
+            xp INTEGER DEFAULT 0,
+            order_num INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+    ''')
+
+    # User Insights - Generated career insights
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS user_insights (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            insight_text TEXT NOT NULL,
+            category TEXT DEFAULT 'general',
+            priority INTEGER DEFAULT 1,
+            order_num INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+    ''')
+
+    # Data Sync Log - Tracks synchronisation runs
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS data_sync_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            last_sync TEXT NOT NULL,
+            sync_type TEXT,
+            modules_updated TEXT
+        )
+    ''')
+
+    # ── Phase 4 migrations: add columns that may not exist in older DBs ──────
+    _safe_alters = [
+        "ALTER TABLE confidence_index ADD COLUMN updated_at TEXT",
+        "ALTER TABLE skill_gap_analysis ADD COLUMN target_role TEXT",
+        "ALTER TABLE resume_health ADD COLUMN created_at TEXT",
+        # action_plans columns expected by data_sync.py
+        "ALTER TABLE action_plans ADD COLUMN xp_reward INTEGER DEFAULT 50",
+        "ALTER TABLE action_plans ADD COLUMN description TEXT",
+        "ALTER TABLE action_plans ADD COLUMN order_num INTEGER DEFAULT 0",
+        "ALTER TABLE action_plans ADD COLUMN completed_at TEXT",
+    ]
+    for _stmt in _safe_alters:
+        try:
+            db.execute(_stmt)
+        except Exception:
+            pass  # Column already exists — safe to ignore
+
     # Initialize tier configurations if not exist
     try:
         db.execute('''INSERT OR IGNORE INTO tier_config (tier, career_analyses_limit, resume_uploads_limit, chatbot_messages_limit, features_json, description, price_monthly)

@@ -1,0 +1,509 @@
+{% extends "base.html" %} {% block title %}Your Learning Path — CareerAssist{%
+endblock %} {% block content %}
+<div class="guidance-container">
+  <!-- Header -->
+  <div class="guidance-header">
+    <div class="header-content">
+      <h1>Your Learning Path</h1>
+      <p class="subtitle">{{ learning_focus }}</p>
+    </div>
+  </div>
+
+  <!-- Timeline Overview -->
+  <div class="timeline-overview">
+    <div class="timeline-stat">
+      <span class="stat-value">{{ path|length }}</span>
+      <span class="stat-label">Skills to Master</span>
+    </div>
+    <div class="timeline-stat">
+      <span class="stat-value">{{ total_weeks }}</span>
+      <span class="stat-label">Weeks Total</span>
+    </div>
+    {% if progress %}
+    <div class="timeline-stat">
+      <span class="stat-value">{{ progress.percentage }}%</span>
+      <span class="stat-label">Complete</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Learning Path -->
+  <div class="learning-path-container">
+    <div class="path-timeline">
+      {% for item in path %}
+      <div class="path-item" data-skill="{{ item.skill_area }}">
+        <div class="path-marker">
+          <div class="path-dot"></div>
+        </div>
+        <div class="path-content">
+          <div class="path-header">
+            <h3>{{ item.order }}. {{ item.skill_area }}</h3>
+            <span
+              class="category-badge {{ 'core' if item.category == 'Core' else 'supporting' }}"
+            >
+              {{ item.category }}
+            </span>
+          </div>
+          <p class="path-description">{{ item.description }}</p>
+          <p class="path-why">
+            <strong>Why this matters:</strong> {{ item.why_matters }}
+          </p>
+
+          <div class="path-details">
+            <span class="detail">⏱ {{ item.weeks }} weeks</span>
+            <span class="detail">Target: {{ item.weeks }} weeks from now</span>
+          </div>
+
+          {% if item.resources %}
+          <div class="path-resources">
+            <strong>Learning approach:</strong>
+            <p>{{ item.resources.approach }}</p>
+            <div class="resource-types">
+              {% for resource_type in item.resources.types %}
+              <span class="resource-tag">{{ resource_type }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="path-actions">
+            <button
+              class="btn-outline small mark-complete-btn"
+              data-skill="{{ item.skill_area }}"
+            >
+              Mark as Complete
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Key Principles -->
+  <div class="principles-section">
+    <h2>How to Use This Path</h2>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-number">1</div>
+        <h3>Go in Order</h3>
+        <p>
+          Don't skip around. Each skill builds on earlier ones. Follow the
+          sequence.
+        </p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">2</div>
+        <h3>Build as You Learn</h3>
+        <p>
+          Don't just watch videos. Build small projects as you go. That's how it
+          sticks.
+        </p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">3</div>
+        <h3>Be Consistent</h3>
+        <p>
+          Small, regular effort beats cramming. 1 hour daily is better than 7
+          hours once a week.
+        </p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">4</div>
+        <h3>Adjust as Needed</h3>
+        <p>
+          If something isn't working, change it. This path is a guide, not law.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="next-steps-section">
+    <h2>What's Next?</h2>
+    <p>
+      You know what to learn and in what order. Now let's create a detailed
+      action plan.
+    </p>
+    <a
+      href="{{ url_for('guidance.resume_evolution') }}"
+      class="btn btn-secondary"
+      >See How Your Resume Evolves</a
+    >
+    <a href="{{ url_for('guidance.actions') }}" class="btn btn-primary"
+      >Get Daily Action Items</a
+    >
+  </div>
+</div>
+
+<style>
+  .guidance-container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .guidance-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .header-content h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+  }
+
+  .timeline-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+
+  .timeline-stat {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .learning-path-container {
+    margin-bottom: 50px;
+  }
+
+  .path-timeline {
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .path-timeline::before {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+  }
+
+  .path-item {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  .path-marker {
+    flex-shrink: 0;
+    width: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .path-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--primary-color);
+    border: 3px solid var(--card-bg);
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .path-content {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .path-content:hover {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .path-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .path-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .category-badge.core {
+    background: #fee;
+    color: #c33;
+  }
+
+  .category-badge.supporting {
+    background: #fef3cd;
+    color: #856404;
+  }
+
+  .path-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+
+  .path-why {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 10px 0;
+    padding: 10px;
+    background: var(--hover-bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--primary-color);
+  }
+
+  .path-why strong {
+    color: var(--text-primary);
+  }
+
+  .path-details {
+    display: flex;
+    gap: 15px;
+    margin: 12px 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .detail {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .path-resources {
+    margin: 15px 0;
+    padding: 12px;
+    background: var(--hover-bg);
+    border-radius: 6px;
+  }
+
+  .path-resources strong {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+
+  .path-resources p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 10px 0;
+  }
+
+  .resource-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .resource-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+
+  .path-actions {
+    margin-top: 15px;
+  }
+
+  .btn-outline {
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .principles-section {
+    margin-bottom: 50px;
+    text-align: center;
+  }
+
+  .principles-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .principle-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .principle-number {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    line-height: 40px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .principle-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .principle-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .next-steps-section {
+    background: var(--primary-color-light);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .next-steps-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .next-steps-section p {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .next-steps-section .btn {
+    margin: 0 10px;
+  }
+
+  @media (max-width: 768px) {
+    .path-timeline::before {
+      left: 9px;
+    }
+
+    .path-item {
+      gap: 15px;
+    }
+
+    .path-header {
+      flex-direction: column;
+    }
+
+    .path-details {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .principles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .next-steps-section .btn {
+      display: block;
+      margin: 10px 0;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const completeButtons = document.querySelectorAll(".mark-complete-btn");
+
+    completeButtons.forEach((btn) => {
+      btn.addEventListener("click", async function () {
+        const skill = this.dataset.skill;
+        const pathItem = this.closest(".path-item");
+
+        try {
+          const response = await fetch(
+            `/guidance/api/skill-complete/${encodeURIComponent(skill)}`,
+            {
+              method: "POST",
+            },
+          );
+
+          if (response.ok) {
+            pathItem.classList.add("completed");
+            this.textContent = "✓ Completed";
+            this.disabled = true;
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

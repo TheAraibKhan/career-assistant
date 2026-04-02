@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from services.auth_service import create_user, authenticate_user, get_user_by_id, update_user_profile
 from functools import wraps
+import datetime
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -18,13 +19,13 @@ def login_required(f):
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     error = None
-    
+
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
         full_name = request.form.get('full_name', '').strip()
         confirm_password = request.form.get('confirm_password', '').strip()
-        
+
         if not all([email, password, full_name, confirm_password]):
             error = 'All fields are required'
         elif password != confirm_password:
@@ -35,21 +36,26 @@ def register():
             result = create_user(email, password, full_name)
             if 'error' not in result:
                 session['user_id'] = result['id']
-                return redirect(url_for('user.home'))
+                session['email'] = email
+                session['full_name'] = full_name
+                # Flag as new user so dashboard can show onboarding guidance
+                session['is_new_user'] = True
+                session['joined_at'] = datetime.datetime.utcnow().isoformat()
+                return redirect('/app')
             else:
                 error = result['error']
-    
+
     return render_template('auth/register.html', error=error)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    
+
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
-        
+
         if not email or not password:
             error = 'Email and password are required'
         else:
@@ -58,17 +64,19 @@ def login():
                 session['user_id'] = user['id']
                 session['email'] = user['email']
                 session['full_name'] = user['full_name']
-                return redirect(url_for('user.home'))
+                session['is_new_user'] = False
+                session['last_login'] = datetime.datetime.utcnow().isoformat()
+                return redirect('/app')
             else:
                 error = 'Invalid email or password'
-    
+
     return render_template('auth/login.html', error=error)
 
 
 @auth_bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('user.home'))
+    return redirect('/')
 
 
 @auth_bp.route('/profile', methods=['GET', 'POST'])

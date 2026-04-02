@@ -18,7 +18,7 @@
       name="description"
       content="Learn how ATS systems scan your resume and what formatting issues cause your application to be filtered out before a human reads it."
     />
-    <title>ATS Killer Detection — CareerAssist</title>
+    <title>Where Your Resume Currently Stands — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -665,69 +665,128 @@
       <div class="hero-inner">
         <div class="feature-eyebrow">
           <span class="feature-eyebrow-dot"></span>
-          Critical Check
+          Starting Point
         </div>
-        <h1>ATS Killer Detection</h1>
+        <h1>Where Your Resume Currently Stands</h1>
         <p class="lead">
-          Your resume passes through automated screening software before any
-          human sees it. Most rejections happen here — not because you're
-          underqualified, but because the system couldn't read your file.
+          Before deciding what to change, you need to understand what's already
+          working. This tool reads your resume the same way a hiring system
+          does — so you see the full picture clearly, without guesswork.
         </p>
         <div class="hero-badge">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          85% of resumes pass this check when properly formatted
+          A starting point — not a final verdict on your application
         </div>
       </div>
     </section>
 
     <!-- Main Content -->
     <main class="main-content">
+
+      {% if user_data and user_data.has_data %}
+      <!-- ── Live User Data Panel ─────────────────────────────────────── -->
+      <div class="content-card" style="border-left: 3px solid var(--accent-primary); margin-bottom: 2rem;">
+        <div class="card-label" style="color: var(--accent-primary);">Your Current Standing</div>
+        <h2 style="margin-bottom: 1.25rem;">
+          {% if user_data.ats_score is not none %}
+            Your resume scored <strong>{{ user_data.ats_score }}</strong> on ATS readability
+          {% else %}
+            No ATS analysis on file yet
+          {% endif %}
+        </h2>
+
+        {% if user_data.ats_score is not none %}
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.ats_score }}</div>
+            <div class="stat-label">ATS Score</div>
+          </div>
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.skill_count }}</div>
+            <div class="stat-label">Skills Detected</div>
+          </div>
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.level_label or '—' }}</div>
+            <div class="stat-label">Readability Status</div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if user_data.blockers %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Things worth looking at:</p>
+        <ul style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+          {% for b in user_data.blockers %}
+          <li style="font-size: 0.875rem; color: var(--text-secondary);">{{ b }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if user_data.skills %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-top: 1.25rem; margin-bottom: 0.75rem;">Skills found in your resume:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          {% for skill in user_data.skills %}
+          <span style="background: var(--surface-2); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem;">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user_data.analyzed_at %}
+        <p style="margin-top: 1.25rem; font-size: 0.75rem; color: var(--text-muted);">
+          Based on analysis from {{ user_data.analyzed_at[:10] }} &mdash;
+          <a href="/resume/upload" style="color: var(--accent-primary);">upload a newer version</a>
+        </p>
+        {% endif %}
+      </div>
+      <!-- ── End Live Panel ──────────────────────────────────────────────── -->
+      {% elif current_user.is_authenticated %}
+      <div class="content-card" style="border-left: 3px solid var(--border-subtle); margin-bottom: 2rem; opacity: 0.8;">
+        <div class="card-label">Your Data</div>
+        <p>You haven't uploaded a resume yet. <a href="/resume/upload" style="color: var(--accent-primary);">Upload one</a> and this section will show your actual ATS readability score.</p>
+      </div>
+      {% endif %}
+
       <!-- Stats Row -->
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-value">40%</div>
+          <div class="stat-value">Step 1</div>
           <div class="stat-label">
-            Of resumes are filtered out by ATS before a human sees them
+            The first thing to understand about your resume — before anything
+            else changes
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">6 sec</div>
+          <div class="stat-value">Honest</div>
           <div class="stat-label">
-            Average time a recruiter spends on a resume that does reach them
+            A clear readout of what hiring systems see when they parse your
+            file
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">75%</div>
+          <div class="stat-value">Fixable</div>
           <div class="stat-label">
-            Of qualified candidates are eliminated at the ATS stage alone
+            Most formatting issues are simple structural changes — not a resume
+            rewrite
           </div>
         </div>
       </div>
 
       <!-- What's the problem -->
       <div class="content-card">
-        <div class="card-label">The Hidden Problem</div>
-        <h2>Why resumes fail before they're even read</h2>
+        <div class="card-label">Understanding the Baseline</div>
+        <h2>What hiring systems actually see when they read your file</h2>
         <p>
-          ATS software isn't sophisticated. It reads resumes the way a plain
-          text parser would — top to bottom, left to right. Tables, graphics,
-          unusual columns, and custom fonts all break that flow. The system
-          marks those resumes as unreadable and moves on.
+          Hiring software reads resumes like a plain text reader — top to
+          bottom, left to right. Certain design choices that look great
+          visually (tables, columns, graphics) cause the parser to lose track
+          of your information entirely. You're not rejected for being
+          unqualified — the system just couldn't read your file.
         </p>
         <p>
-          The frustrating part? Your qualifications were never the issue. The
-          file itself was the problem. That's what this check catches.
+          Knowing this is powerful. It means many of the barriers between you
+          and a human reader are structural, not personal — and they're
+          fixable.
         </p>
 
         <ul class="issue-list">
@@ -828,31 +887,30 @@
 
       <!-- Why it matters -->
       <div class="content-card">
-        <div class="card-label">Why It Matters</div>
-        <h2>A technical problem, not a qualification problem</h2>
+        <div class="card-label">What This Tells You</div>
+        <h2>A structural check — not a judgment</h2>
         <p>
-          The hardest part about an ATS rejection is that you'll never know it
-          happened. You send an application, hear nothing, and assume you
-          weren't qualified enough. In reality, your resume may have been
-          discarded in seconds — not because of your experience, but because of
-          how your file was structured.
+          This tool surfaces structural issues so you can address them with
+          intention. Not all issues are equally important — some have high
+          impact, others are minor. The goal is to give you a clear picture,
+          not a list of failures.
         </p>
         <p>
-          Fixing ATS compatibility is the single highest-leverage change you can
-          make to your resume. Everything else — your bullet points, your
-          keywords, your achievements — only matters if your resume actually
-          gets read first.
+          Once you know how your resume reads to a system, you can make
+          informed decisions about what to keep, what to simplify, and what to
+          restructure. That's a much better starting place than guessing.
         </p>
       </div>
 
       <!-- How to fix it -->
       <div class="content-card">
-        <div class="card-label">How to Fix It</div>
-        <h2>Simple changes that make a real difference</h2>
+        <div class="card-label">Simple Adjustments</div>
+        <h2>What to address — and what order to do it in</h2>
         <p>
-          You don't need to redesign your resume from scratch. Most ATS issues
-          come down to a handful of structural choices that are easy to correct
-          once you know what to look for.
+          You don't need to rebuild your resume. Most parsing issues come down
+          to a handful of structural decisions that are easy to correct once
+          you know what to look for. Start with the items that affect how your
+          content gets read, then work toward cleaner presentation.
         </p>
 
         <ul class="solution-list">
@@ -1093,12 +1151,13 @@
 
       <!-- CTA -->
       <div class="cta-block">
-        <h2>Ready to check your resume?</h2>
+        <h2>Run your first resume checkpoint</h2>
         <p>
-          Upload your resume and get a full ATS compatibility report in under a
-          minute. We'll flag every issue and tell you exactly how to fix it.
+          Upload your resume and see a clear picture of how it reads to a
+          hiring system. No scores that pressure you — just an honest starting
+          point for your journey.
         </p>
-        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
+        <a href="/resume/upload" class="cta-btn">Upload My Resume →</a>
       </div>
     </main>
 

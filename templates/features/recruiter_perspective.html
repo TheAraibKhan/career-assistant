@@ -18,7 +18,7 @@
       name="description"
       content="See your resume the way a recruiter does. We analyze what stands out in 6 seconds and what gets overlooked."
     />
-    <title>Recruiter's Perspective Mode — CareerAssist</title>
+    <title>How Clarity Reads — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -617,13 +617,13 @@
     <section class="page-hero">
       <div class="hero-inner">
         <div class="feature-eyebrow">
-          <span class="eyebrow-dot"></span>Human Factor
+          <span class="eyebrow-dot"></span>Your Presentation Layer
         </div>
-        <h1>Recruiter's Perspective Mode</h1>
+        <h1>How Clarity Reads</h1>
         <p class="lead">
-          A recruiter's first scan lasts about 6 seconds. In that time, they're
-          not reading — they're pattern-matching for signals. We show you what
-          they see and what they miss.
+          A resume is read in stages. Understanding which parts register first
+          — and which parts get skipped — helps you present your story in
+          the order that matters.
         </p>
         <div class="hero-badge">
           <svg
@@ -637,48 +637,107 @@
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
             <circle cx="12" cy="12" r="3" />
           </svg>
-          6 seconds to make your first impression count
+          Presentation is part of the story you tell
         </div>
       </div>
     </section>
 
     <main class="main-content">
+
+      {% if user_data and user_data.has_data %}
+      <div class="content-card" style="border-left: 3px solid var(--accent-primary); margin-bottom: 2rem;">
+        <div class="card-label" style="color: var(--accent-primary);">How Your Resume Currently Reads</div>
+        <h2 style="margin-bottom: 1.25rem;">
+          {% if user_data.overall_score is not none %}
+            Overall presentation score: <strong>{{ user_data.overall_score }}</strong>
+          {% else %}
+            Your resume is in the system — here's what stands out
+          {% endif %}
+        </h2>
+
+        {% if user_data.sections %}
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+          {% for section in user_data.sections %}
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary); min-width: 160px;">{{ section.label }}</span>
+            <div style="flex: 1; height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden;">
+              <div style="height: 100%; width: {{ section.score }}%; background: {% if section.status == 'clear' %}var(--accent-primary){% else %}#f59e0b{% endif %}; border-radius: 999px;"></div>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); min-width: 50px; text-align: right;">{{ section.score }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user_data.strengths %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">What reads clearly:</p>
+        <ul style="margin: 0 0 1rem 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.3rem;">
+          {% for s in user_data.strengths %}
+          <li style="font-size: 0.85rem; color: var(--text-secondary);">{{ s }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if user_data.gaps %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Where structure could be clearer:</p>
+        <ul style="margin: 0 0 1rem 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.3rem;">
+          {% for g in user_data.gaps %}
+          <li style="font-size: 0.85rem; color: var(--text-secondary);">{{ g }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if user_data.analyzed_at %}
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+          Last analysed {{ user_data.analyzed_at[:10] }} &mdash;
+          <a href="/resume/upload" style="color: var(--accent-primary);">upload a new version</a>
+        </p>
+        {% endif %}
+      </div>
+      {% elif current_user.is_authenticated %}
+      <div class="content-card" style="border-left: 3px solid var(--border-subtle); margin-bottom: 2rem; opacity: 0.8;">
+        <div class="card-label">Your Presentation Score</div>
+        <p>Upload your resume to see your clarity score and which sections need restructuring. <a href="/resume/upload" style="color: var(--accent-primary);">Upload now →</a></p>
+      </div>
+      {% endif %}
+
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-value">6 sec</div>
+          <div class="stat-value">Clear</div>
           <div class="stat-label">
-            Average initial review time before a recruiter decides to read
-            further
+            Is your most important information easy to find in the first few
+            seconds of reading?
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">Top ⅓</div>
+          <div class="stat-value">Order</div>
           <div class="stat-label">
-            Of the page is where recruiter attention is concentrated on first
-            glance
+            The sequence of your sections shapes what sticks — not just what
+            you list
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">76%</div>
+          <div class="stat-value">Scannable</div>
           <div class="stat-label">
-            Of recruiters cite lack of quantified achievements as a top
-            rejection reason
+            Dense walls of text get skipped; well-spaced bullets get read in
+            full
           </div>
         </div>
       </div>
 
       <div class="content-card">
-        <div class="card-label">The Reality</div>
-        <h2>What actually happens in those 6 seconds</h2>
+        <div class="card-label">What Gets Noticed First</div>
+        <h2>A resume is read in layers — not all at once</h2>
         <p>
-          Recruiters aren't reading on first glance — they're scanning for
-          visual anchors: your name, most recent role, company names, and
-          whether the layout makes key information findable in seconds.
+          When someone reads your resume for the first time, they're not reading
+          it top to bottom. They scan for anchors: your name, your most recent
+          role, whether the layout makes key information easy to find. If those
+          anchors aren't in the right place, the reading stops early.
         </p>
         <p>
-          If those things don't surface immediately, the resume gets set aside —
-          not because of your experience, but because the presentation didn't do
-          its job. This check identifies exactly those weak spots.
+          This isn't a test you can fail. It's a pattern you can learn — and
+          once you understand it, you'll know exactly how to arrange your
+          experience so the right things land first.
         </p>
         <div class="scan-areas">
           <div class="scan-area">
@@ -716,12 +775,13 @@
       </div>
 
       <div class="content-card">
-        <div class="card-label">Writing for the 6-Second Scan</div>
-        <h2>Small wording changes, big visible difference</h2>
+        <div class="card-label">Writing That Reads Clearly</div>
+        <h2>How to write bullets that actually work</h2>
         <p>
-          The difference between resumes that get callbacks often comes down to
-          how the first line of each bullet reads. Weak verbs and vague language
-          are invisible; strong, specific openings make recruiters slow down.
+          The difference between bullets that get read and bullets that get
+          skipped often comes down to the first word. Concrete, action-led
+          bullets with a clear outcome land every time. Passive, vague
+          descriptions get glossed over.
         </p>
 
         <div class="example-pair">
@@ -817,13 +877,12 @@
       </div>
 
       <div class="cta-block">
-        <h2>Find out what recruiters notice first</h2>
+        <h2>See your resume in a new light</h2>
         <p>
-          Upload your resume and we'll walk you through exactly what stands out
-          — and what needs to be rewritten to make the most of that first
-          glance.
+          Upload your resume and see which information surfaces quickly — and
+          which parts need restructuring so your story reads in the right order.
         </p>
-        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
+        <a href="/resume/upload" class="cta-btn">See How Mine Reads →</a>
       </div>
     </main>
 

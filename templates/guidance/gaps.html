@@ -1,0 +1,323 @@
+{% extends "base.html" %} {% block title %}Skill Gaps — CareerAssist{% endblock
+%} {% block content %}
+<div class="guidance-container">
+  <!-- Header -->
+  <div class="guidance-header">
+    <div class="header-content">
+      <h1>Your Skill Gaps</h1>
+      <p class="subtitle">Here's what you're missing, and why each gap matters.</p>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-card">
+    <h2>The Bottom Line</h2>
+    <p>{{ gaps.summary }}</p>
+  </div>
+
+  <!-- Strengths -->
+  {% if gaps.strengths %}
+  <div class="skills-section">
+    <h2>Your Current Strengths</h2>
+    <p class="section-subtitle">You already have these. Build on them.</p>
+    <div class="skills-grid">
+      {% for skill in gaps.strengths %}
+      <div class="skill-card strength">
+        <span class="skill-icon">✓</span>
+        <p>{{ skill }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Core Gaps -->
+  {% if gaps.core %}
+  <div class="skills-section">
+    <h2>Core Skills You Need</h2>
+    <p class="section-subtitle">These are essential. Master them first.</p>
+    <div class="gap-list">
+      {% for gap in gaps.core %}
+      <div class="gap-card core-gap">
+        <div class="gap-header">
+          <h3>{{ gap.skill }}</h3>
+          <span class="importance-badge core">CRITICAL</span>
+        </div>
+        <div class="gap-body">
+          <p class="gap-explanation">
+            <strong>Why it matters:</strong> {{ gap.why_matters }}
+          </p>
+          <p class="gap-timeline">
+            <strong>Learning time:</strong> {{ gap.suggested_timeframe }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Supporting Gaps -->
+  {% if gaps.supporting %}
+  <div class="skills-section">
+    <h2>Supporting Skills</h2>
+    <p class="section-subtitle">
+      These strengthen your foundation. Learn after the core skills.
+    </p>
+    <div class="gap-list">
+      {% for gap in gaps.supporting %}
+      <div class="gap-card supporting-gap">
+        <div class="gap-header">
+          <h3>{{ gap.skill }}</h3>
+          <span class="importance-badge supporting">HELPFUL</span>
+        </div>
+        <div class="gap-body">
+          <p class="gap-explanation">
+            <strong>Why it matters:</strong> {{ gap.why_matters }}
+          </p>
+          <p class="gap-timeline">
+            <strong>Learning time:</strong> {{ gap.suggested_timeframe }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Call to Action -->
+  <div class="cta-section">
+    <h2>Ready to Build These Skills?</h2>
+    <p>See your structured learning path — what to learn first, and in what order.</p>
+    <a
+      href="{{ url_for('guidance.learning_path') }}"
+      class="btn btn-primary btn-large"
+      >View Learning Path</a
+    >
+  </div>
+</div>
+
+<style>
+  .guidance-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .guidance-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .header-content h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+  }
+
+  .summary-card {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color-light),
+      var(--primary-color)
+    );
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 40px;
+    color: white;
+  }
+
+  .summary-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  .summary-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .skills-section {
+    margin-bottom: 40px;
+  }
+
+  .skills-section h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .skill-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .skill-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .skill-card.strength {
+    border-color: var(--success-color);
+    background: rgba(76, 184, 96, 0.05);
+  }
+
+  .skill-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: var(--success-color);
+    color: white;
+    border-radius: 50%;
+    line-height: 30px;
+    margin-bottom: 8px;
+  }
+
+  .skill-card p {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .gap-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .gap-card {
+    background: var(--card-bg);
+    border-left: 4px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .gap-card:hover {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .gap-card.core-gap {
+    border-left-color: #e74c3c;
+  }
+
+  .gap-card.supporting-gap {
+    border-left-color: #f39c12;
+  }
+
+  .gap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .gap-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .importance-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .importance-badge.core {
+    background: #fee;
+    color: #c33;
+  }
+
+  .importance-badge.supporting {
+    background: #fef3cd;
+    color: #856404;
+  }
+
+  .gap-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .gap-explanation,
+  .gap-timeline {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .gap-explanation strong,
+  .gap-timeline strong {
+    color: var(--text-primary);
+  }
+
+  .cta-section {
+    background: var(--primary-color-light);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .cta-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .cta-section p {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .btn-large {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .header-content h1 {
+      font-size: 1.8rem;
+    }
+
+    .skills-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .gap-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+</style>
+{% endblock %}

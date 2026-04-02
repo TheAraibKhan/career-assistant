@@ -4,17 +4,16 @@ from database.models import create_table
 from database.db import init_db
 from routes.user_routes import user_bp
 from routes.admin_routes import admin_bp
-from routes.chatbot_routes import chatbot_bp, api_bp as chatbot_api_bp
 from routes.auth_routes import auth_bp
-from routes.resume_routes import resume_bp
-from routes.dashboard_routes_new import dashboard_bp
-from routes.saas_routes import saas_bp
+from routes.guidance_routes import guidance_bp
+from routes.features_routes import features_bp
+from routes.career_ai_routes import career_ai_bp
 from routes.contact_routes import contact_bp
+from routes.resume_builder_routes import resume_builder_bp
 import sys
 import io
 from datetime import timedelta
 
-# Set UTF-8 encoding for console output
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
@@ -81,17 +80,18 @@ def inject_user():
 # Register blueprints
 app.register_blueprint(user_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(chatbot_bp)
-app.register_blueprint(chatbot_api_bp)
 app.register_blueprint(auth_bp)
-app.register_blueprint(resume_bp)
-app.register_blueprint(dashboard_bp)
-app.register_blueprint(saas_bp)
-app.register_blueprint(contact_bp)
+app.register_blueprint(guidance_bp)
+app.register_blueprint(features_bp)
+app.register_blueprint(career_ai_bp)
+app.register_blueprint(resume_builder_bp)
+app.register_blueprint(contact_bp, url_prefix='/contact')
 
 # Main routes
 @app.route('/')
 def index():
+    if 'user_id' in session:
+        return redirect('/app')
     return render_template('index.html')
 
 @app.route('/features/target-role')
@@ -114,7 +114,6 @@ def api_analyze_resume():
     if not resume_text and not role_text:
         return jsonify({'success': False, 'message': 'Please provide resume text or target role.'}), 400
 
-    # ── Simple text-based skill extraction ──────────────────────────────────
     SKILL_KEYWORDS = [
         'python','java','javascript','typescript','react','angular','vue','node',
         'sql','mysql','postgresql','mongodb','redis','aws','azure','gcp','docker',
@@ -127,7 +126,6 @@ def api_analyze_resume():
     text_lower = resume_text.lower() + ' ' + role_text.lower()
     found_skills = [s for s in SKILL_KEYWORDS if s in text_lower]
 
-    # ── ATS scoring ─────────────────────────────────────────────────────────
     has_experience = any(kw in text_lower for kw in
                          ['work experience','professional experience','employment',
                           'position','role','internship','job'])
@@ -217,46 +215,39 @@ def login():
 def signup():
     return redirect(url_for('auth.register'))
 
-@app.route('/resume')
-def resume_page():
-    return redirect(url_for('resume.upload'))
-
 @app.route('/profile')
 def profile():
     return redirect(url_for('auth.profile'))
 
 @app.route('/career-guidance')
 def career_guidance():
-    return redirect(url_for('dashboard.index'))
+    return redirect(url_for('guidance.index'))
 
-@app.route('/chatbot')
-def chatbot():
-    return redirect(url_for('chatbot.index'))
+# Legacy dashboard redirects -> new /app routes
+@app.route('/dashboard')
+@app.route('/dashboard/')
+def dashboard_redirect():
+    return redirect('/app')
 
-# Feature detail routes
-@app.route('/features/ats-detection')
-def ats_detection():
-    return render_template('features/ats_detection.html')
+@app.route('/career-roadmap')
+def career_roadmap_redirect():
+    return redirect('/app/roadmap')
 
-@app.route('/features/gap-analysis')
-def gap_analysis():
-    return render_template('features/gap_analysis.html')
+@app.route('/skill-gap')
+def skill_gap_redirect():
+    return redirect('/app/insights')
 
-@app.route('/features/recruiter-perspective')
-def recruiter_perspective():
-    return render_template('features/recruiter_perspective.html')
+@app.route('/reports')
+def reports_redirect():
+    return redirect('/app/insights')
 
-@app.route('/features/bullet-impact')
-def bullet_impact():
-    return render_template('features/bullet_impact.html')
+@app.route('/user/profile')
+def user_profile_redirect():
+    return redirect('/app/profile')
 
-@app.route('/features/formatting-guidance')
-def formatting_guidance():
-    return render_template('features/formatting_guidance.html')
-
-@app.route('/features/career-readiness')
-def career_readiness():
-    return render_template('features/career_readiness.html')
+# Note: feature detail routes are now handled by features_bp
+# which wires live user data to each page.
+# See routes/features_routes.py
 
 @app.route('/pricing')
 def pricing():
@@ -277,6 +268,10 @@ def not_found(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('errors/500.html'), 500
+
+# Close database connection on request teardown
+from database.db import close_db
+app.teardown_appcontext(close_db)
 
 # Initialize database and models on startup
 with app.app_context():

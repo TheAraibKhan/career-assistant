@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Insights — CareerAssist</title>
+    <meta
+      name="description"
+      content="Deep career analytics, skill growth trends, and personalized AI recommendations."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <style>
+      .insights-hero {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .ih-card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .ih-card::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .ih-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--border-glow);
+      }
+      .ih-card:hover::before {
+        opacity: 1;
+      }
+      .ih-card:nth-child(1)::before {
+        background: var(--grad-primary);
+      }
+      .ih-card:nth-child(2)::before {
+        background: var(--grad-accent);
+      }
+      .ih-card:nth-child(3)::before {
+        background: var(--grad-success);
+      }
+      .ih-card:nth-child(4)::before {
+        background: var(--grad-warning);
+      }
+      .ih-icon {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .ih-val {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 800;
+      }
+      .ih-val.purple {
+        background: var(--grad-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .ih-val.green {
+        background: var(--grad-success);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .ih-val.gold {
+        background: var(--grad-warning);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .ih-val.blue {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .ih-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
+      .insight-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .insight-panel {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+      }
+      .insight-panel h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .chart-placeholder {
+        background: rgba(139, 92, 246, 0.03);
+        border: 1px dashed rgba(139, 92, 246, 0.15);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+      }
+      .chart-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.55rem;
+      }
+      .chart-bar-label {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        min-width: 90px;
+        text-align: right;
+      }
+      .chart-bar-track {
+        flex: 1;
+        height: 22px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+        position: relative;
+      }
+      .chart-bar-fill {
+        height: 100%;
+        border-radius: var(--radius-full);
+        transition: width 1s var(--ease-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .chart-bar-fill.purple {
+        background: var(--grad-primary);
+      }
+      .chart-bar-fill.green {
+        background: var(--grad-success);
+      }
+      .chart-bar-fill.pink {
+        background: var(--grad-accent);
+      }
+      .chart-bar-fill.gold {
+        background: var(--grad-warning);
+      }
+      .chart-bar-fill.blue {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      }
+      .weekly-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.35rem;
+      }
+      .weekly-cell {
+        aspect-ratio: 1;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .weekly-cell.low {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--text-dim);
+      }
+      .weekly-cell.med {
+        background: rgba(139, 92, 246, 0.25);
+        color: var(--neon-purple);
+      }
+      .weekly-cell.high {
+        background: rgba(139, 92, 246, 0.45);
+        color: #fff;
+      }
+      .weekly-cell.max {
+        background: var(--neon-purple);
+        color: #fff;
+        box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+      }
+      .weekly-cell:hover {
+        transform: scale(1.2);
+        z-index: 2;
+      }
+      .weekly-labels {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.35rem;
+        margin-top: 0.35rem;
+      }
+      .weekly-labels span {
+        text-align: center;
+        font-size: 0.55rem;
+        color: var(--text-dim);
+      }
+      .ai-rec {
+        background: rgba(139, 92, 246, 0.05);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .ai-rec:hover {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.1);
+        transform: translateX(4px);
+      }
+      .ai-rec-head {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 0.35rem;
+      }
+      .ai-rec-icon {
+        font-size: 1.1rem;
+      }
+      .ai-rec h4 {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .ai-rec p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-left: 1.75rem;
+      }
+      .badge-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      .badge-item {
+        text-align: center;
+        padding: 0.75rem;
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-md);
+        transition: all 0.3s;
+      }
+      .badge-item:hover {
+        transform: scale(1.05);
+        border-color: var(--border-glow);
+      }
+      .badge-item.earned {
+        border-color: rgba(245, 158, 11, 0.3);
+        background: rgba(245, 158, 11, 0.05);
+      }
+      .badge-icon {
+        font-size: 1.75rem;
+        margin-bottom: 0.35rem;
+      }
+      .badge-name {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      .badge-item.locked .badge-icon {
+        opacity: 0.3;
+        filter: grayscale(1);
+      }
+      .badge-item.locked .badge-name {
+        color: var(--text-dim);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/app" class="sidebar-logo"
+            ><div
+              class="logo-icon"
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              CA
+            </div>
+            <div>
+              <div class="logo-text">CareerAssist</div>
+              <div class="logo-tagline">From Confusion to Clarity</div>
+            </div></a
+          >
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a href="/app" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">D</span>
+            Dashboard</a
+          >
+          <a href="/app/journey" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">J</span> Journey</a
+          >
+          <a href="/app/roadmap" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">R</span> Roadmap</a
+          >
+          <a href="/app/projects" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">P</span>
+            Projects</a
+          >
+          <div class="nav-section-label" style="margin-top: 0.75rem">Tools</div>
+          <a href="/app/resume-lab" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">RL</span> Resume
+            Lab</a
+          >
+          <a href="/app/insights" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">I</span>
+            Insights</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <div class="user-name">{{ current_user.name or 'Profile' }}</div>
+              <div class="user-role">
+                {% if onboarding and onboarding.phase == 'pre-college'
+                %}Pre-College{% elif onboarding and onboarding.phase ==
+                'college' %}College{% elif onboarding and onboarding.phase ==
+                'post-college' %}Post-College{% else %}Member{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" style="margin-right: 0">
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>Career Insights 📈</h1>
+            <p>
+              Deep analytics on your progress, skills, and career trajectory
+            </p>
+          </div>
+        </div>
+
+        <!-- Hero Stats -->
+        <div class="insights-hero">
+          <div class="ih-card">
+            <div class="ih-icon">🎯</div>
+            <div class="ih-val purple">0%</div>
+            <div class="ih-label">Career Readiness</div>
+          </div>
+          <div class="ih-card">
+            <div class="ih-icon">🔥</div>
+            <div class="ih-val gold">0</div>
+            <div class="ih-label">Day Streak</div>
+          </div>
+          <div class="ih-card">
+            <div class="ih-icon">⚡</div>
+            <div class="ih-val blue">0</div>
+            <div class="ih-label">Total XP</div>
+          </div>
+          <div class="ih-card">
+            <div class="ih-icon">📊</div>
+            <div class="ih-val green">Top 0%</div>
+            <div class="ih-label">Leaderboard</div>
+          </div>
+        </div>
+
+        <!-- Row 1: Skill Growth + Activity Heatmap -->
+        <div class="insight-grid">
+          <div class="insight-panel">
+            <h3>🧠 Skill Growth</h3>
+            <div id="skillGrowthContainer">
+              <!-- Skills dynamically populated from user profile via /api/insights -->
+              <p
+                style="
+                  color: var(--text-muted);
+                  padding: 1rem;
+                  text-align: center;
+                "
+              >
+                Loading your skills...
+              </p>
+            </div>
+          </div>
+          <div class="insight-panel">
+            <h3>📅 Activity Heatmap (Last 4 Weeks)</h3>
+            <div style="margin-bottom: 0.75rem">
+              <div class="weekly-grid" id="heatmap"></div>
+              <div class="weekly-labels">
+                <span>M</span><span>T</span><span>W</span><span>T</span
+                ><span>F</span><span>S</span><span>S</span>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 0.75rem;
+              "
+            >
+              <span style="font-size: 0.6rem; color: var(--text-dim)"
+                >Less</span
+              >
+              <div style="display: flex; gap: 3px">
+                <div
+                  class="weekly-cell low"
+                  style="width: 14px; height: 14px"
+                ></div>
+                <div
+                  class="weekly-cell med"
+                  style="width: 14px; height: 14px"
+                ></div>
+                <div
+                  class="weekly-cell high"
+                  style="width: 14px; height: 14px"
+                ></div>
+                <div
+                  class="weekly-cell max"
+                  style="width: 14px; height: 14px"
+                ></div>
+              </div>
+              <span style="font-size: 0.6rem; color: var(--text-dim)"
+                >More</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: AI Recommendations + Badges -->
+        <div class="insight-grid">
+          <div class="insight-panel">
+            <h3>🤖 AI Recommendations</h3>
+            <div id="ai-recommendations-container">
+              <!-- Dynamically populated by JavaScript -->
+              <div
+                class="loading"
+                style="
+                  text-align: center;
+                  padding: 2rem;
+                  color: var(--text-muted);
+                "
+              >
+                Loading recommendations...
+              </div>
+            </div>
+          </div>
+          <div class="insight-panel">
+            <h3>🏆 Achievement Badges</h3>
+            <div class="badge-grid">
+              <div class="badge-item earned">
+                <div class="badge-icon">🐍</div>
+                <div class="badge-name">Python Pro</div>
+              </div>
+              <div class="badge-item earned">
+                <div class="badge-icon">🧮</div>
+                <div class="badge-name">DSA Warrior</div>
+              </div>
+              <div class="badge-item earned">
+                <div class="badge-icon">🔥</div>
+                <div class="badge-name">7-Day Streak</div>
+              </div>
+              <div class="badge-item earned">
+                <div class="badge-icon">📊</div>
+                <div class="badge-name">First Analysis</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🌐</div>
+                <div class="badge-name">Full-Stack Hero</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🏗️</div>
+                <div class="badge-name">System Architect</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🤖</div>
+                <div class="badge-name">AI Explorer</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">👑</div>
+                <div class="badge-name">Consistency King</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">💎</div>
+                <div class="badge-name">1500 XP Club</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🚀</div>
+                <div class="badge-name">Career Ready</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🌍</div>
+                <div class="badge-name">Open Source</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🎯</div>
+                <div class="badge-name">Interview Ace</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Fetch real insights data from backend
+      async function loadInsights() {
+        try {
+          const response = await fetch("/api/insights");
+          const data = await response.json();
+
+          if (data.success) {
+            console.log("📊 Insights loaded:", data);
+            renderInsights(data);
+          } else {
+            console.error("Failed to load insights:", data.error);
+          }
+        } catch (error) {
+          console.error("Error loading insights:", error);
+        }
+      }
+
+      function renderInsights(data) {
+        const metrics = data.metrics || {};
+
+        // Update hero metrics
+        const ihCards = document.querySelectorAll(".ih-card");
+        if (ihCards.length >= 4) {
+          if (ihCards[0].querySelector(".ih-val")) {
+            ihCards[0].querySelector(".ih-val").textContent =
+              metrics.career_readiness + "%";
+          }
+          if (ihCards[1].querySelector(".ih-val")) {
+            ihCards[1].querySelector(".ih-val").textContent =
+              metrics.streak_days || "0";
+          }
+          if (ihCards[2].querySelector(".ih-val")) {
+            ihCards[2].querySelector(".ih-val").textContent =
+              "Top " + metrics.percentile + "%";
+          }
+          if (ihCards[3].querySelector(".ih-val")) {
+            ihCards[3].querySelector(".ih-val").textContent =
+              metrics.xp_earned || "0";
+          }
+        }
+
+        // Build skill breakdown bars dynamically from user's actual skills
+        const skillBreakdown = data.skill_breakdown || {};
+        const skillContainer = document.getElementById("skillGrowthContainer");
+        if (skillContainer) {
+          const skillNames = Object.keys(skillBreakdown);
+          if (skillNames.length === 0) {
+            skillContainer.innerHTML =
+              '<p style="color: var(--text-muted); padding: 1rem; text-align: center;">Complete onboarding to see your skill growth.</p>';
+          } else {
+            const colors = [
+              "purple",
+              "blue",
+              "green",
+              "pink",
+              "gold",
+              "purple",
+              "green",
+            ];
+            skillContainer.innerHTML = skillNames
+              .map((skill, idx) => {
+                const pct = skillBreakdown[skill] || 0;
+                const color = colors[idx % colors.length];
+                return `
+                <div class="chart-bar-row">
+                  <div class="chart-bar-label">${skill}</div>
+                  <div class="chart-bar-track">
+                    <div class="chart-bar-fill ${color}" style="width: ${pct}%">${pct}%</div>
+                  </div>
+                </div>
+              `;
+              })
+              .join("");
+          }
+        }
+
+        // Update activity heatmap
+        const heatmap = document.getElementById("heatmap");
+        if (heatmap && data.activity_heatmap) {
+          heatmap.innerHTML = "";
+          const levels = ["low", "med", "high", "max"];
+          data.activity_heatmap.flat().forEach((level) => {
+            const cell = document.createElement("div");
+            const levelIdx =
+              typeof level === "string" ? levels.indexOf(level) : level;
+            cell.className = "weekly-cell " + levels[Math.min(levelIdx, 3)];
+            heatmap.appendChild(cell);
+          });
+        }
+
+        // Update AI recommendations
+        const recommendationsContainer = document.getElementById(
+          "ai-recommendations-container",
+        );
+        if (recommendationsContainer && data.recommendations) {
+          recommendationsContainer.innerHTML = data.recommendations
+            .map(
+              (rec) => `
+            <div class="ai-rec">
+              <div class="ai-rec-head">
+                <span class="ai-rec-icon">${rec.icon}</span>
+                <h4>${rec.title}</h4>
+              </div>
+              <p>${rec.description}</p>
+            </div>
+          `,
+            )
+            .join("");
+        }
+
+        // Update achievements
+        const badgeGrid = document.querySelector(".badge-grid");
+        if (badgeGrid && data.achievements) {
+          badgeGrid.innerHTML = "";
+          data.achievements.forEach((ach) => {
+            const badge = document.createElement("div");
+            badge.className =
+              "badge-item" + (ach.earned ? " earned" : " locked");
+            badge.innerHTML = `
+        <div class="badge-icon">${ach.icon}</div>
+        <div class="badge-name">${ach.name}</div>
+      `;
+            badgeGrid.appendChild(badge);
+          });
+        }
+      }
+
+      // Load insights on page load
+      window.addEventListener("load", loadInsights);
+    </script>
+  </body>
+</html>

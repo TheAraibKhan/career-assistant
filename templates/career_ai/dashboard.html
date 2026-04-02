@@ -1,0 +1,2044 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Dashboard — CareerAssist</title>
+    <meta
+      name="description"
+      content="Your personalized AI career dashboard. Track progress, manage your roadmap, and get AI mentorship."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+    <!-- State Management & Rendering -->
+    <script src="{{ url_for('static', filename='js/app-state.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui-renderer.js') }}"></script>
+    <style>
+      .xp-toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+        z-index: 9999;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .xp-toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- BG Glows -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- ===== ONBOARDING MODAL ===== -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+      <div class="onboarding-card">
+        <!-- Step 1: Skills -->
+        <div class="onboarding-step active" id="ob-step-0">
+          <div class="ob-title">Step 1: Tell Us About You</div>
+          <div class="ob-subtitle">
+            <strong>What skills do you currently have?</strong><br />
+            Select at least one. These form the foundation of your personalized
+            roadmap.
+          </div>
+          <div class="chip-grid" id="skills-chips">
+            <!-- ✅ FIX 1: onclick="toggleChip(this)" added to every chip so clicks are guaranteed -->
+            <div class="chip" data-val="Python" onclick="toggleChip(this)">
+              Python
+            </div>
+            <div class="chip" data-val="JavaScript" onclick="toggleChip(this)">
+              JavaScript
+            </div>
+            <div class="chip" data-val="React" onclick="toggleChip(this)">
+              React
+            </div>
+            <div class="chip" data-val="Java" onclick="toggleChip(this)">
+              Java
+            </div>
+            <div class="chip" data-val="SQL" onclick="toggleChip(this)">
+              SQL
+            </div>
+            <div
+              class="chip"
+              data-val="Machine Learning"
+              onclick="toggleChip(this)"
+            >
+              Machine Learning
+            </div>
+            <div class="chip" data-val="Node.js" onclick="toggleChip(this)">
+              Node.js
+            </div>
+            <div
+              class="chip"
+              data-val="UI/UX Design"
+              onclick="toggleChip(this)"
+            >
+              UI/UX Design
+            </div>
+            <div class="chip" data-val="DSA" onclick="toggleChip(this)">
+              DSA
+            </div>
+            <div class="chip" data-val="Git/GitHub" onclick="toggleChip(this)">
+              Git / GitHub
+            </div>
+            <div
+              class="chip"
+              data-val="Communication"
+              onclick="toggleChip(this)"
+            >
+              Communication
+            </div>
+            <div class="chip" data-val="Leadership" onclick="toggleChip(this)">
+              Leadership
+            </div>
+          </div>
+          <div
+            class="error-msg"
+            id="error-skills"
+            style="
+              display: none;
+              color: #ef4444;
+              font-size: 0.875rem;
+              margin-top: 1rem;
+            "
+          ></div>
+          <div class="ob-btn-row">
+            <button class="ob-btn ob-btn-primary" onclick="obNext(0)">
+              Continue →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Interests -->
+        <div class="onboarding-step" id="ob-step-1">
+          <div class="ob-title">Step 1: What excites you?</div>
+          <div class="ob-subtitle">
+            <strong>Select your areas of interest</strong><br />
+            Your learning roadmap will focus on these areas and connect to real
+            opportunities.
+          </div>
+          <div class="chip-grid" id="interests-chips">
+            <div class="chip" data-val="AI/ML" onclick="toggleChip(this)">
+              AI / ML
+            </div>
+            <div class="chip" data-val="Web Dev" onclick="toggleChip(this)">
+              Web Dev
+            </div>
+            <div class="chip" data-val="Mobile Apps" onclick="toggleChip(this)">
+              Mobile Apps
+            </div>
+            <div class="chip" data-val="DevOps" onclick="toggleChip(this)">
+              DevOps
+            </div>
+            <div
+              class="chip"
+              data-val="Data Science"
+              onclick="toggleChip(this)"
+            >
+              Data Science
+            </div>
+            <div
+              class="chip"
+              data-val="Cybersecurity"
+              onclick="toggleChip(this)"
+            >
+              Cybersecurity
+            </div>
+            <div
+              class="chip"
+              data-val="Product Management"
+              onclick="toggleChip(this)"
+            >
+              Product Mgmt
+            </div>
+            <div class="chip" data-val="Startups" onclick="toggleChip(this)">
+              Startups
+            </div>
+            <div class="chip" data-val="Freelancing" onclick="toggleChip(this)">
+              Freelancing
+            </div>
+            <div class="chip" data-val="Open Source" onclick="toggleChip(this)">
+              Open Source
+            </div>
+          </div>
+          <div
+            class="error-msg"
+            id="error-interests"
+            style="
+              display: none;
+              color: #ef4444;
+              font-size: 0.875rem;
+              margin-top: 1rem;
+            "
+          ></div>
+          <div class="ob-btn-row">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack(1)">
+              ← Back
+            </button>
+            <button class="ob-btn ob-btn-primary" onclick="obNext(1)">
+              Continue →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Phase -->
+        <div class="onboarding-step" id="ob-step-2">
+          <div class="ob-title">Step 1: Where are you in your journey?</div>
+          <div class="ob-subtitle">
+            <strong>Choose your current phase</strong><br />
+            This helps us tailor guidance and milestones that match your
+            situation.
+          </div>
+          <div class="phase-cards" id="phase-cards">
+            <div
+              class="phase-card"
+              data-val="pre-college"
+              onclick="selectPhase(this)"
+            >
+              <div
+                class="phase-icon"
+                style="
+                  font-size: 1.25rem;
+                  font-weight: 800;
+                  color: var(--neon-blue);
+                "
+              >
+                1
+              </div>
+              <h4>Pre-College</h4>
+              <p>Exploring domains & building curiosity</p>
+            </div>
+            <div
+              class="phase-card"
+              data-val="college"
+              onclick="selectPhase(this)"
+            >
+              <div
+                class="phase-icon"
+                style="
+                  font-size: 1.25rem;
+                  font-weight: 800;
+                  color: var(--neon-purple);
+                "
+              >
+                2
+              </div>
+              <h4>College</h4>
+              <p>Building skills & chasing internships</p>
+            </div>
+            <div
+              class="phase-card"
+              data-val="post-college"
+              onclick="selectPhase(this)"
+            >
+              <div
+                class="phase-icon"
+                style="
+                  font-size: 1.25rem;
+                  font-weight: 800;
+                  color: var(--neon-green);
+                "
+              >
+                3
+              </div>
+              <h4>Post-College</h4>
+              <p>Landing jobs & growing your career</p>
+            </div>
+          </div>
+          <div
+            class="error-msg"
+            id="error-phase"
+            style="
+              display: none;
+              color: #ef4444;
+              font-size: 0.875rem;
+              margin-top: 1rem;
+            "
+          ></div>
+          <div class="ob-btn-row">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack(2)">
+              ← Back
+            </button>
+            <button class="ob-btn ob-btn-primary" onclick="obNext(2)">
+              Continue →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Goals -->
+        <div class="onboarding-step" id="ob-step-3">
+          <div class="ob-title">Step 2: What's your main goal?</div>
+          <div class="ob-subtitle">
+            <strong>Select your primary career objective</strong><br />
+            We'll focus your roadmap and daily tasks around what matters most to
+            you.
+          </div>
+          <div class="chip-grid" id="goals-chips">
+            <div class="chip" data-val="Get a job" onclick="toggleChip(this)">
+              Get a Full-Time Job
+            </div>
+            <div
+              class="chip"
+              data-val="Land internship"
+              onclick="toggleChip(this)"
+            >
+              Land an Internship
+            </div>
+            <div
+              class="chip"
+              data-val="Build startup"
+              onclick="toggleChip(this)"
+            >
+              Build a Startup
+            </div>
+            <div class="chip" data-val="Freelance" onclick="toggleChip(this)">
+              Go Freelance
+            </div>
+            <div
+              class="chip"
+              data-val="Higher studies"
+              onclick="toggleChip(this)"
+            >
+              Higher Studies / MS
+            </div>
+            <div
+              class="chip"
+              data-val="Switch career"
+              onclick="toggleChip(this)"
+            >
+              Switch Career
+            </div>
+            <div class="chip" data-val="Open source" onclick="toggleChip(this)">
+              Contribute to Open Source
+            </div>
+            <div class="chip" data-val="Research" onclick="toggleChip(this)">
+              Research / Academia
+            </div>
+          </div>
+          <div
+            class="error-msg"
+            id="error-goals"
+            style="
+              display: none;
+              color: #ef4444;
+              font-size: 0.875rem;
+              margin-top: 1rem;
+            "
+          ></div>
+          <div class="ob-btn-row">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack(3)">
+              ← Back
+            </button>
+            <button class="ob-btn ob-btn-primary" onclick="obNext(3)">
+              Continue →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 5: Time -->
+        <div class="onboarding-step" id="ob-step-4">
+          <div class="ob-title">Step 3: Build & Grow</div>
+          <div class="ob-subtitle">
+            <strong>How much time can you dedicate daily?</strong><br />
+            We'll plan realistic tasks so you stay consistent without burnout.
+            Be honest — it helps us create achievable milestones.
+          </div>
+          <div class="ob-slider-container">
+            <div class="ob-slider-label">
+              <span>Daily study time</span>
+              <strong id="sliderVal">1 hour</strong>
+            </div>
+            <input
+              type="range"
+              class="ob-slider"
+              id="timeSlider"
+              min="1"
+              max="8"
+              value="1"
+              oninput="updateSlider(this.value)"
+            />
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.65rem;
+                color: var(--text-dim);
+                margin-top: 0.5rem;
+              "
+            >
+              <span>1 hr</span><span>4 hrs</span><span>8 hrs</span>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 1.5rem;
+              padding: 1rem;
+              background: rgba(139, 92, 246, 0.08);
+              border-left: 3px solid var(--neon-purple);
+              border-radius: 0.5rem;
+            "
+          >
+            <div
+              style="
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                margin-bottom: 0.5rem;
+              "
+            >
+              💡 Pro Tip
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary)">
+              Based on your selections, we'll generate personalized daily tasks,
+              a learning roadmap, and project suggestions. Consistency is key!
+            </div>
+          </div>
+          <div
+            class="error-msg"
+            id="error-submit"
+            style="
+              display: none;
+              color: #ef4444;
+              font-size: 0.875rem;
+              margin-top: 1rem;
+            "
+          ></div>
+          <div class="ob-btn-row" style="margin-top: 1.5rem">
+            <button class="ob-btn ob-btn-secondary" onclick="obBack(4)">
+              ← Back
+            </button>
+            <button
+              class="ob-btn ob-btn-primary"
+              onclick="finishOnboarding()"
+              id="finishBtn"
+            >
+              Get My Personalized Roadmap →
+            </button>
+          </div>
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner" style="display: none">
+          <div style="font-size: 0.875rem; color: var(--text-secondary)">
+            Generating your personalized roadmap...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== APP SHELL ===== -->
+    <div class="app-shell" id="appShell">
+      <!-- LEFT SIDEBAR -->
+      {% set active_page = 'dashboard' %} {% include
+      'career_ai/partials/sidebar.html' %}
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>
+              Good evening,
+              <span class="highlight" id="greetName"
+                >{{ current_user.full_name or 'there' }}</span
+              >
+            </h1>
+            <p>
+              You have
+              <strong style="color: var(--neon-purple)">3 tasks</strong> due
+              today. Keep the momentum going.
+            </p>
+          </div>
+          <div class="top-actions">
+            <button class="top-btn" title="Notifications" onclick="showToast()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 01-3.46 0" /></svg
+              ><span class="notif-dot"></span>
+            </button>
+            <button class="top-btn" title="Search">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+            <button
+              class="top-btn"
+              title="Settings"
+              onclick="window.location = '/app/profile'"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"
+                />
+              </svg>
+            </button>
+            <button
+              class="top-btn"
+              title="Re-run Onboarding"
+              onclick="
+                document
+                  .getElementById('onboardingOverlay')
+                  .classList.remove('hidden')
+              "
+              style="font-size: 0.7rem; width: auto; padding: 0 0.75rem"
+            >
+              Setup
+            </button>
+          </div>
+        </div>
+
+        <!-- Streak bar -->
+        <div class="streak-bar">
+          <div
+            class="streak-fire"
+            style="font-size: 1rem; font-weight: 800; color: var(--neon-gold)"
+          >
+            7
+          </div>
+          <div class="streak-info">
+            <div class="streak-count">7-Day Streak</div>
+            <div class="streak-text">
+              Keep going — 3 days to your next milestone.
+            </div>
+          </div>
+          <div class="streak-days">
+            <div class="streak-day active">M</div>
+            <div class="streak-day active">T</div>
+            <div class="streak-day active">W</div>
+            <div class="streak-day active">T</div>
+            <div class="streak-day active">F</div>
+            <div class="streak-day active">S</div>
+            <div class="streak-day today">S</div>
+          </div>
+        </div>
+
+        <!-- Motivational nudge -->
+        <div class="nudge-bar">
+          <div
+            class="nudge-icon"
+            style="
+              font-weight: 800;
+              color: var(--neon-green);
+              font-size: 0.85rem;
+            "
+          >
+            ↑
+          </div>
+          <div class="nudge-text">
+            <strong>You're ahead of 72% of learners in your phase.</strong>
+            <span>Complete today's 3 tasks to move into the top 20%.</span>
+          </div>
+          <button
+            class="ob-btn ob-btn-primary"
+            style="width: auto; padding: 0.5rem 1.25rem; font-size: 0.75rem"
+            onclick="window.location = '/app/roadmap'"
+          >
+            View Roadmap
+          </button>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8b5cf6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+            </div>
+            <div class="stat-value">0%</div>
+            <div class="stat-label">Career Readiness</div>
+            <div class="stat-change up">loading</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">XP Earned</div>
+            <div class="stat-change up">loading</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Skills Tracked</div>
+            <div class="stat-change up">loading</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="9 11 12 14 22 4" />
+                <path
+                  d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+                />
+              </svg>
+            </div>
+            <div class="stat-value">0/5</div>
+            <div class="stat-label">Tasks Done Today</div>
+            <div class="stat-change down">loading</div>
+          </div>
+        </div>
+
+        <!-- Row 1: Progress + Roadmap -->
+        <div class="content-grid">
+          <!-- Career Readiness -->
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Career Readiness Score</div>
+              <div
+                class="panel-action"
+                onclick="window.location = '/app/insights'"
+              >
+                Full Report →
+              </div>
+            </div>
+            <div class="progress-ring-container">
+              <div class="progress-ring">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <defs>
+                    <linearGradient
+                      id="progressGrad"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop offset="0%" style="stop-color: #8b5cf6" />
+                      <stop offset="100%" style="stop-color: #3b82f6" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="ring-bg" cx="60" cy="60" r="50" />
+                  <circle
+                    class="ring-fill"
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    stroke-dasharray="314"
+                    stroke-dashoffset="101"
+                    id="mainRingFill"
+                  />
+                </svg>
+                <div class="ring-label">
+                  <div class="ring-value">0%</div>
+                  <div class="ring-text">Ready</div>
+                </div>
+              </div>
+              <div class="progress-details">
+                <div class="progress-item">
+                  <div class="progress-item-header">
+                    <span class="progress-item-label">Technical Skills</span>
+                    <span class="progress-item-value">0%</span>
+                  </div>
+                  <div class="progress-bar-track">
+                    <div
+                      class="progress-bar-fill fill-purple"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="progress-item">
+                  <div class="progress-item-header">
+                    <span class="progress-item-label"
+                      >Portfolio & Projects</span
+                    >
+                    <span class="progress-item-value">0%</span>
+                  </div>
+                  <div class="progress-bar-track">
+                    <div
+                      class="progress-bar-fill fill-pink"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="progress-item">
+                  <div class="progress-item-header">
+                    <span class="progress-item-label">Resume Strength</span>
+                    <span class="progress-item-value">0%</span>
+                  </div>
+                  <div class="progress-bar-track">
+                    <div
+                      class="progress-bar-fill fill-green"
+                      style="width: 70%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roadmap Timeline -->
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Roadmap Progress</div>
+              <div
+                class="panel-action"
+                onclick="window.location = '/app/roadmap'"
+              >
+                Full Roadmap →
+              </div>
+            </div>
+            <div class="roadmap-timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot completed">
+                  <div class="dot-icon">✓</div>
+                </div>
+                <div class="timeline-content">
+                  <h4>Python Fundamentals</h4>
+                  <p>Variables, loops, functions, OOP</p>
+                  <span class="timeline-badge badge-done"
+                    >Completed · +200 XP</span
+                  >
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot completed">
+                  <div class="dot-icon">✓</div>
+                </div>
+                <div class="timeline-content">
+                  <h4>DSA Essentials</h4>
+                  <p>Arrays, linked lists, trees, graphs</p>
+                  <span class="timeline-badge badge-done"
+                    >Completed · +350 XP</span
+                  >
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot active">
+                  <div class="dot-icon">▶</div>
+                </div>
+                <div class="timeline-content">
+                  <h4>Full-Stack Web Development</h4>
+                  <p>React, Node.js, REST APIs, Databases</p>
+                  <span class="timeline-badge badge-progress"
+                    >In Progress · Week 3/8</span
+                  >
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot locked">
+                  <div class="dot-icon" style="font-size: 0.65rem">—</div>
+                </div>
+                <div class="timeline-content">
+                  <h4>System Design</h4>
+                  <p>Scalable architecture, microservices</p>
+                  <span class="timeline-badge badge-locked"
+                    >Locked · Unlocks at Level 5</span
+                  >
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot locked">
+                  <div class="dot-icon" style="font-size: 0.65rem">—</div>
+                </div>
+                <div class="timeline-content">
+                  <h4>Job Application Sprint</h4>
+                  <p>Interview prep, resume polish, offers</p>
+                  <span class="timeline-badge badge-locked">Locked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Daily Tasks + Skill Tree -->
+        <div class="content-grid">
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Today's Tasks</div>
+              <div class="panel-action">Add Task +</div>
+            </div>
+            <div class="task-list">
+              <div class="task-item done" onclick="toggleTask(this)">
+                <div class="task-check"></div>
+                <div class="task-info">
+                  <div class="task-title">
+                    Solve 2 LeetCode problems (Arrays)
+                  </div>
+                  <div class="task-meta">
+                    Roadmap: DSA Essentials · Est. 45 min
+                  </div>
+                </div>
+                <div class="task-xp">+50 XP</div>
+              </div>
+              <div class="task-item done" onclick="toggleTask(this)">
+                <div class="task-check"></div>
+                <div class="task-info">
+                  <div class="task-title">Read: System Design Primer Ch.2</div>
+                  <div class="task-meta">
+                    Roadmap: System Design · Est. 30 min
+                  </div>
+                </div>
+                <div class="task-xp">+40 XP</div>
+              </div>
+              <div class="task-item done" onclick="toggleTask(this)">
+                <div class="task-check"></div>
+                <div class="task-info">
+                  <div class="task-title">Push React project to GitHub</div>
+                  <div class="task-meta">Portfolio · Est. 20 min</div>
+                </div>
+                <div class="task-xp">+30 XP</div>
+              </div>
+              <div class="task-item" onclick="toggleTask(this)">
+                <div class="task-check"></div>
+                <div class="task-info">
+                  <div class="task-title">
+                    Watch: REST API tutorial (30 min)
+                  </div>
+                  <div class="task-meta">
+                    Roadmap: Full-Stack Dev · Est. 30 min
+                  </div>
+                </div>
+                <div class="task-xp">+30 XP</div>
+              </div>
+              <div class="task-item" onclick="toggleTask(this)">
+                <div class="task-check"></div>
+                <div class="task-info">
+                  <div class="task-title">
+                    Update resume with latest project
+                  </div>
+                  <div class="task-meta">Resume Lab · Est. 15 min</div>
+                </div>
+                <div class="task-xp">+20 XP</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skill Tree -->
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">Skill Tree</div>
+              <div
+                class="panel-action"
+                onclick="window.location = '/app/insights'"
+              >
+                Deep Dive →
+              </div>
+            </div>
+            <div class="skill-tree">
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(59, 130, 246, 0.15);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #3b82f6;
+                  "
+                >
+                  PY
+                </div>
+                <span class="skill-name">Python</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-purple"
+                    style="width: 85%"
+                  ></div>
+                </div>
+                <span class="skill-level level-advanced">Advanced</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(245, 158, 11, 0.15);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #f59e0b;
+                  "
+                >
+                  JS
+                </div>
+                <span class="skill-name">JavaScript</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-pink"
+                    style="width: 70%"
+                  ></div>
+                </div>
+                <span class="skill-level level-intermediate">Intermediate</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(16, 185, 129, 0.15);
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    color: #10b981;
+                  "
+                >
+                  RE
+                </div>
+                <span class="skill-name">React</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-green"
+                    style="width: 55%"
+                  ></div>
+                </div>
+                <span class="skill-level level-intermediate">Intermediate</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(139, 92, 246, 0.15);
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    color: #8b5cf6;
+                  "
+                >
+                  SQL
+                </div>
+                <span class="skill-name">SQL</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-purple"
+                    style="width: 65%"
+                  ></div>
+                </div>
+                <span class="skill-level level-intermediate">Intermediate</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(236, 72, 153, 0.15);
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    color: #ec4899;
+                  "
+                >
+                  ML
+                </div>
+                <span class="skill-name">Machine Learning</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-pink"
+                    style="width: 30%"
+                  ></div>
+                </div>
+                <span class="skill-level level-beginner">Beginner</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(6, 182, 212, 0.15);
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    color: #06b6d4;
+                  "
+                >
+                  GIT
+                </div>
+                <span class="skill-name">Git / GitHub</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-green"
+                    style="width: 80%"
+                  ></div>
+                </div>
+                <span class="skill-level level-advanced">Advanced</span>
+              </div>
+              <div class="skill-node">
+                <div
+                  class="skill-icon-box"
+                  style="
+                    background: rgba(245, 158, 11, 0.15);
+                    font-size: 0.6rem;
+                    font-weight: 700;
+                    color: #f59e0b;
+                  "
+                >
+                  DEV
+                </div>
+                <span class="skill-name">Docker / DevOps</span>
+                <div class="progress-bar-track" style="width: 80px">
+                  <div
+                    class="progress-bar-fill fill-pink"
+                    style="width: 20%"
+                  ></div>
+                </div>
+                <span class="skill-level level-beginner">Beginner</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Projects -->
+        <div class="glass-panel" style="margin-bottom: 1.25rem">
+          <div class="panel-header">
+            <div class="panel-title">Recommended Projects</div>
+            <div
+              class="panel-action"
+              onclick="window.location = '/app/projects'"
+            >
+              All Projects →
+            </div>
+          </div>
+          <div
+            class="project-cards"
+            style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 0.75rem;
+            "
+          >
+            <div
+              class="project-card"
+              style="flex-direction: column; align-items: flex-start"
+              onclick="window.location = '/app/projects'"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <div
+                  class="project-thumb"
+                  style="
+                    background: rgba(139, 92, 246, 0.15);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #8b5cf6;
+                  "
+                >
+                  WEB
+                </div>
+                <div>
+                  <div class="project-name">Personal Portfolio Site</div>
+                  <div class="project-desc">HTML, CSS, JS, GitHub Pages</div>
+                </div>
+              </div>
+              <span class="project-difficulty diff-easy">Beginner</span>
+            </div>
+            <div
+              class="project-card"
+              style="flex-direction: column; align-items: flex-start"
+              onclick="window.location = '/app/projects'"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <div
+                  class="project-thumb"
+                  style="
+                    background: rgba(59, 130, 246, 0.15);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #3b82f6;
+                  "
+                >
+                  API
+                </div>
+                <div>
+                  <div class="project-name">E-Commerce REST API</div>
+                  <div class="project-desc">Node.js, Express, MongoDB</div>
+                </div>
+              </div>
+              <span class="project-difficulty diff-medium">Intermediate</span>
+            </div>
+            <div
+              class="project-card"
+              style="flex-direction: column; align-items: flex-start"
+              onclick="window.location = '/app/projects'"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <div
+                  class="project-thumb"
+                  style="
+                    background: rgba(236, 72, 153, 0.15);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #ec4899;
+                  "
+                >
+                  AI
+                </div>
+                <div>
+                  <div class="project-name">AI Chatbot (LLM-powered)</div>
+                  <div class="project-desc">Python, OpenAI API, Flask</div>
+                </div>
+              </div>
+              <span class="project-difficulty diff-hard">Advanced</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT PANEL -->
+      <aside class="right-panel">
+        <div class="panel-tabs">
+          <button
+            class="panel-tab active"
+            id="tab-ai"
+            onclick="switchTab('ai')"
+          >
+            AI Mentor
+          </button>
+          <button
+            class="panel-tab"
+            id="tab-insights"
+            onclick="switchTab('insights')"
+          >
+            Insights
+          </button>
+        </div>
+
+        <!-- AI Chat Tab -->
+        <div class="tab-panel active" id="panel-ai">
+          <div class="ai-chat-container">
+            <div class="ai-chat-header">
+              <div class="ai-chat-title">
+                <div class="ai-status-dot"></div>
+                <strong style="font-size: 0.85rem; color: var(--text-primary)"
+                  >CareerAssist Mentor</strong
+                >
+              </div>
+              <div
+                style="
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                  margin-top: 0.2rem;
+                "
+              >
+                Context-aware · Always learning
+              </div>
+            </div>
+            <div class="ai-chat-messages" id="chatMessages">
+              <div class="chat-msg ai">
+                Hey! I'm your CareerAssist Mentor. I see you've been focused on
+                <strong>Full-Stack Development</strong> this week — great
+                effort!<br /><br />You have <strong>2 tasks left</strong> today.
+                Shall I suggest the best one to do next?
+              </div>
+              <div class="chat-msg ai">
+                <strong>Quick insight:</strong> Completing your React project
+                today would boost your portfolio score by +15%. That's a
+                high-value move.
+              </div>
+            </div>
+            <div class="chat-suggestions">
+              <div class="suggestion-chip" onclick="sendChip(this)">
+                What should I learn next?
+              </div>
+              <div class="suggestion-chip" onclick="sendChip(this)">
+                Review my progress
+              </div>
+              <div class="suggestion-chip" onclick="sendChip(this)">
+                Suggest a project
+              </div>
+              <div class="suggestion-chip" onclick="sendChip(this)">
+                Improve my resume
+              </div>
+              <div class="suggestion-chip" onclick="sendChip(this)">
+                Interview tips
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input
+                type="text"
+                class="chat-input"
+                id="chatInput"
+                placeholder="Ask your CareerAssist mentor..."
+                onkeydown="if (event.key === 'Enter') sendMessage();"
+              />
+              <button class="chat-send" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insights Tab -->
+        <div class="tab-panel" id="panel-insights">
+          <div class="insights-container">
+            <div class="insight-highlight">
+              <div class="big-stat">Top 28%</div>
+              <p>You are ahead of 72% of learners in your phase</p>
+            </div>
+            <div class="insight-card">
+              <div
+                class="insight-icon"
+                style="
+                  font-weight: 700;
+                  font-size: 0.75rem;
+                  color: var(--neon-gold);
+                "
+              >
+                7d
+              </div>
+              <h4>7-Day Streak Active</h4>
+              <p>
+                You've studied every day this week. 3 days from unlocking the
+                "Consistency" badge.
+              </p>
+            </div>
+            <div class="insight-card">
+              <div
+                class="insight-icon"
+                style="
+                  font-weight: 700;
+                  font-size: 0.75rem;
+                  color: var(--neon-green);
+                "
+              >
+                ↑
+              </div>
+              <h4>Fastest Improvement</h4>
+              <p>
+                Your React skill grew 12% this week — fastest across all your
+                tracked skills.
+              </p>
+            </div>
+            <div class="insight-card">
+              <div
+                class="insight-icon"
+                style="
+                  font-weight: 700;
+                  font-size: 0.75rem;
+                  color: var(--neon-purple);
+                "
+              >
+                XP
+              </div>
+              <h4>XP Milestone Close</h4>
+              <p>
+                You need only
+                <strong style="color: var(--neon-gold)">260 more XP</strong> to
+                reach Level 5 and unlock System Design.
+              </p>
+            </div>
+            <div class="insight-card">
+              <div
+                class="insight-icon"
+                style="
+                  font-weight: 700;
+                  font-size: 0.75rem;
+                  color: var(--neon-blue);
+                "
+              >
+                !
+              </div>
+              <h4>Resume Gap Alert</h4>
+              <p>
+                Your portfolio section is weak. Complete 1 more project to boost
+                ATS score by ~18 points.
+              </p>
+            </div>
+            <div class="insight-card">
+              <div
+                class="insight-icon"
+                style="
+                  font-weight: 700;
+                  font-size: 0.75rem;
+                  color: var(--neon-cyan);
+                "
+              >
+                →
+              </div>
+              <h4>Recommended Next Step</h4>
+              <p>
+                Apply to 3 internships this week. Your profile is strong enough
+                for mid-tier companies right now.
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- XP Toast -->
+    <div class="xp-toast" id="xpToast">+30 XP Earned</div>
+
+    <script>
+      // ===== DASHBOARD INITIALIZATION =====
+      console.log('🚀 Dashboard initializing...');
+
+      const onboardingData = {{ onboarding | tojson }};
+
+      /**
+       * Initialize dashboard on page load
+       */
+      async function initializeDashboard() {
+        console.log('📊 Initializing dashboard with onboarding:', onboardingData);
+
+        try {
+          // Check if user has completed onboarding
+          if (onboardingData && Object.keys(onboardingData).length > 0) {
+            // Onboarding complete - fetch real app state from backend
+            console.log('✓ User has completed onboarding, fetching real state');
+
+            try {
+              const response = await fetch('/api/user-profile');
+              const data = await response.json();
+
+              if (data.success && window.appState) {
+                console.log('✓ User profile loaded from backend:', data);
+
+                // Initialize app state with fetched data
+                window.appState.state = {
+                  user: data.user,
+                  profile: data.profile,
+                  stats: data.stats,
+                  skills: data.skills,
+                  roadmap: data.roadmap,
+                };
+                window.appState.saveToStorage();
+
+                // Update stat cards immediately with backend data
+                if (data.stats) {
+                  console.log('📈 Updating stat cards with backend stats:', data.stats);
+                  updateStatCards(data.stats);
+                  updateProgressRing(data.stats);
+                }
+
+                // Notify UI renderer to render with new state
+                window.appState.notifyListeners({}, window.appState.state);
+                console.log('✓ Listeners notified, UI should update');
+
+                // Show dashboard, hide onboarding
+                document.getElementById('onboardingOverlay').classList.add('hidden');
+                document.getElementById('appShell').style.display = 'flex';
+
+                // Load additional dynamic content (detailed tasks, insights, etc)
+                await loadDynamicContent();
+              } else {
+                console.error('Failed to load user profile:', data.error);
+              }
+            } catch (err) {
+              console.error('Error fetching user profile:', err);
+            }
+          } else {
+            // Show onboarding modal
+            console.log('ℹ No onboarding data, showing modal');
+            document.getElementById('onboardingOverlay').classList.remove('hidden');
+            document.getElementById('appShell').style.display = 'none';
+          }
+        } catch (err) {
+          console.error('Dashboard initialization error:', err);
+        }
+      }
+
+      // ===== ONBOARDING DATA & SETUP =====
+      let obData = {
+        skills: [],
+        interests: [],
+        phase: '',
+        goals: [],
+        daily_time: 1
+      };
+      let currentStep = 0;
+
+      // ✅ FIX 1: toggleChip() — called directly via onclick on every chip element.
+      // Replaces the broken event-delegation approach. Toggles both "selected"
+      // (matches .chip.selected in career_ai.css) and "active" (legacy alias).
+      function toggleChip(el) {
+        el.classList.toggle('selected');
+        el.classList.toggle('active');
+        console.log('✓ Chip toggled:', el.dataset.val, el.classList.contains('selected') ? 'ON' : 'OFF');
+      }
+
+      // Add click listeners to chips - MUST RUN IMMEDIATELY FOR ONBOARDING
+      function setupChipListeners() {
+        // Use event delegation on containers for more reliable event handling
+        ["skills-chips", "interests-chips", "goals-chips"].forEach((containerId) => {
+          const container = document.getElementById(containerId);
+          if (container) {
+            container.addEventListener("click", (e) => {
+              const chip = e.target.closest(".chip");
+              if (chip) {
+                chip.classList.toggle("active");
+                hideError(0);  // Just hide any error message
+                console.log('✓ Chip toggled:', chip.dataset.val);
+              }
+            });
+          }
+        });
+        console.log('✓ Chip listeners configured with event delegation');
+      }
+
+      // Set up chip listeners IMMEDIATELY - don't wait for window load
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupChipListeners);
+      } else {
+        setupChipListeners();
+      }
+
+      /**
+       * Load dynamic content (tasks, roadmap, etc)
+       */
+      async function loadDynamicContent() {
+        try {
+          console.log('📥 Loading dynamic content...');
+          console.log('📊 Current app state:', window.appState?.state);
+
+          // Explicitly update stat cards with current stats
+          if (window.appState && window.appState.state && window.appState.state.stats) {
+            console.log('📈 Updating stat cards with:', window.appState.state.stats);
+            updateStatCards(window.appState.state.stats);
+          }
+
+          // Fetch tasks
+          const tasksRes = await fetch('/api/tasks');
+          if (tasksRes.ok) {
+            const tasksData = await tasksRes.json();
+            console.log('📋 Tasks response:', tasksData);
+            if (tasksData.success && tasksData.tasks) {
+              window.uiRenderer?.updateTasks(tasksData.tasks);
+            }
+          }
+
+          // Fetch roadmap
+          const roadmapRes = await fetch('/api/roadmap');
+          if (roadmapRes.ok) {
+            const roadmapData = await roadmapRes.json();
+            console.log('🗺️ Roadmap response:', roadmapData);
+            if (roadmapData.success && roadmapData.roadmap) {
+              console.log('🗺️ Setting roadmap with items:', roadmapData.roadmap);
+              window.appState?.setRoadmap(roadmapData.roadmap);
+              console.log('✓ Roadmap state updated');
+            }
+          }
+
+          // Compute insights
+          window.appState?.computeInsights();
+
+          console.log('✓ Dynamic content loaded successfully');
+        } catch (err) {
+          // ✅ FIX 2: Added the missing catch block and closing brace.
+          // Without these, the entire <script> block was a syntax error,
+          // which prevented ALL JavaScript on the page from executing.
+          console.error('Error loading dynamic content:', err);
+        }
+      }
+
+      function hideError(stepNum) {
+        const errorIds = ["error-skills", "error-interests", "error-goals"];
+        if (errorIds[stepNum]) {
+          const errorEl = document.getElementById(errorIds[stepNum]);
+          if (errorEl) errorEl.style.display = "none";
+        }
+      }
+
+      function obNext(step) {
+        // Validate current step
+        if (step === 0) {
+          const skills = [
+            ...document.querySelectorAll("#skills-chips .chip.selected"),
+          ].map((c) => c.dataset.val);
+          if (skills.length === 0) {
+            showError("error-skills", "Please select at least one skill");
+            return;
+          }
+          obData.skills = skills;
+        }
+        if (step === 1) {
+          const interests = [
+            ...document.querySelectorAll("#interests-chips .chip.selected"),
+          ].map((c) => c.dataset.val);
+          if (interests.length === 0) {
+            showError("error-interests", "Please select at least one interest");
+            return;
+          }
+          obData.interests = interests;
+        }
+        if (step === 3) {
+          const goals = [
+            ...document.querySelectorAll("#goals-chips .chip.selected"),
+          ].map((c) => c.dataset.val);
+          if (goals.length === 0) {
+            showError("error-goals", "Please select at least one goal");
+            return;
+          }
+          obData.goals = goals;
+        }
+        goToStep(step + 1);
+      }
+      function obBack(step) {
+        goToStep(step - 1);
+      }
+      function goToStep(n) {
+        document
+          .getElementById("ob-step-" + currentStep)
+          .classList.remove("active");
+        currentStep = n;
+        document
+          .getElementById("ob-step-" + currentStep)
+          .classList.add("active");
+        for (let i = 0; i < 5; i++)
+          document.getElementById("od" + i).classList.toggle("filled", i <= n);
+      }
+      function selectPhase(el) {
+        document
+          .querySelectorAll(".phase-card")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        obData.phase = el.dataset.val;
+        hideError(2);
+      }
+      function updateSlider(v) {
+        obData.daily_time = v;
+        document.getElementById("sliderVal").textContent =
+          v + (v == 1 ? " hour" : " hours");
+      }
+
+      function showError(errorId, message) {
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.style.display = "block";
+        }
+      }
+
+      async function finishOnboarding() {
+        console.log('🎯 Finishing onboarding with data:', obData);
+
+        // Validate all required fields
+        if (obData.skills.length === 0) {
+          showError("error-submit", "Please complete all steps. Skills are required.");
+          return;
+        }
+        if (obData.interests.length === 0) {
+          showError("error-submit", "Please complete all steps. Interests are required.");
+          return;
+        }
+        if (!obData.phase) {
+          showError("error-submit", "Please complete all steps. Phase selection is required.");
+          return;
+        }
+        if (obData.goals.length === 0) {
+          showError("error-submit", "Please complete all steps. Career goals are required.");
+          return;
+        }
+
+        // Show loading state
+        document.getElementById("loadingSpinner").style.display = "block";
+        document.getElementById("finishBtn").disabled = true;
+
+        try {
+          console.log('📤 Sending onboarding to backend...');
+          const response = await fetch("/api/onboarding", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              skills: obData.skills,
+              interests: obData.interests,
+              phase: obData.phase,
+              goals: obData.goals,
+              daily_time: obData.daily_time,
+            }),
+          });
+
+          const result = await response.json();
+          console.log('📥 Onboarding response:', result);
+
+          if (response.ok && result.success) {
+            console.log('✓ Onboarding saved, fetching complete user profile...');
+
+            // Fetch complete user profile from master endpoint
+            const profileRes = await fetch('/api/user-profile');
+            const profileData = await profileRes.json();
+            console.log('📊 User profile from backend:', profileData);
+
+            if (profileData.success && window.appState) {
+              // Initialize with complete backend state
+              window.appState.state = {
+                user: profileData.user,
+                profile: profileData.profile,
+                stats: profileData.stats,
+                skills: profileData.skills,
+                roadmap: profileData.roadmap,
+              };
+              window.appState.saveToStorage();
+
+              // Update stat cards & ring immediately
+              if (profileData.stats) {
+                updateStatCards(profileData.stats);
+                updateProgressRing(profileData.stats);
+              }
+
+              // Notify listeners to trigger UI updates
+              window.appState.notifyListeners({}, window.appState.state);
+              console.log('✓ Profile state initialized and listeners notified');
+            }
+
+            document.getElementById("onboardingOverlay").classList.add("hidden");
+            document.getElementById("appShell").style.display = "flex";
+            showXpToast("🎉 Profile Created! Your roadmap is ready.");
+
+            // Load dynamic content (tasks, roadmap detail, insights)
+            console.log('⏳ Loading dynamic content in 500ms...');
+            setTimeout(() => {
+              console.log('▶️ Calling loadDynamicContent...');
+              loadDynamicContent();
+            }, 500);
+          } else {
+            showError(
+              "error-submit",
+              result.error || "Failed to save profile. Please try again.",
+            );
+            document.getElementById("loadingSpinner").style.display = "none";
+            document.getElementById("finishBtn").disabled = false;
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showError(
+            "error-submit",
+            "Network error. Please check your connection and try again.",
+          );
+          document.getElementById("loadingSpinner").style.display = "none";
+          document.getElementById("finishBtn").disabled = false;
+        }
+      }
+
+      function applyProfile(p) {
+        // Load real dashboard data from APIs
+        loadRealDashboardData();
+
+        // Update sidebar with user's phase
+        const phaseLabels = {
+          "pre-college": "Pre-College Phase",
+          college: "College Phase",
+          "post-college": "Post-College Phase",
+        };
+        const phaseName = phaseLabels[p.phase] || "Your Phase";
+        if (document.getElementById("userPhaseSb")) {
+          document.getElementById("userPhaseSb").textContent = phaseName;
+        }
+      }
+
+      // ===== MAIN DASHBOARD DATA LOADER =====
+      async function loadDashboardUI() {
+        console.log('Starting loadDashboardUI...');
+        try {
+          // 1. Load and display user stats
+          console.log('Fetching user stats...');
+          const statsRes = await fetch('/api/user-stats');
+          const statsData = await statsRes.json();
+          console.log('Stats response:', statsData);
+
+          if (statsData.success) {
+            updateStatCards(statsData.stats);
+          }
+
+          // 2. Load and display tasks
+          console.log('Fetching tasks...');
+          const tasksRes = await fetch('/api/tasks');
+          const tasksData = await tasksRes.json();
+          console.log('Tasks response:', tasksData);
+
+          if (tasksData.success && tasksData.tasks) {
+            populateTasks(tasksData.tasks);
+          }
+
+          // 3. Load and display roadmap
+          console.log('Fetching roadmap...');
+          const roadmapRes = await fetch('/api/roadmap');
+          const roadmapData = await roadmapRes.json();
+          console.log('Roadmap response:', roadmapData);
+
+          if (roadmapData.success && roadmapData.roadmap) {
+            updateRoadmap(roadmapData.roadmap);
+          }
+
+          // 4. Update sidebar user info
+          const userNameEl = document.getElementById('greetName');
+          if (userNameEl) {
+            userNameEl.textContent = userNameEl.textContent;
+          }
+
+          console.log('Dashboard UI loaded successfully');
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+        }
+      }
+
+      function updateStatCards(stats) {
+        console.log('Updating stat cards with:', stats);
+        const statCards = document.querySelectorAll('.stat-card');
+
+        // Stat 0: Career Readiness
+        if (statCards[0]) {
+          statCards[0].querySelector('.stat-value').textContent = stats.career_readiness + '%';
+          const changeEl = statCards[0].querySelector('.stat-change');
+          const gain = Math.min(30, stats.career_readiness);
+          changeEl.textContent = gain > 0 ? ('↑ ' + gain + '%') : 'New';
+        }
+
+        // Stat 1: XP Earned
+        if (statCards[1]) {
+          statCards[1].querySelector('.stat-value').textContent = stats.total_xp || 0;
+          const changeEl = statCards[1].querySelector('.stat-change');
+          changeEl.textContent = stats.total_xp > 0 ? ('↑ +' + stats.total_xp) : 'Start';
+        }
+
+        // Stat 2: Skills (always 1 for now)
+        if (statCards[2]) {
+          statCards[2].querySelector('.stat-value').textContent = stats.skills_tracked || 1;
+          const changeEl = statCards[2].querySelector('.stat-change');
+          changeEl.textContent = '↑ 2 week';
+        }
+
+        // Stat 3: Tasks Done
+        if (statCards[3]) {
+          const tasksCompleted = stats.tasks_completed || 0;
+          statCards[3].querySelector('.stat-value').textContent = tasksCompleted + '/5';
+          const changeEl = statCards[3].querySelector('.stat-change');
+          const remaining = Math.max(0, 5 - tasksCompleted);
+          changeEl.textContent = remaining + ' left';
+        }
+
+        // Update progress ring
+        const ringValue = document.querySelector('.ring-value');
+        if (ringValue) {
+          ringValue.textContent = stats.career_readiness + '%';
+        }
+
+        const ringFill = document.getElementById('mainRingFill');
+        if (ringFill) {
+          const offset = 314 * (1 - stats.career_readiness / 100);
+          ringFill.style.strokeDashoffset = offset;
+        }
+      }
+
+      function updateProgressRing(stats) {
+        // Update SVG progress ring value
+        const ringValue = document.querySelector('.ring-value');
+        if (ringValue) {
+          ringValue.textContent = stats.career_readiness + '%';
+        }
+
+        // Update SVG stroke offset for animation
+        const ringFill = document.getElementById('mainRingFill');
+        if (ringFill) {
+          const offset = 314 * (1 - stats.career_readiness / 100);
+          ringFill.style.strokeDashoffset = offset;
+        }
+
+        // Update progress bar values
+        const progressItems = document.querySelectorAll('.progress-item-value');
+        if (progressItems.length >= 3) {
+          // These would be calculated from skill progress
+          // For now, we'll set them based on stats
+          progressItems[0].textContent = Math.min(100, Math.round(stats.career_readiness * 0.75)) + '%';
+          progressItems[1].textContent = Math.min(100, Math.round(stats.tasks_completed * 15)) + '%';
+          progressItems[2].textContent = Math.min(100, Math.round(stats.career_readiness * 0.85)) + '%';
+        }
+
+        // Update progress bar fills
+        const progressFills = document.querySelectorAll('.progress-bar-fill');
+        if (progressFills.length >= 3) {
+          progressFills[0].style.width = Math.min(100, Math.round(stats.career_readiness * 0.75)) + '%';
+          progressFills[1].style.width = Math.min(100, Math.round(stats.tasks_completed * 15)) + '%';
+          progressFills[2].style.width = Math.min(100, Math.round(stats.career_readiness * 0.85)) + '%';
+        }
+      }
+
+      function populateTasks(tasks) {
+        console.log('Populating tasks:', tasks);
+        const taskListEl = document.querySelector('.task-list');
+        if (!taskListEl) {
+          console.warn('Task list element not found');
+          return;
+        }
+
+        taskListEl.innerHTML = '';
+
+        if (tasks.length === 0) {
+          taskListEl.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No tasks yet. Check back soon!</div>';
+          return;
+        }
+
+        tasks.forEach((task, idx) => {
+          const taskEl = document.createElement('div');
+          taskEl.className = 'task-item';
+          taskEl.innerHTML = `
+            <div class="task-check"></div>
+            <div class="task-info">
+              <div class="task-title">${task.title}</div>
+              <div class="task-meta">${task.category} · Est. ${task.duration}</div>
+            </div>
+            <div class="task-xp">+${task.xp} XP</div>
+          `;
+          taskEl.onclick = function(e) {
+            if (!this.classList.contains('done')) {
+              completeTask(this, task.title, task.xp);
+            } else {
+              this.classList.remove('done');
+            }
+          };
+          taskListEl.appendChild(taskEl);
+        });
+      }
+
+      async function completeTask(taskEl, title, xp) {
+        console.log('Completing task:', title, 'XP:', xp);
+
+        try {
+          const response = await fetch('/api/task-complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, xp })
+          });
+
+          const result = await response.json();
+          console.log('Task completion response:', result);
+
+          if (result.success) {
+            taskEl.classList.add('done');
+            showXpToast(`+${xp} XP Earned! ⚡`);
+            updateStatCards(result.stats);
+          } else {
+            console.error('Task completion failed:', result.error);
+            showXpToast('Failed to complete task');
+          }
+        } catch (error) {
+          console.error('Error completing task:', error);
+          showXpToast('Error completing task');
+        }
+      }
+
+      function updateRoadmap(roadmapItems) {
+        console.log('Updating roadmap:', roadmapItems);
+        const timelineEl = document.querySelector('.roadmap-timeline');
+        if (!timelineEl) {
+          console.warn('Roadmap timeline element not found');
+          return;
+        }
+
+        timelineEl.innerHTML = '';
+
+        roadmapItems.forEach((item, idx) => {
+          let dotClass = 'locked';
+          let dotIcon = '—';
+          let badgeClass = 'badge-locked';
+          let badgeText = `Locked · Level ${5 + idx}`;
+
+          if (idx === 0) {
+            dotClass = 'completed';
+            dotIcon = '✓';
+            badgeClass = 'badge-done';
+            badgeText = `Completed · +${item.xp} XP`;
+          } else if (idx === 1) {
+            dotClass = 'active';
+            dotIcon = '▶';
+            badgeClass = 'badge-progress';
+            badgeText = `In Progress · Week 1/${item.duration.split(' ')[0]}`;
+          }
+
+          const timelineItemEl = document.createElement('div');
+          timelineItemEl.className = 'timeline-item';
+          timelineItemEl.innerHTML = `
+            <div class="timeline-dot ${dotClass}">
+              <div class="dot-icon">${dotIcon}</div>
+            </div>
+            <div class="timeline-content">
+              <h4>${item.title}</h4>
+              <p>${item.description}</p>
+              <span class="timeline-badge ${badgeClass}">${badgeText}</span>
+            </div>
+          `;
+          timelineEl.appendChild(timelineItemEl);
+        });
+      }
+
+      // ===== TABS =====
+      function switchTab(name) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".panel-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById("panel-" + name).classList.add("active");
+        document.getElementById("tab-" + name).classList.add("active");
+      }
+
+      // ===== CHAT =====
+      const aiReplies = [
+        "Great question! Based on your current skill level, I'd recommend focusing on <strong>System Design fundamentals</strong> next. It will unlock your next roadmap milestone! 🚀",
+        "Your <strong>React</strong> progress is impressive this week! Consider building a full project using React + Node.js to solidify your skills and boost your portfolio score.",
+        "For your phase, <strong>contributing to open source</strong> is the #1 thing that differentiates candidates. Start with a small issue on GitHub to build confidence!",
+        "Your resume has a <strong>55% portfolio score</strong>. Complete the E-Commerce API project and add it — that alone can push you to 70%+ and get past ATS filters.",
+        "Interview prep tip: Do <strong>2 mock interviews this week</strong>. Companies like Google and Amazon prioritize DSA + behavioral competency. You're ready to start!",
+      ];
+      let replyIdx = 0;
+
+      function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const text = input.value.trim();
+        if (!text) return;
+        addMsg(text, "user");
+        input.value = "";
+        setTimeout(() => {
+          addMsg(aiReplies[replyIdx % aiReplies.length], "ai");
+          replyIdx++;
+        }, 800);
+      }
+      function sendChip(chip) {
+        addMsg(chip.textContent, "user");
+        setTimeout(() => {
+          addMsg(aiReplies[replyIdx % aiReplies.length], "ai");
+          replyIdx++;
+        }, 800);
+      }
+      function addMsg(text, type) {
+        const box = document.getElementById("chatMessages");
+        const el = document.createElement("div");
+        el.className = "chat-msg " + type;
+        el.innerHTML = text;
+        box.appendChild(el);
+        box.scrollTop = box.scrollHeight;
+      }
+
+      // ===== TASKS =====
+      function toggleTask(el) {
+        el.classList.toggle('done');
+      }
+
+      // ===== TOAST =====
+      function showToast() {
+        showXpToast("You have 3 new notifications 🔔");
+      }
+      function showXpToast(msg) {
+        const t = document.getElementById("xpToast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      // animate progress ring on load
+      window.addEventListener("load", () => {
+        console.log('🎯 Window load event firing');
+
+        // Wait for state manager to be ready
+        if (window.appState && window.uiRenderer) {
+          console.log('✓ State manager & renderer ready, initializing dashboard');
+          initializeDashboard();
+        } else {
+          console.warn('⏳ Waiting for state manager...');
+          const checkReady = setInterval(() => {
+            if (window.appState && window.uiRenderer) {
+              clearInterval(checkReady);
+              initializeDashboard();
+            }
+          }, 100);
+        }
+
+        setTimeout(() => {
+          const ring = document.getElementById("mainRingFill");
+          if (ring) ring.style.strokeDashoffset = "101";
+        }, 400);
+      });
+    </script>
+  </body>
+</html>

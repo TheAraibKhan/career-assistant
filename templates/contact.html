@@ -1,312 +1,188 @@
-{% extends "base.html" %} {% block title %}Contact & Feedback - CareerAssist{%
-endblock %} {% block extra_css %}
-<style>
-  .contact-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Contact — CareerAssist</title>
+  <meta name="description" content="Get in touch with the CareerAssist team. Send feedback, report bugs, or ask questions."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+  <style>
+    body{font-family:'Inter',system-ui,sans-serif;background:#0a0a1a;color:#e2e8f0;}
+    .font-display{font-family:'Poppins','Inter',system-ui,sans-serif;}
+    .text-gradient{background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .glass-card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(8px);}
+    .glass-card:hover{border-color:rgba(139,92,246,0.2);}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.12);}
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+<!-- BG -->
+<div class="fixed inset-0 pointer-events-none z-0">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px]"></div>
+  <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-600/8 rounded-full blur-[100px]"></div>
+</div>
 
-  .contact-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
+<!-- NAV -->
+<nav class="sticky top-0 z-50 px-6 lg:px-10 py-3 flex justify-between items-center border-b border-white/[0.04]" style="background:rgba(10,10,26,0.85);backdrop-filter:blur(16px);">
+  <a href="/" class="flex items-center gap-2 no-underline">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#lg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient></defs><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="url(#lg)"/></svg>
+    <span class="font-display font-extrabold text-lg text-gradient">CareerAssist</span>
+  </a>
+  <div class="flex items-center gap-2">
+    {% if current_user.is_authenticated %}
+    <a href="/app" class="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors">Dashboard</a>
+    <a href="/contact/" class="px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 rounded-full hover:shadow-glow-sm transition-all">Contact</a>
+    <a href="/auth/logout" class="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors">Logout</a>
+    {% else %}
+    <a href="/" class="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors">Home</a>
+    <a href="/contact/" class="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors">Contact</a>
+    <a href="/auth/login" class="px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 rounded-full hover:shadow-glow-sm transition-all">Sign In</a>
+    {% endif %}
+  </div>
+</nav>
 
-  .contact-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-  }
-
-  .contact-header p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .contact-section {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .contact-section h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: var(--primary);
-  }
-
-  .contact-methods {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .contact-method {
-    text-align: center;
-  }
-
-  .contact-method-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .contact-method h3 {
-    margin-bottom: 0.5rem;
-  }
-
-  .contact-method p {
-    color: var(--text-secondary);
-  }
-
-  .contact-method a {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    transition: border-color 150ms ease;
-  }
-
-  .form-group input:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.1);
-  }
-
-  .form-group textarea {
-    resize: vertical;
-    min-height: 150px;
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .btn-submit {
-    background: var(--primary);
-    color: white;
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 150ms ease;
-  }
-
-  .btn-submit:hover {
-    background: var(--primary-dark);
-  }
-
-  .btn-cancel {
-    background: transparent;
-    color: var(--text-secondary);
-    padding: 0.75rem 2rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 150ms ease;
-  }
-
-  .btn-cancel:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  .faq {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .faq-item {
-    padding: 1.5rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-  }
-
-  .faq-item h3 {
-    margin-bottom: 0.75rem;
-    color: var(--primary);
-  }
-
-  .faq-item p {
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  @media (max-width: 768px) {
-    .contact-container {
-      padding: 1.5rem;
-    }
-
-    .contact-header h1 {
-      font-size: 1.75rem;
-    }
-
-    .form-actions {
-      flex-direction: column;
-    }
-
-    .btn-submit,
-    .btn-cancel {
-      width: 100%;
-      text-align: center;
-    }
-  }
-</style>
-{% endblock %} {% block content %}
-<div class="contact-container">
-  <!-- HEADER -->
-  <div class="contact-header">
-    <h1>🤝 Let's Connect</h1>
-    <p>
-      Have feedback? Want to discuss a feature? We're here to help shape
-      CareerAssist into something truly useful.
-    </p>
+<div class="relative z-10 max-w-3xl mx-auto px-6 py-12">
+  <!-- Header -->
+  <div class="text-center mb-10">
+    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold text-purple-400 uppercase tracking-widest bg-purple-500/[0.08] border border-purple-500/20 mb-4">Contact</span>
+    <h1 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Get in Touch</h1>
+    <p class="text-gray-400 max-w-md mx-auto leading-relaxed">Questions, feedback, bug reports, or ideas — every message helps us build something better.</p>
   </div>
 
-  <!-- CONTACT METHODS -->
-  <div class="contact-section">
-    <h2>Get in Touch</h2>
-    <div class="contact-methods">
-      <div class="contact-method">
-        <div class="contact-method-icon">💬</div>
-        <h3>Feedback Form</h3>
-        <p>Send us your thoughts directly below</p>
+  <!-- Methods -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
+    <div class="glass-card rounded-xl p-5 text-center transition-all">
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       </div>
-      <div class="contact-method">
-        <div class="contact-method-icon">📧</div>
-        <h3>Email</h3>
-        <p>
-          <a href="mailto:support@careerassist.ai">support@careerassist.ai</a>
-        </p>
+      <h3 class="text-sm font-bold mb-1">Feedback Form</h3>
+      <p class="text-xs text-gray-500">Use the form below to send your message.</p>
+    </div>
+    <div class="glass-card rounded-xl p-5 text-center transition-all">
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       </div>
-      <div class="contact-method">
-        <div class="contact-method-icon">🐛</div>
-        <h3>Report Issues</h3>
-        <p><a href="mailto:bugs@careerassist.ai">bugs@careerassist.ai</a></p>
+      <h3 class="text-sm font-bold mb-1">Email Support</h3>
+      <p class="text-xs"><a href="mailto:support@careerassist.ai" class="text-purple-400 hover:text-purple-300 transition-colors">support@careerassist.ai</a></p>
+    </div>
+    <div class="glass-card rounded-xl p-5 text-center transition-all">
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </div>
+      <h3 class="text-sm font-bold mb-1">Report a Bug</h3>
+      <p class="text-xs"><a href="mailto:bugs@careerassist.ai" class="text-purple-400 hover:text-purple-300 transition-colors">bugs@careerassist.ai</a></p>
     </div>
   </div>
 
-  <!-- FEEDBACK FORM -->
-  <div class="contact-section">
-    <h2>Send Us Feedback</h2>
+  <!-- Form -->
+  <div class="glass-card rounded-2xl p-6 sm:p-8 mb-10">
+    <div class="mb-6">
+      <span class="text-xs font-bold text-purple-400 uppercase tracking-widest">Send a Message</span>
+      <h2 class="font-display text-xl font-bold mt-1 mb-1">Share Your Thoughts</h2>
+      <p class="text-sm text-gray-500">We read every message. Feature idea, pain point, or just a hello — we want to hear it.</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}{% if messages %}{% for message in messages %}
+    <div class="mb-4 px-4 py-3 rounded-lg bg-green-500/[0.08] border border-green-500/20 text-green-400 text-sm font-medium">{{ message }}</div>
+    {% endfor %}{% endif %}{% endwith %}
+
     <form method="POST" action="/contact/submit">
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-1.5" for="name">Your Name</label>
+          <input type="text" id="name" name="name" placeholder="Full name" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white text-sm placeholder-gray-600 transition-all"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-1.5" for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white text-sm placeholder-gray-600 transition-all"/>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required />
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-gray-300 mb-1.5" for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Feature idea, bug report, general feedback" required class="w-full px-3.5 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white text-sm placeholder-gray-600 transition-all"/>
       </div>
-
-      <div class="form-group">
-        <label for="subject">Subject</label>
-        <input
-          type="text"
-          id="subject"
-          name="subject"
-          placeholder="e.g., Feature idea, Bug report, General feedback"
-          required
-        />
+      <div class="mb-5">
+        <label class="block text-sm font-semibold text-gray-300 mb-1.5" for="message">Message</label>
+        <textarea id="message" name="message" rows="5" placeholder="Tell us what's on your mind..." required class="w-full px-3.5 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white text-sm placeholder-gray-600 resize-y transition-all"></textarea>
       </div>
-
-      <div class="form-group">
-        <label for="message">Message</label>
-        <textarea
-          id="message"
-          name="message"
-          placeholder="Tell us what's on your mind..."
-          required
-        ></textarea>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-submit">Send Feedback</button>
-        <a href="/" class="btn-cancel">Cancel</a>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg shadow-glow-sm hover:shadow-glow-md hover:-translate-y-0.5 transition-all">Send Message</button>
+        <a href="/" class="px-5 py-2.5 text-sm font-semibold text-gray-400 border border-white/[0.08] rounded-lg hover:text-white hover:border-purple-500/30 transition-all text-center">Cancel</a>
       </div>
     </form>
   </div>
 
   <!-- FAQ -->
-  <div class="contact-section">
-    <h2>Frequently Asked</h2>
-    <div class="faq">
-      <div class="faq-item">
-        <h3>What data do you collect?</h3>
-        <p>
-          We only ask for what's necessary: your resume for analysis, and basic
-          contact info if you share feedback. We never sell your data.
-        </p>
+  <div class="glass-card rounded-2xl p-6 sm:p-8">
+    <span class="text-xs font-bold text-purple-400 uppercase tracking-widest">Common Questions</span>
+    <h2 class="font-display text-xl font-bold mt-1 mb-5">Frequently Asked</h2>
+    <div class="space-y-2" id="faqList">
+      <div class="faq-item border border-white/[0.06] rounded-xl overflow-hidden transition-all hover:border-purple-500/20">
+        <button class="w-full px-4 py-3.5 text-left flex justify-between items-center gap-3 text-sm font-semibold text-gray-200 hover:bg-white/[0.02] transition-colors" onclick="toggleFaq(this)">
+          What data do you collect?
+          <svg class="w-4 h-4 text-purple-400 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body max-h-0 overflow-hidden transition-all duration-300">
+          <div class="px-4 pb-3.5 text-sm text-gray-400 leading-relaxed">We only ask for what's necessary: your resume for analysis, and basic contact info if you share feedback. We never sell your data.</div>
+        </div>
       </div>
-
-      <div class="faq-item">
-        <h3>How long does analysis take?</h3>
-        <p>
-          ATS and career readiness analysis happens instantly. You'll see your
-          results as soon as you upload. Detailed insights are available in your
-          dashboard.
-        </p>
+      <div class="faq-item border border-white/[0.06] rounded-xl overflow-hidden transition-all hover:border-purple-500/20">
+        <button class="w-full px-4 py-3.5 text-left flex justify-between items-center gap-3 text-sm font-semibold text-gray-200 hover:bg-white/[0.02] transition-colors" onclick="toggleFaq(this)">
+          How long does analysis take?
+          <svg class="w-4 h-4 text-purple-400 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body max-h-0 overflow-hidden transition-all duration-300">
+          <div class="px-4 pb-3.5 text-sm text-gray-400 leading-relaxed">ATS and career readiness analysis happens instantly — usually under 10 seconds. Results appear as soon as you upload.</div>
+        </div>
       </div>
-
-      <div class="faq-item">
-        <h3>Can I delete my data?</h3>
-        <p>
-          Yes. Go to your profile settings and request account deletion. All
-          your data will be removed within 24 hours.
-        </p>
+      <div class="faq-item border border-white/[0.06] rounded-xl overflow-hidden transition-all hover:border-purple-500/20">
+        <button class="w-full px-4 py-3.5 text-left flex justify-between items-center gap-3 text-sm font-semibold text-gray-200 hover:bg-white/[0.02] transition-colors" onclick="toggleFaq(this)">
+          Can I delete my data?
+          <svg class="w-4 h-4 text-purple-400 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body max-h-0 overflow-hidden transition-all duration-300">
+          <div class="px-4 pb-3.5 text-sm text-gray-400 leading-relaxed">Yes. Go to your profile settings and request account deletion. All your data will be removed within 24 hours.</div>
+        </div>
       </div>
-
-      <div class="faq-item">
-        <h3>Is CareerAssist really free?</h3>
-        <p>
-          We offer a free tier with all core features. We're building premium
-          plans for advanced features, but the basics will always be free.
-        </p>
-      </div>
-
-      <div class="faq-item">
-        <h3>How is CareerAssist different from other tools?</h3>
-        <p>
-          We focus on what actually matters: ATS compatibility, real career
-          alignment, and actionable feedback. No generic scores. No BS.
-        </p>
+      <div class="faq-item border border-white/[0.06] rounded-xl overflow-hidden transition-all hover:border-purple-500/20">
+        <button class="w-full px-4 py-3.5 text-left flex justify-between items-center gap-3 text-sm font-semibold text-gray-200 hover:bg-white/[0.02] transition-colors" onclick="toggleFaq(this)">
+          Is CareerAssist free?
+          <svg class="w-4 h-4 text-purple-400 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-body max-h-0 overflow-hidden transition-all duration-300">
+          <div class="px-4 pb-3.5 text-sm text-gray-400 leading-relaxed">Core features are free — resume analysis, ATS scoring, skill gap analysis, and career guidance. Premium plans with advanced features are coming soon.</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-{% endblock %}
+<!-- Footer -->
+<footer class="text-center py-6 px-6 border-t border-white/[0.04] relative z-10 mt-8">
+  <p class="text-xs text-gray-700">&copy; 2026 CareerAssist. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const body = item.querySelector('.faq-body');
+  const chevron = btn.querySelector('svg');
+  const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+  // Close all
+  document.querySelectorAll('.faq-item').forEach(i => {
+    i.querySelector('.faq-body').style.maxHeight = '0px';
+    const c = i.querySelector('button svg');
+    if (c) c.style.transform = 'rotate(0deg)';
+  });
+  if (!isOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    chevron.style.transform = 'rotate(180deg)';
+  }
+}
+</script>
+</body>
+</html>

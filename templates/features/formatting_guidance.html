@@ -14,7 +14,7 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visual & Formatting Guidance - CareerAssist</title>
+    <title>Resume Readability Check - CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -595,40 +595,72 @@
 
     <div class="main-content">
       <div class="page-header">
-        <h1>Visual & Formatting Guidance</h1>
+        <h1>Resume Readability Check</h1>
         <p>
           Formatting is not just about aesthetics—it affects readability, ATS
           compatibility, and recruiter first impressions.
         </p>
-        <span class="status-badge">Professional polish matters</span>
+        <span class="status-badge">Legibility &amp; Clarity</span>
       </div>
+      {% if user_data and user_data.has_data %}
+      <div style="background: var(--surface-1); border: 1px solid var(--border-subtle); border-left: 3px solid var(--accent-primary); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+        <div style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-primary); margin-bottom: 0.75rem;">Your Formatting Snapshot</div>
+        {% if user_data.grade %}
+        <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Grade <strong>{{ user_data.grade }}</strong> &mdash; {{ user_data.grade_label }}</h2>
+        {% endif %}
+        {% if user_data.formatting_score is not none %}
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem;">
+          <div style="font-size:2rem; font-weight:700; color:var(--accent-primary);">{{ user_data.formatting_score }}</div>
+          <div style="flex:1;">
+            <div style="height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden;">
+              <div style="height:100%; width:{{ user_data.formatting_score }}%; background:var(--accent-primary); border-radius:999px;"></div>
+            </div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">Formatting score out of 100</p>
+          </div>
+        </div>
+        {% endif %}
+        {% if user_data.analyzed_at %}
+        <p style="font-size:0.75rem; color:var(--text-muted);">
+          Based on resume from {{ user_data.analyzed_at[:10] }} &mdash;
+          <a href="/resume/upload" style="color:var(--accent-primary);">upload again</a> to refresh.
+        </p>
+        {% endif %}
+      </div>
+      {% elif current_user.is_authenticated %}
+      <div style="background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:10px; padding:1.5rem; margin-bottom:2rem; opacity:0.8;">
+        <p style="color:var(--text-secondary); font-size:0.9rem;">
+          Upload your resume to see your formatting grade and personalised readability checklist.
+          <a href="/resume/upload" style="color:var(--accent-primary);">Upload now &rarr;</a>
+        </p>
+      </div>
+      {% endif %}
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-number">38%</div>
-          <div class="stat-label">Say format affects perception</div>
+          <div class="stat-number">Readable</div>
+          <div class="stat-label">Clear spacing and consistent fonts reduce cognitive friction for the reader</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">63%</div>
-          <div class="stat-label">Resumes with formatting issues rejected</div>
+          <div class="stat-number">Honest</div>
+          <div class="stat-label">Simple, clean formatting communicates confidence — not over-design</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">2 sec</div>
-          <div class="stat-label">Impact of poor formatting</div>
+          <div class="stat-number">Durable</div>
+          <div class="stat-label">A well-formatted resume stays readable across all versions and devices</div>
         </div>
       </div>
 
       <div class="content-section">
-        <h2>Why Formatting Matters</h2>
+        <h2>What Good Formatting Actually Does</h2>
         <p>
-          Your resume's visual appearance sends a signal before anyone reads a
-          word. Sloppy formatting suggests carelessness. Poor spacing makes it
-          hard to scan. Bad typography looks outdated. These factors combine to
-          cost you interviews.
+          Formatting isn't decoration. It's structure. A well-formatted resume
+          makes your experience easier to follow, which means the reader stays
+          with it longer. Inconsistent spacing, mixed fonts, and crowded text
+          create friction — and friction shortens attention.
         </p>
         <p>
-          <strong>Good formatting is invisible.</strong> It doesn't distract. It
-          guides the reader's eye. It shows professionalism without effort.
+          <strong>Good formatting is invisible.</strong> It doesn't call
+          attention to itself. It makes everything else easier to read.
         </p>
       </div>
 
@@ -852,7 +884,7 @@
       </div>
 
       <div class="cta-section">
-        <h3>Get Detailed Formatting Feedback</h3>
+        <h3>See Where Your Formatting Stands</h3>
         <p>
           Upload your resume and we'll scan it for formatting issues, suggest
           improvements, and give you a professional polish score.

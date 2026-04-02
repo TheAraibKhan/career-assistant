@@ -18,7 +18,7 @@
       name="description"
       content="Every bullet point on your resume gets scored on specificity, power verbs, quantified impact, and ATS keyword fit. See exactly which ones are weak."
     />
-    <title>Bullet Point Impact Scoring — CareerAssist</title>
+    <title>How Your Resume Should Evolve — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -623,13 +623,13 @@
     <section class="page-hero">
       <div class="hero-inner">
         <div class="feature-eyebrow">
-          <span class="eyebrow-dot"></span>Smart Optimization
+          <span class="eyebrow-dot"></span>Resume as Growth
         </div>
-        <h1>Bullet Point Impact Scoring</h1>
+        <h1>How Your Resume Should Evolve</h1>
         <p class="lead">
-          Most resumes have a mix of strong and weak bullets — and most people
-          can't tell the difference. We score each one individually so you know
-          exactly which lines need work.
+          Your resume shouldn't look the same as it did a year ago. As your
+          experience grows, the way you describe it should sharpen. This tool
+          helps you understand what to update — and when.
         </p>
         <div class="hero-badge">
           <svg
@@ -644,41 +644,106 @@
           >
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
-          Per-bullet scoring on 4 dimensions
+          Your resume is a current record — not a final statement
         </div>
       </div>
     </section>
 
     <main class="main-content">
+
+      {% if user_data and user_data.has_data %}
+      <div class="content-card" style="border-left: 3px solid var(--accent-primary); margin-bottom: 2rem;">
+        <div class="card-label" style="color: var(--accent-primary);">Your Resume's Evolution</div>
+        <h2 style="margin-bottom: 1.25rem;">
+          {% if user_data.version_count > 1 %}
+            {{ user_data.version_count }} versions submitted — here's the arc
+          {% elif user_data.version_count == 1 %}
+            First version on record — your starting point
+          {% else %}
+            Upload a resume to begin tracking your evolution
+          {% endif %}
+        </h2>
+
+        {% if user_data.stage_label %}
+        <div style="padding: 0.875rem 1.125rem; background: var(--surface-2); border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+          <strong style="color: var(--text-primary);">Current stage:</strong> {{ user_data.stage_label }}
+        </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.current_score or '—' }}</div>
+            <div class="stat-label">Latest Score</div>
+          </div>
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.version_count }}</div>
+            <div class="stat-label">Versions Uploaded</div>
+          </div>
+          {% if user_data.improvement is not none %}
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{% if user_data.improvement > 0 %}+{% endif %}{{ user_data.improvement }}</div>
+            <div class="stat-label">Score Change</div>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if user_data.score_timeline and user_data.score_timeline | length > 1 %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Score across your versions:</p>
+        <div style="display: flex; gap: 0.5rem; align-items: flex-end; height: 60px; margin-bottom: 1rem;">
+          {% for point in user_data.score_timeline %}
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+            <div style="width: 100%; background: var(--accent-primary); border-radius: 4px 4px 0 0; opacity: 0.8;"
+                 title="{{ point.date }}: {{ point.score }}"
+                 style="height: {{ (point.score / 100 * 55) | int }}px; width: 100%; background: var(--accent-primary); border-radius: 4px 4px 0 0;"></div>
+            <span style="font-size: 0.6rem; color: var(--text-muted);">{{ point.score }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <p style="font-size: 0.75rem; color: var(--text-muted);">
+          <a href="/resume/upload" style="color: var(--accent-primary);">Upload your updated resume</a> to record the next point in your timeline.
+        </p>
+      </div>
+      {% elif current_user.is_authenticated %}
+      <div class="content-card" style="border-left: 3px solid var(--border-subtle); margin-bottom: 2rem; opacity: 0.8;">
+        <div class="card-label">Your Resume Evolution</div>
+        <p>Upload your resume to start tracking how your resume evolves version by version. <a href="/resume/upload" style="color: var(--accent-primary);">Upload now →</a></p>
+      </div>
+      {% endif %}
+
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-value">6.8</div>
+          <div class="stat-value">Evolves</div>
           <div class="stat-label">
-            Average bullet impact score out of 10 across resumes we review
+            A resume that doesn't change as you grow no longer reflects
+            where you actually are
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">40%</div>
+          <div class="stat-value">Clear</div>
           <div class="stat-label">
-            Of bullets on most resumes lack quantified results of any kind
+            Well-written bullets don't rely on jargon — they describe real
+            outcomes in plain language
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">2–3×</div>
+          <div class="stat-value">Current</div>
           <div class="stat-label">
-            More recruiter engagement with resumes whose bullets lead with
-            results
+            Moving your strongest, most recent experience to the top is often
+            the biggest single improvement
           </div>
         </div>
       </div>
 
       <div class="content-card">
-        <div class="card-label">How We Score</div>
-        <h2>What makes a bullet strong — and what doesn't</h2>
+        <div class="card-label">What Good Bullets Do</div>
+        <h2>Clarity, not complexity — that's what lands</h2>
         <p>
-          We break each bullet point into four components that predict whether a
-          recruiter will actually read it or skim past it. Each dimension gets a
-          score from 1 to 10, and you see the total for every line.
+          A bullet point does one job: it tells someone what you did, how you
+          did it, and what changed as a result. When those three things are
+          clear, the bullet works. When they're vague or missing, it doesn't —
+          regardless of how significant the actual work was.
         </p>
 
         <div class="score-grid">
@@ -716,11 +781,13 @@
       </div>
 
       <div class="content-card">
-        <div class="card-label">In Practice</div>
-        <h2>The difference a rewrite makes</h2>
+        <div class="card-label">Evolving Over Time</div>
+        <h2>How the same experience reads differently as you grow</h2>
         <p>
-          Here's how the same experience reads at different impact levels. The
-          underlying facts don't change — just how they're presented.
+          The facts of what you did don't change — but how you describe them
+          should. Early-stage bullet points tend to describe responsibilities.
+          Mature bullet points describe outcomes. This progression is a sign of
+          your growing self-awareness, not a flaw in your original writing.
         </p>
 
         <div class="bullet-example">
@@ -758,8 +825,8 @@
       </div>
 
       <div class="content-card">
-        <div class="card-label">How to Improve Your Scores</div>
-        <h2>Practical rewrites that raise the bar</h2>
+        <div class="card-label">When to Update Your Bullets</div>
+        <h2>Signs your resume needs an update</h2>
         <ul class="tip-list">
           <li>
             <svg
@@ -838,12 +905,13 @@
       </div>
 
       <div class="cta-block">
-        <h2>Score your resume's bullets now</h2>
+        <h2>See which bullets reflect your current stage</h2>
         <p>
-          Upload your resume and get an individual score for every bullet point
-          — with specific guidance on which ones to rewrite first.
+          Upload your resume and get a clear picture of which lines still
+          represent where you are — and which ones are ready to be rewritten
+          or retired as you grow.
         </p>
-        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
+        <a href="/resume/upload" class="cta-btn">Evolve My Resume →</a>
       </div>
     </main>
 

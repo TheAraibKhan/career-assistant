@@ -150,14 +150,14 @@
 
       <div class="error-actions">
         <a
-          href="{{ url_for('index') if session.user_id else url_for('auth.login') }}"
+          href="{% if session.user_id %}/app{% else %}/auth/login{% endif %}"
           class="btn btn-primary"
         >
           {% if session.user_id %} Go to Dashboard {% else %} Sign In {% endif
           %}
         </a>
         <a
-          href="{{ url_for('user.home') if session.user_id else '/' }}"
+          href="/"
           class="btn btn-secondary"
           >Go Home</a
         >

@@ -11,6 +11,9 @@ def get_db():
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row
+        # Enable WAL mode to prevent database locking issues
+        db.execute('PRAGMA journal_mode=WAL')
+        db.execute('PRAGMA timeout=10000')  # 10 second timeout for locks
     return db
 
 def init_db():

@@ -1,0 +1,1267 @@
+{% extends "base.html" %} {% block title %}Resume Builder | Smart Career
+Assistant{% endblock %} {% block content %}
+<div class="resume-builder-container">
+  <div class="builder-header">
+    <h1>📄 Resume Builder</h1>
+    <p>Create a professional resume with templates and AI suggestions</p>
+  </div>
+
+  <div class="builder-layout">
+    <!-- Left Panel: Form -->
+    <div class="builder-form-panel">
+      <!-- Step 1: Template Selection -->
+      <div class="builder-section" id="template-section">
+        <div class="section-header">
+          <h2>1. Choose Template</h2>
+          <span class="step-badge">Step 1</span>
+        </div>
+
+        <div class="templates-grid" id="templates-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Step 2: Personal Information -->
+      <div class="builder-section" id="personal-info-section">
+        <div class="section-header">
+          <h2>2. Personal Information</h2>
+          <span class="step-badge">Step 2</span>
+        </div>
+
+        <form class="form-group">
+          <div class="form-row">
+            <div class="form-column">
+              <label>Full Name *</label>
+              <input
+                type="text"
+                id="fullName"
+                class="form-input"
+                placeholder="John Doe"
+                required
+              />
+              <small class="form-hint">Used for resume header</small>
+            </div>
+            <div class="form-column">
+              <label>Email *</label>
+              <input
+                type="email"
+                id="email"
+                class="form-input"
+                placeholder="john@example.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-column">
+              <label>Phone</label>
+              <input
+                type="tel"
+                id="phone"
+                class="form-input"
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+            <div class="form-column">
+              <label>Location</label>
+              <input
+                type="text"
+                id="location"
+                class="form-input"
+                placeholder="San Francisco, CA"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-column">
+              <label>Website / Portfolio</label>
+              <input
+                type="url"
+                id="website"
+                class="form-input"
+                placeholder="https://yourportfolio.com"
+              />
+            </div>
+            <div class="form-column">
+              <label>LinkedIn Profile</label>
+              <input
+                type="url"
+                id="linkedin"
+                class="form-input"
+                placeholder="https://linkedin.com/in/johndoe"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-column full-width">
+              <label>Professional Summary</label>
+              <textarea
+                id="summary"
+                class="form-textarea"
+                placeholder="Brief overview of your career goals and key strengths..."
+              ></textarea>
+              <small class="form-hint"
+                >2-3 lines about your professional background</small
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 3: Experience -->
+      <div class="builder-section" id="experience-section">
+        <div class="section-header">
+          <h2>3. Work Experience</h2>
+          <span class="step-badge">Step 3</span>
+          <button class="btn-add" onclick="addExperienceEntry()">
+            + Add Experience
+          </button>
+        </div>
+
+        <div id="experience-entries" class="entries-container">
+          <!-- Dynamically added -->
+        </div>
+      </div>
+
+      <!-- Step 4: Education -->
+      <div class="builder-section" id="education-section">
+        <div class="section-header">
+          <h2>4. Education</h2>
+          <span class="step-badge">Step 4</span>
+          <button class="btn-add" onclick="addEducationEntry()">
+            + Add Education
+          </button>
+        </div>
+
+        <div id="education-entries" class="entries-container">
+          <!-- Dynamically added -->
+        </div>
+      </div>
+
+      <!-- Step 5: Projects -->
+      <div class="builder-section" id="projects-section">
+        <div class="section-header">
+          <h2>5. Projects</h2>
+          <span class="step-badge">Step 5</span>
+          <button class="btn-add" onclick="addProjectEntry()">
+            + Add Project
+          </button>
+        </div>
+
+        <div id="projects-entries" class="entries-container">
+          <!-- Dynamically added -->
+        </div>
+      </div>
+
+      <!-- Step 6: Skills -->
+      <div class="builder-section" id="skills-section">
+        <div class="section-header">
+          <h2>6. Skills</h2>
+          <span class="step-badge">Step 6</span>
+        </div>
+
+        <div class="skills-input-group">
+          <input
+            type="text"
+            id="skill-input"
+            class="form-input"
+            placeholder="e.g., Python, React, Project Management..."
+          />
+          <button class="btn-primary" onclick="addSkill()">Add Skill</button>
+        </div>
+
+        <div id="skills-list" class="skills-list">
+          <!-- Dynamically added -->
+        </div>
+        <small class="form-hint">Add 10-15 most relevant skills</small>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="builder-actions">
+        <button class="btn-secondary" onclick="clearResume()">Clear All</button>
+        <button class="btn-primary" onclick="validateResume()">
+          Validate Resume
+        </button>
+        <button class="btn-success" onclick="exportResume()">
+          Export Resume
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Preview -->
+    <div class="builder-preview-panel">
+      <div class="preview-sticky">
+        <div class="preview-header">
+          <h3>📋 Live Preview</h3>
+          <div class="preview-controls">
+            <button class="btn-small" onclick="togglePreviewType()">
+              Switch View
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-tabs">
+          <button class="tab-button active" onclick="switchTab('html-preview')">
+            HTML
+          </button>
+          <button class="tab-button" onclick="switchTab('json-preview')">
+            JSON
+          </button>
+        </div>
+
+        <div id="html-preview" class="preview-content active">
+          <!-- HTML preview populated by JavaScript -->
+        </div>
+
+        <div id="json-preview" class="preview-content">
+          <pre id="json-display"></pre>
+        </div>
+
+        <div class="preview-validation">
+          <div id="validation-status" class="validation-box">
+            <p>Resume status will appear here</p>
+          </div>
+        </div>
+
+        <div class="preview-suggestions">
+          <h4>💡 Suggestions</h4>
+          <ul id="suggestions-list">
+            <li>Add your personal information to get started</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Validation Modal -->
+<div id="validation-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Resume Validation</h2>
+      <button class="modal-close" onclick="closeValidationModal()">
+        &times;
+      </button>
+    </div>
+    <div id="validation-details" class="modal-body">
+      <!-- Validation results populated by JavaScript -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeValidationModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .resume-builder-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .builder-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .builder-header h1 {
+    font-size: 2.5em;
+    color: #333;
+    margin: 0 0 10px 0;
+  }
+
+  .builder-header p {
+    font-size: 1.1em;
+    color: #666;
+    margin: 0;
+  }
+
+  .builder-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .builder-form-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .builder-section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+
+  .section-header h2 {
+    font-size: 1.3em;
+    color: #333;
+    margin: 0;
+  }
+
+  .step-badge {
+    background: #1f77e2;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    white-space: nowrap;
+  }
+
+  .btn-add {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.3s;
+  }
+
+  .btn-add:hover {
+    background: #218838;
+  }
+
+  /* Templates Grid */
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .template-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+  }
+
+  .template-card:hover {
+    border-color: #1f77e2;
+    background: #f0f5ff;
+  }
+
+  .template-card.selected {
+    border-color: #1f77e2;
+    background: #e7f0ff;
+  }
+
+  .template-preview {
+    font-family: monospace;
+    font-size: 0.8em;
+    margin: 10px 0;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  .template-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .template-desc {
+    font-size: 0.8em;
+    color: #999;
+  }
+
+  /* Form Styles */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-row.full-width {
+    grid-template-columns: 1fr;
+  }
+
+  .form-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-column.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-input,
+  .form-textarea {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95em;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: border-color 0.3s;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #1f77e2;
+    box-shadow: 0 0 0 3px rgba(31, 119, 226, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .form-hint {
+    display: block;
+    font-size: 0.8em;
+    color: #999;
+    margin-top: 5px;
+  }
+
+  label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+  }
+
+  /* Entry Management */
+  .entries-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .entry-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    background: #fafbfc;
+    position: relative;
+  }
+
+  .entry-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .entry-card-title {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .btn-remove {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+  }
+
+  .btn-remove:hover {
+    background: #c82333;
+  }
+
+  /* Skills */
+  .skills-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .skills-input-group input {
+    flex: 1;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .skill-tag {
+    background: #1f77e2;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-tag button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 0;
+  }
+
+  /* Actions */
+  .builder-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  /* Preview Panel */
+  .builder-preview-panel {
+    position: relative;
+  }
+
+  .preview-sticky {
+    position: sticky;
+    top: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .preview-header {
+    background: #1f77e2;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .preview-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+  }
+
+  .preview-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .preview-tabs {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+  }
+
+  .tab-button.active {
+    color: #1f77e2;
+    border-bottom-color: #1f77e2;
+  }
+
+  .preview-content {
+    display: none;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .preview-content.active {
+    display: block;
+  }
+
+  #html-preview {
+    font-size: 0.9em;
+  }
+
+  #html-preview h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+  }
+
+  #html-preview p {
+    margin: 8px 0;
+  }
+
+  #json-preview pre {
+    margin: 0;
+    font-size: 0.8em;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    overflow: auto;
+  }
+
+  .validation-box {
+    border-left: 4px solid #ffc107;
+    padding: 12px;
+    background: #fffbf0;
+    margin: 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  .validation-box.success {
+    border-left-color: #28a745;
+    background: #f0fdf4;
+  }
+
+  .validation-box.error {
+    border-left-color: #dc3545;
+    background: #fdf0f0;
+  }
+
+  .preview-suggestions {
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .preview-suggestions h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.95em;
+  }
+
+  .preview-suggestions ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9em;
+  }
+
+  .preview-suggestions li {
+    margin: 5px 0;
+    color: #666;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary,
+  .btn-success,
+  .btn-small {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background: #1f77e2;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #1a61b8;
+  }
+
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-secondary:hover {
+    background: #d0d0d0;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background: #218838;
+  }
+
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 0.85em;
+    background: #1f77e2;
+    color: white;
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #999;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+    text-align: right;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .builder-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-sticky {
+      position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .builder-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .templates-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  let resumeData = {
+    personal: {
+      full_name: "",
+      email: "",
+      phone: "",
+      location: "",
+      website: "",
+      linkedin: "",
+    },
+    summary: "",
+    education: [],
+    experience: [],
+    projects: [],
+    skills: [],
+    certifications: [],
+  };
+
+  let selectedTemplate = "clean";
+
+  // Initialize
+  document.addEventListener("DOMContentLoaded", function () {
+    loadTemplates();
+    attachFormListeners();
+    updatePreview();
+  });
+
+  // Load templates
+  async function loadTemplates() {
+    try {
+      const response = await fetch("/api/resume/templates");
+      const data = await response.json();
+
+      if (data.success) {
+        const grid = document.getElementById("templates-grid");
+        grid.innerHTML = data.templates
+          .map(
+            (template) => `
+                <div class="template-card" onclick="selectTemplate('${template.id}')">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-preview">${template.preview}</div>
+                    <div class="template-desc">${template.description}</div>
+                </div>
+            `,
+          )
+          .join("");
+
+        // Select first template
+        selectTemplate("clean");
+      }
+    } catch (error) {
+      console.error("Error loading templates:", error);
+    }
+  }
+
+  function selectTemplate(templateId) {
+    selectedTemplate = templateId;
+    document.querySelectorAll(".template-card").forEach((card) => {
+      card.classList.remove("selected");
+    });
+    event.target.closest(".template-card").classList.add("selected");
+    updatePreview();
+  }
+
+  // Attach form listeners
+  function attachFormListeners() {
+    [
+      "fullName",
+      "email",
+      "phone",
+      "location",
+      "website",
+      "linkedin",
+      "summary",
+    ].forEach((fieldId) => {
+      const element = document.getElementById(fieldId);
+      if (element) {
+        element.addEventListener("change", function () {
+          const field = fieldId
+            .replace(/([A-Z])/g, "_$1")
+            .toLowerCase()
+            .replace("_full_name", "full_name");
+          resumeData.personal[field] = this.value;
+          updatePreview();
+        });
+      }
+    });
+  }
+
+  function addExperienceEntry() {
+    const entry = {
+      id: Date.now(),
+      job_title: "",
+      company: "",
+      start_date: "",
+      end_date: "",
+      description: "",
+    };
+
+    resumeData.experience.push(entry);
+    renderExperienceEntries();
+  }
+
+  function renderExperienceEntries() {
+    const container = document.getElementById("experience-entries");
+    container.innerHTML = resumeData.experience
+      .map(
+        (exp, index) => `
+        <div class="entry-card">
+            <div class="entry-card-header">
+                <div class="entry-card-title">${exp.job_title || "Work Experience"} @ ${exp.company || "Company"}</div>
+                <button class="btn-remove" onclick="removeExperience(${index})">Remove</button>
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Job Title</label>
+                        <input type="text" class="form-input" value="${exp.job_title}" onchange="updateExperience(${index}, 'job_title', this.value)">
+                    </div>
+                    <div class="form-column">
+                        <label>Company</label>
+                        <input type="text" class="form-input" value="${exp.company}" onchange="updateExperience(${index}, 'company', this.value)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Start Date</label>
+                        <input type="month" class="form-input" value="${exp.start_date}" onchange="updateExperience(${index}, 'start_date', this.value)">
+                    </div>
+                    <div class="form-column">
+                        <label>End Date</label>
+                        <input type="month" class="form-input" value="${exp.end_date}" onchange="updateExperience(${index}, 'end_date', this.value)" placeholder="Leave blank if current">
+                    </div>
+                </div>
+                <div class="form-row full-width">
+                    <div class="form-column full-width">
+                        <label>Description</label>
+                        <textarea class="form-textarea" onchange="updateExperience(${index}, 'description', this.value)" placeholder="What did you accomplish? Use action verbs like Developed, Designed, Led...">${exp.description}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+      )
+      .join("");
+  }
+
+  function updateExperience(index, field, value) {
+    resumeData.experience[index][field] = value;
+    updatePreview();
+    renderExperienceEntries();
+  }
+
+  function removeExperience(index) {
+    resumeData.experience.splice(index, 1);
+    renderExperienceEntries();
+    updatePreview();
+  }
+
+  function addEducationEntry() {
+    const entry = {
+      id: Date.now(),
+      degree: "",
+      major: "",
+      school: "",
+      graduation_year: "",
+      gpa: "",
+    };
+
+    resumeData.education.push(entry);
+    renderEducationEntries();
+  }
+
+  function renderEducationEntries() {
+    const container = document.getElementById("education-entries");
+    container.innerHTML = resumeData.education
+      .map(
+        (edu, index) => `
+        <div class="entry-card">
+            <div class="entry-card-header">
+                <div class="entry-card-title">${edu.degree} in ${edu.major || "Major"}</div>
+                <button class="btn-remove" onclick="removeEducation(${index})">Remove</button>
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Degree</label>
+                        <input type="text" class="form-input" value="${edu.degree}" onchange="updateEducation(${index}, 'degree', this.value)" placeholder="B.S., M.S., B.Tech, etc.">
+                    </div>
+                    <div class="form-column">
+                        <label>Major/Field</label>
+                        <input type="text" class="form-input" value="${edu.major}" onchange="updateEducation(${index}, 'major', this.value)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>School/University</label>
+                        <input type="text" class="form-input" value="${edu.school}" onchange="updateEducation(${index}, 'school', this.value)">
+                    </div>
+                    <div class="form-column">
+                        <label>Graduation Year</label>
+                        <input type="number" class="form-input" value="${edu.graduation_year}" onchange="updateEducation(${index}, 'graduation_year', this.value)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>GPA (optional)</label>
+                        <input type="text" class="form-input" value="${edu.gpa}" onchange="updateEducation(${index}, 'gpa', this.value)" placeholder="3.85/4.0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+      )
+      .join("");
+  }
+
+  function updateEducation(index, field, value) {
+    resumeData.education[index][field] = value;
+    updatePreview();
+    renderEducationEntries();
+  }
+
+  function removeEducation(index) {
+    resumeData.education.splice(index, 1);
+    renderEducationEntries();
+    updatePreview();
+  }
+
+  function addProjectEntry() {
+    const entry = {
+      id: Date.now(),
+      title: "",
+      description: "",
+      tech_stack: "",
+      github_link: "",
+      demo_link: "",
+    };
+
+    resumeData.projects.push(entry);
+    renderProjectEntries();
+  }
+
+  function renderProjectEntries() {
+    const container = document.getElementById("projects-entries");
+    container.innerHTML = resumeData.projects
+      .map(
+        (proj, index) => `
+        <div class="entry-card">
+            <div class="entry-card-header">
+                <div class="entry-card-title">${proj.title || "Project"}</div>
+                <button class="btn-remove" onclick="removeProject(${index})">Remove</button>
+            </div>
+            <div class="form-group">
+                <div class="form-row full-width">
+                    <div class="form-column full-width">
+                        <label>Project Title</label>
+                        <input type="text" class="form-input" value="${proj.title}" onchange="updateProject(${index}, 'title', this.value)">
+                    </div>
+                </div>
+                <div class="form-row full-width">
+                    <div class="form-column full-width">
+                        <label>Description</label>
+                        <textarea class="form-textarea" onchange="updateProject(${index}, 'description', this.value)">${proj.description}</textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Technologies</label>
+                        <input type="text" class="form-input" value="${proj.tech_stack}" onchange="updateProject(${index}, 'tech_stack', this.value)" placeholder="Python, React, MongoDB...">
+                    </div>
+                    <div class="form-column">
+                        <label>GitHub Link</label>
+                        <input type="url" class="form-input" value="${proj.github_link}" onchange="updateProject(${index}, 'github_link', this.value)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Demo Link</label>
+                        <input type="url" class="form-input" value="${proj.demo_link}" onchange="updateProject(${index}, 'demo_link', this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+      )
+      .join("");
+  }
+
+  function updateProject(index, field, value) {
+    resumeData.projects[index][field] = value;
+    updatePreview();
+    renderProjectEntries();
+  }
+
+  function removeProject(index) {
+    resumeData.projects.splice(index, 1);
+    renderProjectEntries();
+    updatePreview();
+  }
+
+  function addSkill() {
+    const input = document.getElementById("skill-input");
+    const skill = input.value.trim();
+
+    if (skill && !resumeData.skills.includes(skill)) {
+      resumeData.skills.push(skill);
+      input.value = "";
+      renderSkills();
+      updatePreview();
+    }
+  }
+
+  function renderSkills() {
+    const container = document.getElementById("skills-list");
+    container.innerHTML = resumeData.skills
+      .map(
+        (skill) => `
+        <div class="skill-tag">
+            ${skill}
+            <button onclick="removeSkill('${skill}')">✕</button>
+        </div>
+    `,
+      )
+      .join("");
+  }
+
+  function removeSkill(skill) {
+    resumeData.skills = resumeData.skills.filter((s) => s !== skill);
+    renderSkills();
+    updatePreview();
+  }
+
+  function updatePreview() {
+    // Update JSON view
+    document.getElementById("json-display").textContent = JSON.stringify(
+      resumeData,
+      null,
+      2,
+    );
+
+    // Update HTML preview (simplified)
+    const preview = document.getElementById("html-preview");
+    preview.innerHTML = `
+        <h4>${resumeData.personal.full_name || "Your Name"}</h4>
+        <p>${resumeData.personal.email} | ${resumeData.personal.phone || "Phone"} | ${resumeData.personal.location || "Location"}</p>
+        
+        ${resumeData.summary ? `<p><strong>Summary:</strong> ${resumeData.summary}</p>` : ""}
+        
+        ${
+          resumeData.experience.length > 0
+            ? `
+            <h5>Experience</h5>
+            ${resumeData.experience
+              .map(
+                (exp) => `
+                <p><strong>${exp.job_title}</strong> @ ${exp.company}</p>
+                <p>${exp.description}</p>
+            `,
+              )
+              .join("")}
+        `
+            : ""
+        }
+        
+        ${
+          resumeData.projects.length > 0
+            ? `
+            <h5>Projects</h5>
+            ${resumeData.projects
+              .map(
+                (proj) => `
+                <p><strong>${proj.title}</strong></p>
+                <p>${proj.description}</p>
+            `,
+              )
+              .join("")}
+        `
+            : ""
+        }
+        
+        ${
+          resumeData.skills.length > 0
+            ? `
+            <p><strong>Skills:</strong> ${resumeData.skills.join(", ")}</p>
+        `
+            : ""
+        }
+    `;
+  }
+
+  function switchTab(tabId) {
+    document
+      .querySelectorAll(".tab-button")
+      .forEach((btn) => btn.classList.remove("active"));
+    document
+      .querySelectorAll(".preview-content")
+      .forEach((content) => content.classList.remove("active"));
+
+    event.target.classList.add("active");
+    document.getElementById(tabId).classList.add("active");
+  }
+
+  function validateResume() {
+    console.log("Validating resume...");
+    // TODO: Call validation API
+  }
+
+  function exportResume() {
+    // TODO: Show export options (PDF, ATS format, etc.)
+    console.log("Exporting resume...");
+  }
+
+  function clearResume() {
+    if (confirm("Clear all resume data?")) {
+      resumeData = {
+        personal: {
+          full_name: "",
+          email: "",
+          phone: "",
+          location: "",
+          website: "",
+          linkedin: "",
+        },
+        summary: "",
+        education: [],
+        experience: [],
+        projects: [],
+        skills: [],
+      };
+
+      // Clear form inputs
+      [
+        "fullName",
+        "email",
+        "phone",
+        "location",
+        "website",
+        "linkedin",
+        "summary",
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+
+      renderExperienceEntries();
+      renderEducationEntries();
+      renderProjectEntries();
+      renderSkills();
+      updatePreview();
+    }
+  }
+
+  function closeValidationModal() {
+    document.getElementById("validation-modal").classList.remove("active");
+  }
+
+  // Allow Enter key to add skills
+  document.addEventListener("DOMContentLoaded", function () {
+    const skillInput = document.getElementById("skill-input");
+    if (skillInput) {
+      skillInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          addSkill();
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

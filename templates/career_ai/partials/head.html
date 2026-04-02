@@ -1,0 +1,19 @@
+<!-- Shared head imports for all CareerAssist app pages -->
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/career_ai.css') }}"/>
+<style>
+  .font-display{font-family:'Poppins','Inter',system-ui,sans-serif;}
+  .text-gradient{background:linear-gradient(135deg,#8b5cf6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .glass{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);}
+  .card-3d{transform-style:preserve-3d;transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),box-shadow 0.4s ease;}
+  .card-3d:hover{transform:translateY(-4px);box-shadow:0 20px 40px -12px rgba(139,92,246,0.2);}
+  .glow-border{border:1px solid rgba(255,255,255,0.06);transition:all 0.3s;}
+  .glow-border:hover{border-color:rgba(139,92,246,0.35);box-shadow:0 0 25px rgba(139,92,246,0.08);}
+  .icon-box{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+</style>

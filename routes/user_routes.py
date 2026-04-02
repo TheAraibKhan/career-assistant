@@ -1,13 +1,11 @@
 from flask import Blueprint, render_template, request, session, jsonify, url_for
-from services.analysis import analyze_profile
-from services.roadmap import get_roadmap
-from services.readiness import calculate_readiness
-from services.recommendations_engine import get_detailed_recommendation
-from services.action_plan import generate_action_plan
+from services.analysis_pipeline import run_full_pipeline
+from services.roadmap_service import generate_roadmap
 from services.career_engine import (
     get_career_recommendation, get_role_skills, calculate_career_confidence,
     get_career_guidance
 )
+from services.action_guidance_service import ActionGuidanceService
 from services.saas_service import check_usage_limit, increment_usage, get_usage_context
 from database.models import insert_submission, get_user_submissions
 import traceback
@@ -78,11 +76,18 @@ def home():
                     
                     role_skills = get_role_skills(role)
                     
-                    readiness_data = calculate_readiness(role, all_skills)
-                    readiness_score = readiness_data.get('readiness_score', 0)
-                    strengths = readiness_data.get('strengths', [])
-                    gaps = readiness_data.get('gaps', [])
-                    next_actions = readiness_data.get('next_actions', [])
+                    # Calculate readiness from career_engine
+                    readiness_score = confidence
+                    missing_skills = set(role_skills) - set(all_skills)
+                    strengths = [s for s in role_skills if s in all_skills]
+                    gaps = list(missing_skills)
+                    next_actions = [f"Learn {s}" for s in list(missing_skills)[:3]]
+                    readiness_data = {
+                        'readiness_score': readiness_score,
+                        'strengths': strengths,
+                        'gaps': gaps,
+                        'next_actions': next_actions
+                    }
                     
                     submission_id = None
                     if user_id:
@@ -240,7 +245,7 @@ def analyze_resume_text():
             session['user_id'] = user_id
         
         # Parse resume for basic info
-        from services.resume_parser import parse_resume_text
+        from services.resume_parser_saas import parse_resume_text
         parsed = parse_resume_text(resume_text) if resume_text else {
             'name': 'Guest User',
             'skills': [],
@@ -258,12 +263,18 @@ def analyze_resume_text():
         role = career_rec['role'] if career_rec else (role_text or 'Software Engineer')
         tier = career_rec.get('tier', 'Entry') if career_rec else 'Entry'
         
-        # Calculate readiness
-        readiness_data = calculate_readiness(role, skills)
-        readiness_score = readiness_data.get('readiness_score', 0)
+        # Calculate readiness from career_engine
         confidence = calculate_career_confidence(interest, level, skills)
-        strengths = readiness_data.get('strengths', [])
-        gaps = readiness_data.get('gaps', [])
+        role_skills = get_role_skills(role)
+        missing_skills = set(role_skills) - set(skills) if role_skills else set()
+        strengths = [s for s in role_skills if s in skills] if role_skills else []
+        gaps = list(missing_skills)
+        readiness_data = {
+            'readiness_score': confidence,
+            'strengths': strengths,
+            'gaps': gaps
+        }
+        readiness_score = readiness_data.get('readiness_score', 0)
         
         # Save to database
         submission_id = insert_submission(
@@ -308,7 +319,7 @@ def analyze_resume_text():
                     'confidence': confidence,
                     'strengths': strengths[:5],
                     'gaps': gaps[:5],
-                    'redirect': url_for('dashboard.index')
+                    'redirect': '/app'
                 }
             })
         else:

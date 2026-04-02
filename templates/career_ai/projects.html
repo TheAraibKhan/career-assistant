@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Projects — CareerAssist</title>
+    <meta
+      name="description"
+      content="AI-suggested projects to build your portfolio and advance your career."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <style>
+      .projects-hero {
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.08),
+          rgba(139, 92, 246, 0.06)
+        );
+        border: 1px solid rgba(236, 72, 153, 0.15);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .filter-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .filter-chip {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .filter-chip:hover,
+      .filter-chip.active {
+        background: rgba(139, 92, 246, 0.12);
+        border-color: var(--neon-purple);
+        color: var(--neon-purple);
+      }
+      .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+      .proj-card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      .proj-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .proj-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--border-glow);
+        box-shadow: var(--shadow-glow-md);
+      }
+      .proj-card:hover::before {
+        opacity: 1;
+      }
+      .proj-card:nth-child(3n + 1)::before {
+        background: var(--grad-primary);
+      }
+      .proj-card:nth-child(3n + 2)::before {
+        background: var(--grad-accent);
+      }
+      .proj-card:nth-child(3n + 3)::before {
+        background: var(--grad-success);
+      }
+      .proj-header {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+      }
+      .proj-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+      .proj-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .proj-subtitle {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .proj-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        line-height: 1.55;
+        margin-bottom: 1rem;
+      }
+      .proj-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+      }
+      .proj-tech span {
+        font-size: 0.6rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--neon-purple);
+      }
+      .proj-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-glass);
+      }
+      .proj-xp {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--neon-gold);
+        background: rgba(245, 158, 11, 0.1);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+      }
+      .proj-time {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+      }
+      .proj-start-btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        background: var(--grad-primary);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .proj-start-btn:hover {
+        box-shadow: var(--shadow-glow-sm);
+        transform: scale(1.05);
+      }
+      .proj-steps {
+        margin-top: 1rem;
+        display: none;
+      }
+      .proj-card.expanded .proj-steps {
+        display: block;
+        animation: slideIn 0.3s var(--ease-smooth);
+      }
+      .proj-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        padding: 0.5rem 0;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+      .proj-step-num {
+        min-width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--neon-purple);
+        font-size: 0.6rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .github-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/app" class="sidebar-logo"
+            ><div
+              class="logo-icon"
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              CA
+            </div>
+            <div>
+              <div class="logo-text">CareerAssist</div>
+              <div class="logo-tagline">From Confusion to Clarity</div>
+            </div></a
+          >
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a href="/app" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">D</span>
+            Dashboard</a
+          >
+          <a href="/app/journey" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">J</span> Journey</a
+          >
+          <a href="/app/roadmap" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">R</span> Roadmap</a
+          >
+          <a href="/app/projects" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">P</span>
+            Projects</a
+          >
+          <div class="nav-section-label" style="margin-top: 0.75rem">Tools</div>
+          <a href="/app/resume-lab" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">RL</span> Resume
+            Lab</a
+          >
+          <a href="/app/insights" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">I</span>
+            Insights</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <div class="user-name">{{ current_user.name or 'Profile' }}</div>
+              <div class="user-role">
+                {% if onboarding and onboarding.phase == 'pre-college'
+                %}Pre-College{% elif onboarding and onboarding.phase ==
+                'college' %}College{% elif onboarding and onboarding.phase ==
+                'post-college' %}Post-College{% else %}Member{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" style="margin-right: 0">
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>Project Builder 💡</h1>
+            <p>AI-recommended projects matched to your skill level and goals</p>
+          </div>
+        </div>
+
+        <div class="projects-hero">
+          <div>
+            <h3
+              style="
+                font-family: var(--font-display);
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 0.25rem;
+              "
+            >
+              Build Projects That Matter
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-secondary)">
+              Each project is designed to fill skill gaps and boost your
+              portfolio. Step-by-step guidance included.
+            </p>
+          </div>
+          <div style="text-align: center">
+            <div
+              style="
+                font-family: var(--font-display);
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: var(--neon-purple);
+              "
+            >
+              2/6
+            </div>
+            <div style="font-size: 0.65rem; color: var(--text-muted)">
+              Projects Done
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-chip active" onclick="filterProjects('all', this)">
+            All Projects
+          </div>
+          <div class="filter-chip" onclick="filterProjects('beginner', this)">
+            Beginner
+          </div>
+          <div
+            class="filter-chip"
+            onclick="filterProjects('intermediate', this)"
+          >
+            Intermediate
+          </div>
+          <div class="filter-chip" onclick="filterProjects('advanced', this)">
+            Advanced
+          </div>
+          <div class="filter-chip" onclick="filterProjects('web', this)">
+            Web Dev
+          </div>
+          <div class="filter-chip" onclick="filterProjects('ai', this)">
+            AI/ML
+          </div>
+        </div>
+
+        <div class="project-grid" id="projectsContainer">
+          <!-- Projects loaded dynamically here -->
+          <p
+            style="
+              color: var(--text-muted);
+              padding: 2rem;
+              text-align: center;
+              grid-column: 1/-1;
+            "
+          >
+            Loading projects...
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let allProjects = [];
+
+      // Load projects from API
+      async function loadProjects() {
+        try {
+          const response = await fetch("/api/projects");
+          if (!response.ok) throw new Error("Failed to fetch projects");
+
+          const data = await response.json();
+          allProjects = data.projects || [];
+
+          // Get profile to update completion stat
+          const profileRes = await fetch("/api/user-profile");
+          const profileData = await profileRes.json();
+          const stats = profileData.stats || {};
+
+          // Update hero stats
+          const completed = allProjects.filter(
+            (p) => p.status === "completed",
+          ).length;
+          const total = allProjects.length;
+          document.querySelector(
+            ".projects-hero div:last-child div:first-child",
+          ).textContent = `${completed}/${total}`;
+
+          renderProjects("all");
+        } catch (error) {
+          console.error("Error loading projects:", error);
+          document.getElementById("projectsContainer").innerHTML =
+            '<p style="color: red; padding: 2rem; text-align: center; grid-column: 1/-1;">Error loading projects. Please refresh.</p>';
+        }
+      }
+
+      // Render projects based on filter
+      function renderProjects(filter) {
+        const container = document.getElementById("projectsContainer");
+        container.innerHTML = "";
+
+        const filtered =
+          filter === "all"
+            ? allProjects
+            : allProjects.filter(
+                (p) => p.level === filter || p.category === filter,
+              );
+
+        if (filtered.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); padding: 2rem; text-align: center; grid-column: 1/-1;">No projects found for this filter.</p>';
+          return;
+        }
+
+        filtered.forEach((project) => {
+          const statusBadgeText =
+            project.status === "completed"
+              ? "Completed"
+              : project.status === "in-progress"
+                ? "In Progress"
+                : "Locked";
+          const statusBadgeClass =
+            project.status === "completed"
+              ? "badge-done"
+              : project.status === "in-progress"
+                ? "badge-progress"
+                : "badge-locked";
+          const levelBadgeClass =
+            project.level === "beginner"
+              ? "diff-easy"
+              : project.level === "intermediate"
+                ? "diff-medium"
+                : "diff-hard";
+
+          const card = document.createElement("div");
+          card.className = "proj-card";
+          card.dataset.level = project.level;
+          card.dataset.cat = project.category;
+          card.onclick = function () {
+            toggleProject(this);
+          };
+
+          card.innerHTML = `
+            <div class="proj-header">
+              <div class="proj-icon" style="background:rgba(139,92,246,0.15);">${project.icon}</div>
+              <div>
+                <div class="proj-title">${project.title}</div>
+                <div class="proj-subtitle">${project.description.substring(0, 30)}...</div>
+              </div>
+            </div>
+            <div class="proj-desc">${project.description}</div>
+            <div class="proj-tech">
+              ${project.tech.map((t) => `<span>${t}</span>`).join("")}
+            </div>
+            <div class="proj-footer">
+              <span class="project-difficulty ${levelBadgeClass}">${project.level.charAt(0).toUpperCase() + project.level.slice(1)}</span>
+              <span class="proj-xp">+${project.xp} XP</span>
+              <span class="proj-time">📅 ${project.duration}</span>
+            </div>
+            <div class="proj-steps">
+              ${project.steps
+                .map(
+                  (step, idx) => `
+                <div class="proj-step">
+                  <div class="proj-step-num">${idx + 1}</div>
+                  ${step}
+                </div>
+              `,
+                )
+                .join("")}
+              <div class="github-badge">🔗 Push to GitHub → Add to Portfolio</div>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      function toggleProject(card) {
+        card.classList.toggle("expanded");
+      }
+
+      function filterProjects(filter, btn) {
+        document
+          .querySelectorAll(".filter-chip")
+          .forEach((c) => c.classList.remove("active"));
+        btn.classList.add("active");
+        renderProjects(filter);
+      }
+
+      // Load projects on page load
+      window.addEventListener("load", loadProjects);
+    </script>
+  </body>
+</html>

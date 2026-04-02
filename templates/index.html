@@ -1,3056 +1,404 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <script>
-      (function () {
-        var saved = localStorage.getItem("careerassist-theme");
-        var prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
-        if (saved === "dark" || (!saved && prefersDark)) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
-      })();
-    </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Get AI-powered feedback on your resume. Built for students and early professionals looking to land their first or next role."
-    />
-    <meta
-      name="keywords"
-      content="resume checker, AI resume review, career assistant, job application help"
-    />
-    <meta name="author" content="CareerAssist" />
-
-    <title>
-      CareerAssist — AI Resume Review for Students & Early Professionals
-    </title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <style>
-      /* ===== CSS RESET & BASE ===== */
-      *,
-      *::before,
-      *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      :root {
-        /* Primary Colors - Purple gradient like screenshot 2 */
-        --primary: #9333ea;
-        --primary-dark: #7c3aed;
-        --primary-light: #a855f7;
-
-        /* Accent Colors */
-        --accent: #ec4899;
-        --accent-light: #f472b6;
-        --success: #10b981;
-        --warning: #f59e0b;
-
-        /* Neutral Colors */
-        --text-primary: #1f2937;
-        --text-secondary: #4b5563;
-        --text-muted: #6b7280;
-        --border: #e5e7eb;
-        --border-light: #f3f4f6;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8faff;
-        --bg-tertiary: #f5f7fc;
-
-        /* Shadows */
-        --shadow-sm: 0 1px 2px 0 rgba(147, 51, 234, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(147, 51, 234, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(147, 51, 234, 0.15);
-        --shadow-xl: 0 20px 25px -5px rgba(147, 51, 234, 0.2);
-
-        /* Spacing */
-        --space-xs: 0.25rem;
-        --space-sm: 0.5rem;
-        --space-md: 1rem;
-        --space-lg: 1.5rem;
-        --space-xl: 2rem;
-        --space-2xl: 3rem;
-        --space-3xl: 4rem;
-
-        /* Border Radius */
-        --radius-sm: 0.25rem;
-        --radius-md: 0.375rem;
-        --radius-lg: 0.5rem;
-        --radius-xl: 0.75rem;
-        --radius-2xl: 1rem;
-
-        /* Transitions */
-        --transition-fast: 150ms ease;
-        --transition-base: 220ms ease;
-        --transition-slow: 350ms ease;
-      }
-
-      html {
-        scroll-behavior: smooth;
-        font-size: 16px;
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background-color: var(--bg-primary);
-        color: var(--text-primary);
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        overflow-x: hidden;
-      }
-
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      button {
-        font-family: inherit;
-        cursor: pointer;
-      }
-
-      /* ===== HEADER ===== */
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background-color: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-bottom: 1px solid var(--border);
-        transition: all var(--transition-base);
-      }
-
-      .site-header.scrolled {
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-      }
-
-      .header-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 1.125rem 2.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .logo {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
-        transition: color var(--transition-base);
-        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .logo:hover {
-        opacity: 0.8;
-      }
-
-      .main-nav {
-        display: flex;
-        align-items: center;
-        gap: 2.5rem;
-      }
-
-      .main-nav a {
-        font-size: 0.9375rem;
-        font-weight: 500;
-        color: var(--text-secondary);
-        transition: color var(--transition-base);
-        letter-spacing: -0.01em;
-      }
-
-      .main-nav a:hover {
-        color: var(--primary);
-      }
-
-      .nav-login {
-        padding: 0;
-        margin: 0;
-      }
-
-      .btn-primary {
-        background: white;
-        color: var(--text-primary);
-        padding: 0.5rem 1.125rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        font-weight: 500;
-        font-size: 0.9375rem;
-        transition: all var(--transition-base);
-        box-shadow: none;
-      }
-
-      .btn-primary:hover {
-        background: var(--bg-secondary);
-        border-color: var(--primary);
-        color: var(--primary);
-      }
-
-      .btn-primary:active {
-        transform: translateY(0);
-      }
-
-      .mobile-menu-toggle {
-        display: none;
-        flex-direction: column;
-        gap: 4px;
-        background: transparent;
-        border: none;
-        padding: 0.5rem;
-      }
-
-      .mobile-menu-toggle span {
-        width: 24px;
-        height: 2px;
-        background-color: var(--text-primary);
-        border-radius: 2px;
-        transition: all var(--transition-base);
-      }
-
-      /* ===== HERO SECTION - IDEAPROOF STYLE ===== */
-      .hero {
-        min-height: 100vh;
-        padding: 4rem 2rem;
-        background: linear-gradient(
-          135deg,
-          #f5f3ff 0%,
-          #faf5ff 25%,
-          #f0f9ff 50%,
-          #faf5ff 75%,
-          #f5f3ff 100%
-        );
-        position: relative;
-        overflow: hidden;
-      }
-
-      /* Grid Pattern Background */
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image:
-          linear-gradient(rgba(147, 51, 234, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(147, 51, 234, 0.03) 1px, transparent 1px);
-        background-size: 40px 40px;
-        background-position: -1px -1px;
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      /* Floating gradient orbs like IdeaProof */
-      .gradient-orb-1 {
-        position: absolute;
-        top: -20%;
-        left: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(168, 85, 247, 0.18) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        filter: blur(60px);
-        pointer-events: none;
-        animation: float 20s ease-in-out infinite;
-        z-index: 2;
-      }
-
-      .gradient-orb-2 {
-        position: absolute;
-        bottom: -20%;
-        right: -10%;
-        width: 700px;
-        height: 700px;
-        background: radial-gradient(
-          circle,
-          rgba(99, 102, 241, 0.15) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        filter: blur(70px);
-        pointer-events: none;
-        animation: float 25s ease-in-out infinite reverse;
-        z-index: 2;
-      }
-
-      .gradient-orb-3 {
-        position: absolute;
-        top: 40%;
-        right: 20%;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(
-          circle,
-          rgba(236, 72, 153, 0.12) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        filter: blur(50px);
-        pointer-events: none;
-        animation: float 18s ease-in-out infinite;
-        z-index: 2;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translate(0, 0) scale(1);
-        }
-        33% {
-          transform: translate(30px, -30px) scale(1.1);
-        }
-        66% {
-          transform: translate(-20px, 20px) scale(0.95);
-        }
-      }
-
-      .hero-container {
-        max-width: 820px;
-        width: 100%;
-        margin: 0 auto;
-        position: relative;
-        z-index: 10;
-        padding-top: 2rem;
-      }
-
-      /* Interactive Generator Card */
-      .generator-card {
-        background: white;
-        border-radius: 1.5rem;
-        box-shadow:
-          0 4px 6px -1px rgba(0, 0, 0, 0.03),
-          0 20px 60px -12px rgba(147, 51, 234, 0.2);
-        padding: 3rem;
-        border: 1px solid rgba(147, 51, 234, 0.1);
-        transition: all 0.3s ease;
-        position: relative;
-      }
-
-      .generator-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
-        border-radius: 1.5rem 1.5rem 0 0;
-      }
-
-      .generator-card:hover {
-        box-shadow:
-          0 4px 6px -1px rgba(0, 0, 0, 0.04),
-          0 24px 70px -12px rgba(147, 51, 234, 0.25);
-        transform: translateY(-4px);
-      }
-
-      /* Eyebrow Text */
-      .hero-eyebrow {
-        font-size: 0.8125rem;
-        font-weight: 600;
-        color: #9333ea;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 0.75rem;
-        text-align: center;
-      }
-
-      /* Main Headline */
-      .hero-headline {
-        font-size: clamp(1.875rem, 4vw, 2.5rem);
-        font-weight: 800;
-        color: var(--text-primary);
-        letter-spacing: -0.03em;
-        line-height: 1.15;
-        margin-bottom: 2.5rem;
-        text-align: center;
-      }
-
-      /* Input Mode Toggle */
-      .input-mode-toggle {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        background: #f8fafc;
-        padding: 0.375rem;
-        border-radius: 0.75rem;
-      }
-
-      .mode-btn {
-        flex: 1;
-        padding: 0.75rem 1rem;
-        border: none;
-        background: transparent;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-        font-weight: 600;
-        border-radius: 0.625rem;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-      }
-
-      .mode-btn.active {
-        background: white;
-        color: var(--text-primary);
-        box-shadow:
-          0 2px 8px rgba(147, 51, 234, 0.15),
-          0 0 0 1px rgba(147, 51, 234, 0.1);
-      }
-
-      .mode-btn:hover:not(.active) {
-        color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.5);
-      }
-
-      /* Input Container */
-      .input-container {
-        position: relative;
-        margin-bottom: 1rem;
-      }
-
-      .input-view {
-        display: none;
-      }
-
-      .input-view.active {
-        display: block;
-      }
-
-      /* Main Textarea */
-      .hero-textarea {
-        width: 100%;
-        min-height: 220px;
-        padding: 1.25rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.875rem;
-        font-family: inherit;
-        font-size: 0.9375rem;
-        line-height: 1.6;
-        color: var(--text-primary);
-        resize: vertical;
-        transition: all 0.2s ease;
-        background: white;
-      }
-
-      .hero-textarea:focus {
-        outline: none;
-        border-color: #9333ea;
-        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-      }
-
-      .hero-textarea::placeholder {
-        color: #9ca3af;
-      }
-
-      /* Role Input */
-      .hero-input {
-        width: 100%;
-        padding: 1.25rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.875rem;
-        font-family: inherit;
-        font-size: 0.9375rem;
-        color: var(--text-primary);
-        transition: all 0.2s ease;
-        background: white;
-      }
-
-      .hero-input:focus {
-        outline: none;
-        border-color: #9333ea;
-        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-      }
-
-      .hero-input::placeholder {
-        color: #9ca3af;
-      }
-
-      /* Dual Input View */
-      .dual-input-grid {
-        display: grid;
-        gap: 1rem;
-      }
-
-      .input-label {
-        font-size: 0.8125rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-        margin-bottom: 0.5rem;
-        display: block;
-      }
-
-      /* Character Counter */
-      .char-counter {
-        position: absolute;
-        bottom: 0.75rem;
-        right: 0.75rem;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-weight: 500;
-      }
-
-      /* Primary Action Button */
-      .hero-cta {
-        width: 100%;
-        padding: 1.125rem 2rem;
-        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-        color: white;
-        border: none;
-        border-radius: 0.875rem;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-      }
-
-      .hero-cta:hover {
-        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.5);
-        transform: translateY(-2px);
-      }
-
-      .hero-cta:active {
-        transform: translateY(0);
-      }
-
-      .hero-cta:disabled {
-        background: #d1d5db;
-        color: #9ca3af;
-        cursor: not-allowed;
-        box-shadow: none;
-      }
-
-      /* Trust Hint */
-      .trust-hint {
-        text-align: center;
-        margin-top: 1rem;
-        font-size: 0.875rem;
-        color: #6b7280;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        font-weight: 500;
-      }
-
-      .trust-hint span {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-      }
-
-      .trust-hint span:first-child {
-        color: #10b981;
-      }
-
-      .trust-hint span:last-child {
-        color: #f59e0b;
-      }
-
-      .trust-dot {
-        width: 3px;
-        height: 3px;
-        background: #d1d5db;
-        border-radius: 50%;
-      }
-
-      /* Quick Stats Below Card */
-      .hero-stats {
-        display: flex;
-        justify-content: center;
-        gap: 4rem;
-        margin-top: 3rem;
-        padding: 0;
-      }
-
-      .stat-item {
-        text-align: center;
-      }
-
-      .stat-item strong {
-        display: block;
-        font-size: 1.75rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.25rem;
-        letter-spacing: -0.02em;
-      }
-
-      .stat-item span {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        font-weight: 500;
-      }
-
-      /* Loading State */
-      .loading-spinner {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* ===== SECTION COMMONS ===== */
-      .section-wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-      }
-
-      .section-header {
-        text-align: center;
-        margin-bottom: var(--space-3xl);
-      }
-
-      .section-header h2 {
-        font-size: clamp(2rem, 4vw, 2.75rem);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-      }
-
-      .section-header p {
-        font-size: clamp(1rem, 2vw, 1.125rem);
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.7;
-      }
-
-      /* ===== HOW IT WORKS SECTION ===== */
-      .how-section {
-        padding: 6rem 2rem;
-        background: white;
-      }
-
-      .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2.5rem;
-        position: relative;
-      }
-
-      .step-card {
-        padding: 2rem 1.75rem;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-xl);
-        transition: all var(--transition-slow);
-        position: relative;
-      }
-
-      .step-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
-        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        opacity: 0;
-        transition: opacity var(--transition-base);
-      }
-
-      .step-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-        border-color: rgba(147, 51, 234, 0.2);
-      }
-
-      .step-card:hover::before {
-        opacity: 1;
-      }
-
-      .step-number {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-        color: white;
-        border-radius: 50%;
-        font-weight: 800;
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
-        position: relative;
-      }
-
-      .step-number::after {
-        content: "";
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
-        z-index: -1;
-        opacity: 0.15;
-      }
-
-      .step-card h3 {
-        font-size: 1.375rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.75rem;
-        letter-spacing: -0.01em;
-      }
-
-      .step-card p {
-        font-size: 1rem;
-        line-height: 1.7;
-        color: var(--text-secondary);
-      }
-
-      /* ===== FEATURES SECTION ===== */
-      .features-section {
-        padding: 6rem 2rem;
-        background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .features-section::before {
-        content: "";
-        position: absolute;
-        top: -40%;
-        right: -20%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(147, 51, 234, 0.06) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        pointer-events: none;
-      }
-
-      .features-section::after {
-        content: "";
-        position: absolute;
-        bottom: -30%;
-        left: -15%;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(
-          circle,
-          rgba(236, 72, 153, 0.05) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        pointer-events: none;
-      }
-
-      .features-list {
-        display: grid;
-        gap: 2rem;
-        max-width: 1000px;
-        margin: 0 auto;
-        position: relative;
-        z-index: 1;
-      }
-
-      /* Feature Cards */
-      .feature-item {
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 2rem;
-        padding: 2.5rem;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 1.25rem;
-        transition: all var(--transition-slow);
-        align-items: start;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-      }
-
-      .feature-item:hover {
-        border-color: rgba(147, 51, 234, 0.3);
-        box-shadow: 0 12px 24px -5px rgba(147, 51, 234, 0.18);
-        transform: translateY(-4px);
-      }
-
-      a.feature-link {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-      }
-
-      .feature-item::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
-        opacity: 0;
-        transition: opacity var(--transition-base);
-      }
-
-      .feature-item:hover::before {
-        opacity: 1;
-      }
-
-      /* Feature Icon */
-      .feature-icon-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .feature-icon {
-        flex-shrink: 0;
-        width: 72px;
-        height: 72px;
-        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
-        border-radius: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.25);
-        font-size: 2rem;
-        transition: all var(--transition-base);
-      }
-
-      .feature-item:hover .feature-icon {
-        transform: scale(1.08) rotate(2deg);
-        box-shadow: 0 8px 20px rgba(147, 51, 234, 0.35);
-      }
-
-      /* Health Indicators */
-      .health-indicators {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        padding-top: 0.5rem;
-      }
-
-      .health-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
-      .health-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .health-dot.green {
-        background: #10b981;
-        box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-      }
-
-      .health-dot.yellow {
-        background: #f59e0b;
-        box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-      }
-
-      .health-dot.red {
-        background: #ef4444;
-        box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-      }
-
-      .health-item span:last-child {
-        color: var(--text-secondary);
-      }
-
-      /* Feature Content */
-      .feature-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .feature-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 1rem;
-      }
-
-      .feature-title-block h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.01em;
-      }
-
-      .feature-subtitle {
-        font-size: 0.875rem;
-        color: #9333ea;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .feature-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: linear-gradient(
-          135deg,
-          rgba(147, 51, 234, 0.1) 0%,
-          rgba(236, 72, 153, 0.1) 100%
-        );
-        border: 1px solid rgba(147, 51, 234, 0.2);
-        border-radius: 0.5rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #9333ea;
-        white-space: nowrap;
-      }
-
-      /* Feature Insights */
-      .feature-insight {
-        background: #f8fafc;
-        border-left: 3px solid #9333ea;
-        padding: 1.25rem;
-        border-radius: 0.5rem;
-        display: grid;
-        gap: 0.75rem;
-      }
-
-      .insight-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-      }
-
-      .insight-text {
-        font-size: 0.95rem;
-        line-height: 1.6;
-        color: var(--text-secondary);
-      }
-
-      /* Feature Metrics */
-      .feature-metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-      }
-
-      .metric-item {
-        padding: 1rem;
-        background: #f8fafc;
-        border-radius: 0.75rem;
-        border: 1px solid #f0f1f3;
-        text-align: center;
-      }
-
-      .metric-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #9333ea;
-        margin-bottom: 0.25rem;
-      }
-
-      .metric-label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-weight: 500;
-      }
-
-      /* Action Suggestions */
-      .action-suggestions {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      .suggestion {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 0.875rem;
-        background: linear-gradient(
-          90deg,
-          rgba(16, 185, 129, 0.05) 0%,
-          transparent 100%
-        );
-        border-left: 2px solid #10b981;
-        border-radius: 0.375rem;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: var(--text-secondary);
-      }
-
-      .suggestion-icon {
-        flex-shrink: 0;
-        color: #10b981;
-        font-weight: 700;
-        margin-top: 2px;
-      }
-
-      /* Confidence Score */
-      .confidence-bar {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .confidence-label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-muted);
-      }
-
-      .confidence-track {
-        height: 6px;
-        background: #e5e7eb;
-        border-radius: 3px;
-        overflow: hidden;
-      }
-
-      .confidence-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
-        border-radius: 3px;
-        transition: width var(--transition-slow);
-      }
-
-      /* ===== TRUST SECTION ===== */
-      .trust-section {
-        padding: 6rem 2rem;
-        background: white;
-      }
-
-      .trust-content {
-        max-width: 800px;
-        margin: 0 auto;
-        text-align: center;
-      }
-
-      .trust-content h2 {
-        font-size: clamp(1.875rem, 4vw, 2.5rem);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: var(--text-primary);
-        margin-bottom: 1.5rem;
-      }
-
-      .trust-content p {
-        font-size: 1.125rem;
-        line-height: 1.8;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-      }
-
-      .trust-author {
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 1px solid var(--border);
-      }
-
-      .trust-author span {
-        font-size: 1rem;
-        font-weight: 600;
-        background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      /* ===== CTA SECTION ===== */
-      .cta-section {
-        padding: 5rem 2.5rem;
-        background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-      }
-
-      .cta-container {
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 3.5rem 3rem;
-        background: linear-gradient(
-          135deg,
-          rgba(147, 51, 234, 0.05) 0%,
-          rgba(236, 72, 153, 0.04) 100%
-        );
-        border: 1px solid rgba(147, 51, 234, 0.1);
-        border-radius: 1.5rem;
-        text-align: center;
-      }
-
-      .cta-container h2 {
-        font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.875rem;
-        letter-spacing: -0.025em;
-        line-height: 1.3;
-      }
-
-      .cta-container p {
-        font-size: 1.0625rem;
-        line-height: 1.6;
-        color: var(--text-secondary);
-        margin-bottom: 2rem;
-        font-weight: 400;
-      }
-
-      .btn-cta {
-        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-        color: white;
-        padding: 0.875rem 2rem;
-        border: none;
-        border-radius: 0.75rem;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all var(--transition-base);
-        display: inline-block;
-        box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4);
-      }
-
-      .btn-cta:hover {
-        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.5);
-        transform: translateY(-2px);
-      }
-
-      /* ===== FOOTER ===== */
-      .site-footer {
-        background: #1f2937;
-        color: #9ca3af;
-        padding: 3.5rem 2rem 2.5rem;
-      }
-
-      .footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr 1fr;
-        gap: 3.5rem;
-        margin-bottom: 2.5rem;
-      }
-
-      .footer-brand .logo {
-        color: #f3f4f6;
-        font-size: 1.375rem;
-        margin-bottom: 1rem;
-        display: block;
-      }
-
-      .footer-brand p {
-        font-size: 0.9375rem;
-        line-height: 1.65;
-        max-width: 280px;
-        color: #9ca3af;
-      }
-
-      .footer-links {
-        display: contents;
-      }
-
-      .footer-column h4 {
-        color: #f3f4f6;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .footer-column a {
-        display: block;
-        font-size: 0.9375rem;
-        color: #9ca3af;
-        margin-bottom: 0.875rem;
-        transition: color var(--transition-base);
-      }
-
-      .footer-column a:hover {
-        color: #f3f4f6;
-      }
-
-      .footer-bottom {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding-top: 2.5rem;
-        border-top: 1px solid rgba(156, 163, 175, 0.2);
-        text-align: center;
-      }
-
-      .footer-bottom p {
-        font-size: 0.875rem;
-        color: #6b7280;
-      }
-
-      /* ===== RESPONSIVE DESIGN ===== */
-      @media (max-width: 1024px) {
-        .header-container {
-          padding: 1rem 1.5rem;
-        }
-
-        .hero {
-          padding: 3rem 1.5rem;
-          min-height: auto;
-        }
-
-        .generator-card {
-          padding: 2.5rem;
-        }
-
-        .hero-stats {
-          gap: 2rem;
-          flex-wrap: wrap;
-        }
-
-        .how-section,
-        .features-section,
-        .trust-section,
-        .cta-section {
-          padding: 4rem 1.5rem;
-        }
-
-        .footer-container {
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-        }
-
-        .footer-brand {
-          grid-column: 1 / -1;
-        }
-
-        .feature-item {
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-        }
-
-        .feature-icon-wrapper {
-          flex-direction: row;
-          align-items: center;
-        }
-
-        .health-indicators {
-          flex-direction: row;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .main-nav {
-          position: fixed;
-          top: 73px;
-          left: 0;
-          right: 0;
-          background: white;
-          flex-direction: column;
-          padding: 1.5rem;
-          border-bottom: 1px solid var(--border);
-          box-shadow: var(--shadow-lg);
-          transform: translateY(-100%);
-          opacity: 0;
-          transition: all var(--transition-base);
-          pointer-events: none;
-        }
-
-        .main-nav.active {
-          transform: translateY(0);
-          opacity: 1;
-          pointer-events: all;
-        }
-
-        .mobile-menu-toggle {
-          display: flex;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(1) {
-          transform: rotate(45deg) translateY(7px);
-        }
-
-        .mobile-menu-toggle.active span:nth-child(2) {
-          opacity: 0;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(3) {
-          transform: rotate(-45deg) translateY(-7px);
-        }
-
-        .generator-card {
-          padding: 2rem;
-        }
-
-        .hero-headline {
-          font-size: 1.75rem;
-        }
-
-        .hero-stats {
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .steps-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .feature-item {
-          flex-direction: column;
-          padding: 1.75rem;
-        }
-
-        .feature-icon {
-          width: 64px;
-          height: 64px;
-          font-size: 1.75rem;
-        }
-
-        .feature-title-block h3 {
-          font-size: 1.25rem;
-        }
-
-        .feature-metrics {
-          grid-template-columns: 1fr;
-        }
-
-        .cta-container {
-          padding: 3rem 2rem;
-        }
-
-        .footer-container {
-          grid-template-columns: 1fr;
-        }
-
-        .footer-brand {
-          grid-column: 1;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .header-container {
-          padding: 1rem;
-        }
-
-        .hero {
-          padding: 2rem 1rem;
-        }
-
-        .generator-card {
-          padding: 1.5rem;
-        }
-
-        .section-wrapper {
-          padding: 0 1rem;
-        }
-
-        .how-section,
-        .features-section,
-        .trust-section,
-        .cta-section {
-          padding: 3rem 1rem;
-        }
-
-        .step-card,
-        .feature-item {
-          padding: 1.5rem;
-        }
-
-        .cta-container {
-          padding: 2.5rem 1.5rem;
-        }
-
-        .input-mode-toggle {
-          flex-direction: column;
-        }
-
-        .mode-btn {
-          width: 100%;
-        }
-
-        .hero-stats {
-          gap: 2rem;
-        }
-
-        .stat-item strong {
-          font-size: 1.5rem;
-        }
-      }
-
-      /* ===== ACCESSIBILITY ===== */
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-
-      /* Focus visible for keyboard navigation */
-      *:focus-visible {
-        outline: 2px solid #9333ea;
-        outline-offset: 2px;
-      }
-
-      /* ===== UTILITY CLASSES ===== */
-      .visually-hidden {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-      }
-
-      /* ===== DARK MODE OVERRIDES ===== */
-      [data-theme="dark"] {
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #162032;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border: #2d3748;
-        --border-light: #1e293b;
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-      }
-      [data-theme="dark"] body {
-        background-color: #0f172a;
-        color: #f1f5f9;
-      }
-      [data-theme="dark"] .site-header {
-        background-color: rgba(15, 23, 42, 0.97);
-        border-bottom-color: #2d3748;
-      }
-      [data-theme="dark"] .hero {
-        background: linear-gradient(
-          135deg,
-          #1a1040 0%,
-          #0f172a 50%,
-          #101828 100%
-        );
-      }
-      [data-theme="dark"] .generator-card {
-        background: #1e293b;
-        border-color: #334155;
-        box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.5);
-      }
-      [data-theme="dark"] .input-mode-toggle {
-        background: #162032;
-      }
-      [data-theme="dark"] .mode-btn.active {
-        background: #2d3748;
-        color: #f1f5f9;
-      }
-      [data-theme="dark"] .hero-textarea,
-      [data-theme="dark"] .hero-input {
-        background: #162032;
-        border-color: #334155;
-        color: #f1f5f9;
-      }
-      [data-theme="dark"] .hero-textarea::placeholder,
-      [data-theme="dark"] .hero-input::placeholder {
-        color: #64748b;
-      }
-      [data-theme="dark"] .char-counter {
-        background: rgba(30, 41, 59, 0.95);
-        color: #94a3b8;
-      }
-      [data-theme="dark"] .how-section {
-        background: #0f172a;
-      }
-      [data-theme="dark"] .step-card {
-        background: #1e293b;
-        border-color: #2d3748;
-      }
-      [data-theme="dark"] .features-section {
-        background: linear-gradient(180deg, #0f172a 0%, #0f172a 100%);
-      }
-      [data-theme="dark"] .feature-item {
-        background: #1e293b;
-        border-color: #2d3748;
-      }
-      [data-theme="dark"] .trust-section {
-        background: #0f172a;
-      }
-      [data-theme="dark"] .trust-card {
-        background: #1e293b;
-        border-color: #2d3748;
-      }
-      [data-theme="dark"] .cta-section {
-        background: linear-gradient(135deg, #4c1d95 0%, #312e81 100%);
-      }
-      [data-theme="dark"] .cta-container {
-        background: rgba(147, 51, 234, 0.12);
-        border-color: rgba(147, 51, 234, 0.25);
-      }
-      [data-theme="dark"] .cta-container h2 {
-        color: #f1f5f9;
-      }
-      [data-theme="dark"] .feature-insight {
-        background: #162032;
-        border-left-color: #7c3aed;
-      }
-      [data-theme="dark"] .metric-item {
-        background: #162032;
-        border-color: #2d3748;
-      }
-      [data-theme="dark"] .suggestion {
-        background: linear-gradient(
-          90deg,
-          rgba(16, 185, 129, 0.08) 0%,
-          transparent 100%
-        );
-      }
-      [data-theme="dark"] .confidence-track {
-        background: #2d3748;
-      }
-      [data-theme="dark"] .btn-primary {
-        background: #1e293b;
-        border-color: #334155;
-        color: #cbd5e1;
-      }
-      [data-theme="dark"] .btn-primary:hover {
-        border-color: rgba(147, 51, 234, 0.5);
-        color: #a855f7;
-        background: #162032;
-      }
-      [data-theme="dark"] .main-nav {
-        background: rgba(15, 23, 42, 0.98);
-        border-bottom-color: #2d3748;
-      }
-      [data-theme="dark"] .dark-mode-toggle-idx {
-        border-color: #334155;
-        color: #94a3b8;
-      }
-      [data-theme="dark"] .dark-mode-toggle-idx:hover {
-        color: #a855f7;
-        border-color: rgba(147, 51, 234, 0.4);
-        background: rgba(147, 51, 234, 0.06);
-      }
-      [data-theme="dark"] .dark-mode-toggle-idx .ic-sun {
-        display: none;
-      }
-      [data-theme="dark"] .dark-mode-toggle-idx .ic-moon {
-        display: block;
-      }
-      .dark-mode-toggle-idx {
-        background: none;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        width: 36px;
-        height: 36px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        transition: all 200ms ease;
-        flex-shrink: 0;
-      }
-      .dark-mode-toggle-idx .ic-sun {
-        display: block;
-      }
-      .dark-mode-toggle-idx .ic-moon {
-        display: none;
-      }
-      /* ===== RESUME CTA CARD ===== */
-      .resume-cta-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.75rem 1.5rem;
-        text-align: center;
-        border: 2px dashed rgba(147, 51, 234, 0.25);
-        border-radius: 1rem;
-        background: linear-gradient(
-          135deg,
-          rgba(147, 51, 234, 0.04) 0%,
-          rgba(236, 72, 153, 0.03) 100%
-        );
-        transition: border-color 200ms;
-      }
-      .resume-cta-card:hover {
-        border-color: rgba(147, 51, 234, 0.45);
-      }
-      .resume-cta-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 1rem;
-        background: linear-gradient(135deg, #9333ea, #ec4899);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-      }
-      .resume-cta-text {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-      .resume-cta-text strong {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--text-primary);
-      }
-      .resume-cta-text span {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        max-width: 380px;
-        line-height: 1.5;
-      }
-      .resume-cta-checks {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: center;
-      }
-      .rcta-check {
-        padding: 0.25rem 0.75rem;
-        border-radius: 999px;
-        background: rgba(147, 51, 234, 0.08);
-        color: #7c3aed;
-        font-size: 0.78rem;
-        font-weight: 600;
-        border: 1px solid rgba(147, 51, 234, 0.15);
-      }
-      .resume-upload-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.875rem 2rem;
-        border-radius: 0.75rem;
-        background: linear-gradient(135deg, #9333ea, #ec4899);
-        color: white;
-        font-weight: 700;
-        font-size: 0.95rem;
-        text-decoration: none;
-        transition: all 200ms ease;
-        box-shadow: 0 4px 16px rgba(147, 51, 234, 0.35);
-      }
-      .resume-upload-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(147, 51, 234, 0.45);
-      }
-      /* ===== ROLE FORM ===== */
-      .role-form {
-        display: flex;
-        flex-direction: column;
-        gap: 0.875rem;
-      }
-      .role-field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-      .role-label {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .role-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-      }
-      @media (max-width: 520px) {
-        .role-row {
-          grid-template-columns: 1fr;
-        }
-      }
-      .hero-select {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.625rem;
-        background: var(--bg-primary, white);
-        color: var(--text-primary);
-        font-size: 0.9rem;
-        font-family: inherit;
-        appearance: none;
-        -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239333ea' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.9rem center;
-        cursor: pointer;
-        outline: none;
-        transition: border-color 200ms;
-      }
-      .hero-select:focus {
-        border-color: #9333ea;
-        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.12);
-      }
-      .role-input-main {
-        font-size: 1rem;
-        font-weight: 500;
-      }
-      /* Both mode hint banner */
-      .both-hint {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(147, 51, 234, 0.06);
-        border-radius: 0.5rem;
-        padding: 0.6rem 0.9rem;
-        font-size: 0.82rem;
-        color: var(--text-secondary);
-        margin-bottom: 0.5rem;
-        border: 1px solid rgba(147, 51, 234, 0.15);
-      }
-      [data-theme="dark"] .resume-cta-card {
-        background: rgba(147, 51, 234, 0.08);
-        border-color: rgba(147, 51, 234, 0.3);
-      }
-      [data-theme="dark"] .hero-select {
-        background-color: #1e293b;
-        border-color: #334155;
-        color: #e2e8f0;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      }
-      /* hide analyzeBtn for resume mode */
-      .hero-cta.hidden {
-        display: none !important;
-      }
-      /* ===== IN-PAGE RESULTS PANEL ===== */
-      .results-panel {
-        display: none;
-        max-width: 900px;
-        margin: 0 auto 4rem;
-        padding: 0 2rem;
-        animation: slideUp 0.5s ease;
-      }
-      .results-panel.visible {
-        display: block;
-      }
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(24px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .results-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .results-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--text-primary);
-      }
-      .results-subtitle {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-top: 0.2rem;
-      }
-      .results-retry {
-        background: none;
-        border: 1px solid var(--border);
-        color: var(--text-muted);
-        padding: 0.5rem 1.1rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-size: 0.875rem;
-        transition: all 200ms ease;
-      }
-      .results-retry:hover {
-        border-color: #9333ea;
-        color: #9333ea;
-      }
-      .scores-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .score-card {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.25rem 1.5rem;
-        text-align: center;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-      }
-      .score-card .sc-value {
-        font-size: 2.25rem;
-        font-weight: 800;
-        line-height: 1;
-        background: linear-gradient(135deg, #9333ea, #ec4899);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .score-card .sc-label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 0.4rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .score-card .sc-bar {
-        height: 5px;
-        background: #e5e7eb;
-        border-radius: 3px;
-        margin-top: 0.75rem;
-        overflow: hidden;
-      }
-      .score-card .sc-fill {
-        height: 100%;
-        border-radius: 3px;
-        background: linear-gradient(90deg, #9333ea, #ec4899);
-        transition: width 1s ease;
-      }
-      .results-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-      @media (max-width: 640px) {
-        .results-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      .res-card {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-      }
-      .res-card-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #9333ea;
-        margin-bottom: 0.75rem;
-      }
-      .res-card.full {
-        grid-column: 1 / -1;
-      }
-      .skill-pill {
-        display: inline-block;
-        padding: 0.3rem 0.75rem;
-        background: rgba(147, 51, 234, 0.08);
-        color: #7c3aed;
-        border: 1px solid rgba(147, 51, 234, 0.18);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin: 0.25rem;
-      }
-      .check-item {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        margin: 0.5rem 0;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-      }
-      .check-item svg {
-        flex-shrink: 0;
-      }
-      .rec-item {
-        display: flex;
-        gap: 0.75rem;
-        align-items: flex-start;
-        padding: 0.6rem 0;
-        border-bottom: 1px solid var(--border-light);
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-      }
-      .rec-item:last-child {
-        border-bottom: none;
-      }
-      .rec-num {
-        flex-shrink: 0;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #9333ea, #ec4899);
-        color: white;
-        font-size: 0.7rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 1px;
-      }
-      .input-preview {
-        background: var(--bg-secondary, #f8fafc);
-        border-radius: 0.5rem;
-        padding: 0.75rem 1rem;
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-word;
-        max-height: 140px;
-        overflow-y: auto;
-        border: 1px solid var(--border);
-      }
-      .results-cta {
-        background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-        border-radius: 1.25rem;
-        padding: 2rem 2.5rem;
-        text-align: center;
-        margin-top: 1rem;
-      }
-      .results-cta h3 {
-        color: white;
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-      .results-cta p {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 0.9rem;
-        margin-bottom: 1.25rem;
-      }
-      .results-cta-btns {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .rcta-btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.625rem;
-        font-weight: 700;
-        font-size: 0.875rem;
-        text-decoration: none;
-        transition: all 180ms ease;
-        display: inline-block;
-      }
-      .rcta-btn.primary {
-        background: white;
-        color: #7c3aed;
-      }
-      .rcta-btn.primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      }
-      .rcta-btn.secondary {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-      }
-      .rcta-btn.secondary:hover {
-        background: rgba(255, 255, 255, 0.25);
-      }
-      /* Dark mode results panel */
-      [data-theme="dark"] .score-card,
-      [data-theme="dark"] .res-card {
-        background: #1e293b;
-        border-color: #2d3748;
-        box-shadow: none;
-      }
-      [data-theme="dark"] .input-preview {
-        background: #162032;
-        border-color: #2d3748;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Header -->
-    <header class="site-header" id="header">
-      <div class="header-container">
-        <a href="/" class="logo">CareerAssist</a>
-        <nav class="main-nav" id="mainNav">
-          <a href="#how-it-works">How it works</a>
-          <a href="/resume/upload">Resume Analysis</a>
-          <a href="#features">Features</a>
-          <a href="/dashboard">Dashboard</a>
-          <a href="/login" class="nav-login">Sign in</a>
-          <a href="/resume/upload" class="btn-primary">Analyze Free</a>
-        </nav>
-        <div style="display: flex; align-items: center; gap: 0.75rem">
-          <button
-            class="dark-mode-toggle-idx"
-            id="dmBtnIdx"
-            aria-label="Toggle dark mode"
-          >
-            <svg
-              class="ic-moon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-            <svg
-              class="ic-sun"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="12" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </svg>
-          </button>
-          <button
-            class="mobile-menu-toggle"
-            id="mobileMenuToggle"
-            aria-label="Toggle menu"
-            aria-expanded="false"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </div>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CareerAssist — From Confusion to Career Clarity</title>
+  <meta name="description" content="CareerAssist is your AI-powered career companion. Personalized roadmaps, skill tracking, resume analysis, and AI mentorship."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+  <style>
+    body{font-family:'Inter',system-ui,sans-serif;background:#0a0a1a;color:#f0f0f8;}
+    .font-display{font-family:'Poppins','Inter',system-ui,sans-serif;}
+    /* 3D Card Transform */
+    .card-3d{transform-style:preserve-3d;transition:transform 0.5s cubic-bezier(0.23,1,0.32,1),box-shadow 0.5s ease;}
+    .card-3d:hover{transform:translateY(-8px) rotateX(2deg) rotateY(-2deg);box-shadow:0 25px 50px -12px rgba(139,92,246,0.25);}
+    /* Gradient text */
+    .text-gradient{background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 50%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .text-gradient-accent{background:linear-gradient(135deg,#ec4899,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    /* Glow border on hover */
+    .glow-border{border:1px solid rgba(255,255,255,0.06);transition:all 0.4s;}
+    .glow-border:hover{border-color:rgba(139,92,246,0.4);box-shadow:0 0 30px rgba(139,92,246,0.1);}
+    /* Floating orbs */
+    .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+    /* Scroll animations */
+    .reveal{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.22,1,0.36,1);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-delay-1{transition-delay:0.1s;}
+    .reveal-delay-2{transition-delay:0.2s;}
+    .reveal-delay-3{transition-delay:0.3s;}
+    /* 3D perspective container */
+    .perspective-container{perspective:1500px;}
+    /* Glass morphism */
+    .glass{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);}
+    /* Shimmer effect */
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    .shimmer{background:linear-gradient(90deg,transparent,rgba(139,92,246,0.08),transparent);background-size:200% 100%;animation:shimmer 3s infinite;}
+    /* Float animation */
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+    .animate-float{animation:float 6s ease-in-out infinite;}
+    .animate-float-slow{animation:float 8s ease-in-out infinite;}
+    .animate-float-fast{animation:float 4s ease-in-out infinite;}
+    /* Pulse dot */
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+    .pulse-dot{animation:pulse-dot 2s infinite;}
+    /* Slide in */
+    @keyframes slideIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .animate-slide-in{animation:slideIn 0.6s ease-out both;}
+    .animate-slide-in-d1{animation:slideIn 0.6s ease-out 0.1s both;}
+    .animate-slide-in-d2{animation:slideIn 0.6s ease-out 0.2s both;}
+    .animate-slide-in-d3{animation:slideIn 0.6s ease-out 0.3s both;}
+    .animate-slide-in-d4{animation:slideIn 0.6s ease-out 0.4s both;}
+    /* Shine on hover */
+    .shine-hover{position:relative;overflow:hidden;}
+    .shine-hover::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,0.03) 50%,transparent 60%);transform:rotate(45deg);transition:all 0.6s;}
+    .shine-hover:hover::after{left:100%;}
+    /* Neon line */
+    .neon-line{height:2px;background:linear-gradient(90deg,transparent,#8b5cf6,transparent);opacity:0.3;}
+  </style>
+</head>
+<body class="overflow-x-hidden">
+<!-- BG Orbs -->
+<div class="orb w-[600px] h-[600px] bg-purple-600/15 -top-48 -left-24"></div>
+<div class="orb w-[500px] h-[500px] bg-blue-600/10 -bottom-32 -right-24"></div>
+<div class="orb w-[350px] h-[350px] bg-pink-500/8 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav id="mainNav" class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-10 py-3 flex justify-between items-center transition-all duration-300" style="background:rgba(10,10,26,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.04);">
+  <a href="/" class="flex items-center gap-2.5 no-underline group">
+    <svg class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="url(#navLg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="navLg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient></defs><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="url(#navLg)"/></svg>
+    <div>
+      <span class="font-display font-extrabold text-lg text-gradient">CareerAssist</span>
+      <span class="block text-[0.55rem] text-gray-500 -mt-0.5">From Confusion to Clarity</span>
+    </div>
+  </a>
+  <div class="hidden md:flex items-center gap-1">
+    <a href="#how-it-works" class="px-3.5 py-2 text-sm font-medium text-gray-400 rounded-full hover:text-white hover:bg-white/[0.04] transition-all">How It Works</a>
+    <a href="#features" class="px-3.5 py-2 text-sm font-medium text-gray-400 rounded-full hover:text-white hover:bg-white/[0.04] transition-all">Features</a>
+    <a href="#journey" class="px-3.5 py-2 text-sm font-medium text-gray-400 rounded-full hover:text-white hover:bg-white/[0.04] transition-all">Journey</a>
+    <a href="/contact" class="px-3.5 py-2 text-sm font-medium text-gray-400 rounded-full hover:text-white hover:bg-white/[0.04] transition-all">Contact</a>
+  </div>
+  <div class="flex items-center gap-2.5">
+    {% if current_user.is_authenticated %}
+    <a href="/app" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-white/[0.08] rounded-full hover:text-white hover:border-purple-500/40 hover:bg-purple-500/[0.04] transition-all">Dashboard</a>
+    <a href="/auth/profile" class="px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-glow-sm hover:shadow-glow-md hover:-translate-y-0.5 transition-all duration-300">Profile</a>
+    {% else %}
+    <a href="/auth/login" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-white/[0.08] rounded-full hover:text-white hover:border-purple-500/40 hover:bg-purple-500/[0.04] transition-all">Sign In</a>
+    <a href="/auth/register" class="px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-purple-500 to-blue-500 rounded-full shadow-glow-sm hover:shadow-glow-md hover:-translate-y-0.5 transition-all duration-300">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-16 relative z-10">
+  <!-- Badge -->
+  <div class="animate-slide-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/25 bg-purple-500/[0.08] mb-6">
+    <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>
+    <span class="text-xs font-semibold text-purple-400 tracking-wide">AI-Powered Career Guidance Platform</span>
+  </div>
+
+  <!-- Main heading -->
+  <h1 class="animate-slide-in-d1 font-display font-black text-5xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-5">
+    From Confusion to<br>
+    <span class="text-gradient">Career Clarity</span>
+  </h1>
+
+  <!-- Sub -->
+  <p class="animate-slide-in-d2 text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
+    Your intelligent career companion. Personalized roadmaps, AI mentorship, skill tracking, and resume optimization — built for students and aspiring tech professionals.
+  </p>
+
+  <!-- CTAs -->
+  <div class="animate-slide-in-d3 flex flex-col sm:flex-row gap-3 items-center">
+    {% if current_user.is_authenticated %}
+    <a href="/app" class="group px-8 py-3.5 text-base font-bold text-white bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-full shadow-glow-md hover:shadow-glow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+      <span>Open Dashboard</span>
+      <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    </a>
+    {% else %}
+    <a href="/auth/register" class="group px-8 py-3.5 text-base font-bold text-white bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-full shadow-glow-md hover:shadow-glow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+      <span>Start Your Journey — Free</span>
+      <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    </a>
+    {% endif %}
+    <a href="#how-it-works" class="px-6 py-3.5 text-base font-semibold text-gray-400 border border-white/[0.08] rounded-full hover:text-white hover:border-purple-500/30 hover:bg-white/[0.02] transition-all">See How It Works ↓</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="animate-slide-in-d4 flex flex-col sm:flex-row gap-8 sm:gap-12 mt-14">
+    <div class="text-center">
+      <div class="font-display text-2xl font-extrabold text-gradient">3 Phases</div>
+      <div class="text-xs text-gray-600 mt-0.5">Pre-College → College → Career</div>
+    </div>
+    <div class="text-center">
+      <div class="font-display text-2xl font-extrabold text-gradient">AI Mentor</div>
+      <div class="text-xs text-gray-600 mt-0.5">Context-Aware Guidance</div>
+    </div>
+    <div class="text-center">
+      <div class="font-display text-2xl font-extrabold text-gradient">100%</div>
+      <div class="text-xs text-gray-600 mt-0.5">Free to Explore</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 3D DASHBOARD PREVIEW ═══════════ -->
+<section class="px-6 pb-20 relative z-10">
+  <div class="perspective-container max-w-4xl mx-auto">
+    <div class="card-3d glass rounded-2xl overflow-hidden shadow-3d">
+      <!-- Browser bar -->
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.04] bg-white/[0.01]">
+        <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+        <div class="flex-1 text-center text-[0.6rem] text-gray-600 bg-white/[0.02] rounded py-1 mx-12">careerassist.app/dashboard</div>
       </div>
-    </header>
-
-    <main>
-      <!-- Hero Section - IdeaProof Style -->
-      <section class="hero">
-        <!-- Gradient Orbs -->
-        <div class="gradient-orb-1"></div>
-        <div class="gradient-orb-2"></div>
-        <div class="gradient-orb-3"></div>
-
-        <div class="hero-container">
-          <div class="generator-card">
-            <!-- Eyebrow -->
-            <div class="hero-eyebrow">AI-Powered Career Analysis</div>
-
-            <!-- Headline -->
-            <h1 class="hero-headline">
-              Get instant feedback on your career profile
-            </h1>
-
-            <!-- Input Mode Toggle -->
-            <div class="input-mode-toggle">
-              <button class="mode-btn active" data-mode="resume">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                  />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-                Resume Analysis
-              </button>
-              <button class="mode-btn" data-mode="role">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg>
-                Target Role
-              </button>
-              <button class="mode-btn" data-mode="both">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
-                  />
-                  <path d="M13 2v7h7" />
-                  <line x1="9" y1="17" x2="15" y2="17" />
-                  <line x1="9" y1="13" x2="15" y2="13" />
-                </svg>
-                Both
-              </button>
+      <!-- Body -->
+      <div class="grid grid-cols-1 md:grid-cols-[160px_1fr_200px] gap-3 p-4 min-h-[300px]">
+        <!-- Sidebar mock -->
+        <div class="hidden md:block bg-white/[0.015] rounded-xl p-3">
+          <div class="text-[0.65rem] font-extrabold text-purple-400 mb-4 flex items-center gap-1.5">CareerAssist</div>
+          <div class="space-y-1">
+            <div class="px-2.5 py-1.5 text-[0.6rem] font-semibold text-purple-400 bg-purple-500/10 rounded-lg">Dashboard</div>
+            <div class="px-2.5 py-1.5 text-[0.6rem] text-gray-500 rounded-lg">Journey</div>
+            <div class="px-2.5 py-1.5 text-[0.6rem] text-gray-500 rounded-lg">Roadmap</div>
+            <div class="px-2.5 py-1.5 text-[0.6rem] text-gray-500 rounded-lg">Projects</div>
+            <div class="px-2.5 py-1.5 text-[0.6rem] text-gray-500 rounded-lg">Resume Lab</div>
+            <div class="px-2.5 py-1.5 text-[0.6rem] text-gray-500 rounded-lg">Insights</div>
+          </div>
+        </div>
+        <!-- Main -->
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3 text-center">
+              <div class="text-lg font-extrabold text-purple-400">68%</div>
+              <div class="text-[0.5rem] text-gray-600">Career Ready</div>
             </div>
-
-            <!-- Input Views -->
-            <div class="input-container">
-              <!-- Resume Mode -->
-              <div class="input-view active" data-view="resume">
-                <textarea
-                  class="hero-textarea"
-                  id="resumeInput"
-                  placeholder="Paste your resume text here — we'll redirect you to a full analysis..."
-                  maxlength="5000"
-                ></textarea>
-                <span class="char-counter">0 / 5000</span>
-              </div>
-
-              <!-- Target Role Mode -->
-              <div class="input-view" data-view="role">
-                <div class="role-form">
-                  <div class="role-field">
-                    <label class="role-label" for="roleInput"
-                      >What role are you targeting?</label
-                    >
-                    <input
-                      type="text"
-                      class="hero-input role-input-main"
-                      id="roleInput"
-                      placeholder="e.g., Software Engineer, Product Manager, Data Scientist…"
-                      autocomplete="off"
-                    />
-                  </div>
-                  <div class="role-row">
-                    <div class="role-field">
-                      <label class="role-label" for="expLevel"
-                        >Experience Level</label
-                      >
-                      <select class="hero-select" id="expLevel">
-                        <option value="">Select level…</option>
-                        <option value="student">Student / Intern</option>
-                        <option value="entry">Entry Level (0–2 yrs)</option>
-                        <option value="mid">Mid Level (3–6 yrs)</option>
-                        <option value="senior">Senior (7+ yrs)</option>
-                        <option value="lead">Lead / Manager</option>
-                        <option value="executive">Executive / VP+</option>
-                      </select>
-                    </div>
-                    <div class="role-field">
-                      <label class="role-label" for="industryField"
-                        >Industry</label
-                      >
-                      <select class="hero-select" id="industryField">
-                        <option value="">Any industry…</option>
-                        <option value="tech">Technology &amp; Software</option>
-                        <option value="finance">Finance &amp; Banking</option>
-                        <option value="healthcare">
-                          Healthcare &amp; Biotech
-                        </option>
-                        <option value="marketing">Marketing &amp; Media</option>
-                        <option value="consulting">Consulting</option>
-                        <option value="design">Design &amp; UX</option>
-                        <option value="data">Data &amp; Analytics</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Both Mode -->
-              <div class="input-view" data-view="both">
-                <input
-                  type="text"
-                  class="hero-input"
-                  id="roleInputBoth"
-                  placeholder="Enter your target role (e.g., Software Engineer at Google)"
-                />
-              </div>
+            <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3 text-center">
+              <div class="text-lg font-extrabold text-blue-400">1,240</div>
+              <div class="text-[0.5rem] text-gray-600">XP Earned</div>
             </div>
-
-            <!-- Primary CTA -->
-            <button class="hero-cta" id="analyzeBtn">
-              <span id="analyzeBtnLabel">Analyze Now</span>
-            </button>
-
-            <!-- Trust Hint -->
-            <div class="trust-hint">
-              <span>Free to use</span>
-              <span class="trust-dot"></span>
-              <span>Instant Results</span>
+            <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3 text-center">
+              <div class="text-lg font-extrabold text-cyan-400">8</div>
+              <div class="text-[0.5rem] text-gray-600">Skills</div>
+            </div>
+            <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3 text-center">
+              <div class="text-lg font-extrabold text-green-400">3/5</div>
+              <div class="text-[0.5rem] text-gray-600">Tasks Done</div>
             </div>
           </div>
-
-          <!-- Quick Stats Below Card -->
-          <div class="hero-stats">
-            <div class="stat-item">
-              <strong>12,400+</strong>
-              <span>resumes analyzed</span>
-            </div>
-            <div class="stat-item">
-              <strong>4.8/5</strong>
-              <span>average rating</span>
-            </div>
-            <div class="stat-item">
-              <strong>&lt;60 sec</strong>
-              <span>instant results</span>
+          <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3">
+            <div class="text-[0.65rem] font-bold text-white mb-2">Your Roadmap</div>
+            <div class="flex gap-1.5 flex-wrap">
+              <span class="text-[0.55rem] px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 font-medium">✓ Python</span>
+              <span class="text-[0.55rem] px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 font-medium">✓ DSA</span>
+              <span class="text-[0.55rem] px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 font-medium">▶ Web Dev</span>
+              <span class="text-[0.55rem] px-2.5 py-1 rounded-full bg-white/[0.03] text-gray-600 font-medium">System Design</span>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- How It Works Section -->
-      <section id="how-it-works" class="how-section">
-        <div class="section-wrapper">
-          <header class="section-header">
-            <h2>From Resume to Results in 3 Steps</h2>
-            <p>
-              Simple, fast, and designed for people who actually want
-              constructive feedback—not generic scores.
-            </p>
-          </header>
-
-          <div class="steps-grid">
-            <article class="step-card">
-              <div class="step-number">1</div>
-              <h3>Upload Your Resume</h3>
-              <p>
-                PDF, Word, or plain text—doesn't matter. We analyze the same way
-                recruiters do, starting with ATS parsing.
-              </p>
-            </article>
-
-            <article class="step-card">
-              <div class="step-number">2</div>
-              <h3>Get Honest Feedback</h3>
-              <p>
-                We show you exactly what recruiters see in 6 seconds, your ATS
-                compatibility score, skill gaps, and high-impact improvements
-                with reasoning.
-              </p>
-            </article>
-
-            <article class="step-card">
-              <div class="step-number">3</div>
-              <h3>Take Action & Track Progress</h3>
-              <p>
-                Fix what matters most, reupload, and watch your scores improve.
-                Build your career confidence, not just a resume.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section id="features" class="features-section">
-        <div class="section-wrapper">
-          <header class="section-header">
-            <h2>Built on Real Hiring Insights</h2>
-            <p>
-              We analyze resumes the way actual ATS systems and recruiters do.
-              Every feature targets real reasons why resumes get rejected.
-            </p>
-          </header>
-
-          <div class="features-list">
-            <!-- Feature 1: ATS Compatibility -->
-            <a href="/features/ats-detection" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Parsing</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Visibility</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Keywords</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Critical Check</span>
-                      <h3>ATS Killer Detection</h3>
-                    </div>
-                    <span class="feature-badge">85% Pass Rate</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">What's Happening</span>
-                    <p class="insight-text">
-                      Most recruiters never see your resume—ATS software filters
-                      it first. We detect hidden killers like tables, unusual
-                      formatting, and missing parsing markers that cause 40% of
-                      resumes to fail.
-                    </p>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">Why It Matters</span>
-                    <p class="insight-text">
-                      A perfectly written resume means nothing if the ATS can't
-                      read it. We scan for technical issues that silently reject
-                      your application before any human reads it.
-                    </p>
-                  </div>
-                  <div class="action-suggestions">
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Avoid tables</strong> for layout; use bullet
-                        points instead</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Remove images & icons</strong> that ATS
-                        software can't read</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Use standard fonts</strong> like Arial or
-                        Calibri</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <!-- Feature 2: Role Match Intelligence -->
-            <a href="/features/gap-analysis" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <circle cx="12" cy="12" r="6" />
-                      <circle cx="12" cy="12" r="2" />
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Skills Fit</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Experience</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot red"></div>
-                      <span>Keywords</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Smart Matching</span>
-                      <h3>Role-Specific Gap Analysis</h3>
-                    </div>
-                    <span class="feature-badge">Role Match: 72%</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">What We Do</span>
-                    <p class="insight-text">
-                      Compare your resume to actual job descriptions. We
-                      identify exactly which keywords, skills, and experiences
-                      matter most for your target role, then show you what's
-                      missing.
-                    </p>
-                  </div>
-                  <div class="feature-metrics">
-                    <div class="metric-item">
-                      <div class="metric-value">8/12</div>
-                      <div class="metric-label">Key Skills Found</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">4</div>
-                      <div class="metric-label">Keywords Missing</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">6/10</div>
-                      <div class="metric-label">Experience Match</div>
-                    </div>
-                  </div>
-                  <div class="confidence-bar">
-                    <div class="confidence-label">
-                      <span>Keyword Confidence</span>
-                      <span>72%</span>
-                    </div>
-                    <div class="confidence-track">
-                      <div class="confidence-fill" style="width: 72%"></div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <!-- Feature 3: Recruiter's 6-Second View -->
-            <a href="/features/recruiter-perspective" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Clarity</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Impact</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Scannability</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Human Factor</span>
-                      <h3>Recruiter's Perspective Mode</h3>
-                    </div>
-                    <span class="feature-badge">Visual Scan</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">The Reality</span>
-                    <p class="insight-text">
-                      Recruiters spend 6 seconds scanning resumes. We analyze
-                      what they notice in that glance: is your summary
-                      compelling? Are achievements bold? Can they find your most
-                      important info instantly?
-                    </p>
-                  </div>
-                  <div class="action-suggestions">
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Strengthen weak verbs:</strong> Replace
-                        "helped" with "drove" or "accelerated"</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Add impact numbers:</strong> "Increased revenue
-                        34%" beats "improved sales"</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Lead with value:</strong> Put your strongest
-                        achievement first in each role</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <!-- Feature 4: Bullet Point Power Score -->
-            <a href="/features/bullet-impact" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <polygon
-                        points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
-                      />
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Weight</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Specificity</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot red"></div>
-                      <span>Compat.</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Smart Optimization</span>
-                      <h3>Bullet Point Impact Scoring</h3>
-                    </div>
-                    <span class="feature-badge">Avg Score: 6.8/10</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">How We Score</span>
-                    <p class="insight-text">
-                      Each bullet point gets scored on: specificity of results,
-                      use of power verbs, quantifiable impact, and ATS keyword
-                      fit. We show you exactly which bullets are weak and how to
-                      strengthen them.
-                    </p>
-                  </div>
-                  <div class="feature-metrics">
-                    <div class="metric-item">
-                      <div class="metric-value">12</div>
-                      <div class="metric-label">Strong Bullets</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">5</div>
-                      <div class="metric-label">Needs Work</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">2</div>
-                      <div class="metric-label">Weak Language</div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <!-- Feature 5: Formatting & Clarity Score -->
-            <a href="/features/formatting-guidance" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"
-                      />
-                      <circle cx="6.5" cy="11.5" r="1.5" />
-                      <circle cx="9.5" cy="7.5" r="1.5" />
-                      <circle cx="14.5" cy="7.5" r="1.5" />
-                      <circle cx="17.5" cy="11.5" r="1.5" />
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Layout</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Typography</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Spacing</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Polish & Details</span>
-                      <h3>Visual & Formatting Guidance</h3>
-                    </div>
-                    <span class="feature-badge">91% Optimal</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">What Matters</span>
-                    <p class="insight-text">
-                      Small formatting issues kill credibility: inconsistent
-                      spacing, wrong fonts, poor margins. We catch and fix them
-                      all with section-by-section guidance.
-                    </p>
-                  </div>
-                  <div class="action-suggestions">
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Use 1-inch margins</strong> and consistent line
-                        spacing</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Pick one font family;</strong> stick with it
-                        throughout</span
-                      >
-                    </div>
-                    <div class="suggestion">
-                      <span class="suggestion-icon">→</span>
-                      <span
-                        ><strong>Real dates, real names:</strong> No
-                        abbreviations or creative formats</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <!-- Feature 6: Career Readiness Dashboard -->
-            <a href="/features/career-readiness" class="feature-link">
-              <article class="feature-item">
-                <div class="feature-icon-wrapper">
-                  <div class="feature-icon">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <line x1="18" y1="20" x2="18" y2="10" />
-                      <line x1="12" y1="20" x2="12" y2="4" />
-                      <line x1="6" y1="20" x2="6" y2="14" />
-                    </svg>
-                  </div>
-                  <div class="health-indicators">
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Overall</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot green"></div>
-                      <span>Trackable</span>
-                    </div>
-                    <div class="health-item">
-                      <div class="health-dot yellow"></div>
-                      <span>Trending</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="feature-content">
-                  <div class="feature-header">
-                    <div class="feature-title-block">
-                      <span class="feature-subtitle">Long-Term Growth</span>
-                      <h3>Career Readiness Score & Trends</h3>
-                    </div>
-                    <span class="feature-badge">Score: 78/100</span>
-                  </div>
-                  <div class="feature-insight">
-                    <span class="insight-label">Track Progress Over Time</span>
-                    <p class="insight-text">
-                      Upload multiple versions and watch your score improve. See
-                      trends across: ATS compatibility, keyword density, impact
-                      strength, and readability. Build your resume methodically.
-                    </p>
-                  </div>
-                  <div class="feature-metrics">
-                    <div class="metric-item">
-                      <div class="metric-value">↑ 12%</div>
-                      <div class="metric-label">Last 2 weeks</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">5</div>
-                      <div class="metric-label">Versions Uploaded</div>
-                    </div>
-                    <div class="metric-item">
-                      <div class="metric-value">78%</div>
-                      <div class="metric-label">Overall Health</div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Trust Section -->
-      <section class="trust-section">
-        <div class="section-wrapper">
-          <div class="trust-content">
-            <h2>Built by someone who's been there</h2>
-            <p>
-              I built this because I remember what it's like to send out dozens
-              of applications and hear nothing back. Your resume isn't bad—it
-              just needs the right tweaks to get noticed.
-            </p>
-            <p>
-              This tool gives you the same feedback I wish I had when I was
-              starting out. It's free for students, always will be.
-            </p>
-            <div class="trust-author">
-              <span>— Araib Khan, Creator</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA Section -->
-      <section class="cta-section">
-        <div class="cta-container">
-          <h2>Ready to Get More Interviews?</h2>
-          <p>
-            Join thousands of students and early professionals getting
-            actionable feedback on their resumes. No spam. No nonsense. Just
-            real career guidance.
-          </p>
-          <a href="/resume/upload" class="btn-cta">Analyze My Resume Now</a>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="footer-container">
-        <div class="footer-brand">
-          <span class="logo">CareerAssist</span>
-          <p>
-            AI-powered resume feedback for students and early professionals.
-          </p>
-        </div>
-
-        <div class="footer-links">
-          <div class="footer-column">
-            <h4>Product</h4>
-            <a href="#features">Features</a>
-            <a href="/pricing">Pricing</a>
-            <a href="#how-it-works">How it works</a>
-          </div>
-
-          <div class="footer-column">
-            <h4>Company</h4>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-            <a href="/privacy">Privacy</a>
-          </div>
-
-          <div class="footer-column">
-            <h4>Connect</h4>
-            <a
-              href="https://github.com/TheAraibKhan"
-              target="_blank"
-              rel="noopener"
-              >GitHub</a
-            >
-            <a
-              href="https://www.linkedin.com/in/the-araib-khan/"
-              target="_blank"
-              rel="noopener"
-              >LinkedIn</a
-            >
-            <a href="mailto:khanaraib81@gmail.com">Email</a>
+        <!-- Chat mock -->
+        <div class="hidden md:block bg-white/[0.015] rounded-xl p-3">
+          <div class="text-[0.6rem] font-bold text-white mb-2">AI Mentor</div>
+          <div class="space-y-2">
+            <div class="bg-purple-500/[0.06] rounded-lg p-2 text-[0.52rem] text-gray-400 leading-relaxed">Hey! I see you've been focused on Web Dev — great effort!</div>
+            <div class="bg-purple-500/[0.06] rounded-lg p-2 text-[0.52rem] text-gray-400 leading-relaxed">You have 2 tasks left. Shall I pick the best one?</div>
+            <div class="bg-white/[0.02] rounded-lg p-2 text-[0.5rem] text-gray-600 text-center">Ask your mentor...</div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
 
-      <div class="footer-bottom">
-        <p>&copy; 2026 CareerAssist. Made with care.</p>
+<!-- Divider -->
+<div class="neon-line max-w-xs mx-auto my-4"></div>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section id="how-it-works" class="py-20 px-6 relative z-10">
+  <div class="text-center mb-14 reveal">
+    <span class="inline-block px-4 py-1.5 rounded-full text-[0.65rem] font-bold text-purple-400 uppercase tracking-widest bg-purple-500/[0.08] border border-purple-500/20 mb-4">How It Works</span>
+    <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Three Steps to Career Clarity</h2>
+    <p class="text-gray-400 max-w-md mx-auto">Our AI guides you through a personalized journey — no guesswork, no confusion.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+    <!-- Step 1 -->
+    <div class="reveal reveal-delay-1 card-3d glass rounded-2xl p-7 text-center shine-hover group relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 rounded-full bg-purple-500/10 border-2 border-purple-500/25 flex items-center justify-center font-display text-lg font-extrabold text-purple-400 mx-auto mb-4">1</div>
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <h3 class="font-display text-lg font-bold mb-2">Tell Us About You</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Share your skills, interests, career goals, and current phase. Onboarding takes 60 seconds.</p>
+    </div>
+    <!-- Step 2 -->
+    <div class="reveal reveal-delay-2 card-3d glass rounded-2xl p-7 text-center shine-hover group relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 rounded-full bg-purple-500/10 border-2 border-purple-500/25 flex items-center justify-center font-display text-lg font-extrabold text-purple-400 mx-auto mb-4">2</div>
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-pink-500/10 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <h3 class="font-display text-lg font-bold mb-2">Get Your AI Roadmap</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">We generate a personalized learning path, daily tasks, project suggestions, and a career readiness score.</p>
+    </div>
+    <!-- Step 3 -->
+    <div class="reveal reveal-delay-3 card-3d glass rounded-2xl p-7 text-center shine-hover group relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-green-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 rounded-full bg-purple-500/10 border-2 border-purple-500/25 flex items-center justify-center font-display text-lg font-extrabold text-purple-400 mx-auto mb-4">3</div>
+      <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-green-500/10 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div>
+      <h3 class="font-display text-lg font-bold mb-2">Build & Grow</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Complete tasks, build projects, track skills, optimize your resume, and watch your career score rise.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FEATURES ═══════════ -->
+<section id="features" class="py-20 px-6 relative z-10">
+  <div class="text-center mb-14 reveal">
+    <span class="inline-block px-4 py-1.5 rounded-full text-[0.65rem] font-bold text-purple-400 uppercase tracking-widest bg-purple-500/[0.08] border border-purple-500/20 mb-4">Features</span>
+    <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Everything You Need to Succeed</h2>
+    <p class="text-gray-400 max-w-lg mx-auto">A complete career operating system — think Notion + Duolingo + AI, purpose-built for tech careers.</p>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+    <div class="reveal card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">Smart Dashboard</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Career readiness score, XP tracking, streak counter, and daily tasks — all in a premium interface.</p>
+    </div>
+    <div class="reveal reveal-delay-1 card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-blue-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">AI Career Roadmap</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Personalized learning milestones with XP rewards. Unlock modules as you level up.</p>
+    </div>
+    <div class="reveal reveal-delay-2 card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-cyan-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">AI Mentor Chat</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Context-aware career coaching that knows your skills, phase, and goals. Get advice instantly.</p>
+    </div>
+    <div class="reveal card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-amber-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">Project Builder</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">AI-recommended projects matched to your skill level with step-by-step guidance.</p>
+    </div>
+    <div class="reveal reveal-delay-1 card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-green-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">Resume Lab</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Upload your resume for AI-powered ATS scoring, keyword analysis, and optimization tips.</p>
+    </div>
+    <div class="reveal reveal-delay-2 card-3d glass rounded-xl p-6 shine-hover group">
+      <div class="w-9 h-9 mb-3 rounded-lg bg-pink-500/10 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <h3 class="font-bold text-base mb-1.5">Career Insights</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">Skill growth analytics, activity heatmaps, leaderboard ranking, and achievement badges.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CAREER JOURNEY ═══════════ -->
+<section id="journey" class="py-20 px-6 relative z-10">
+  <div class="text-center mb-14 reveal">
+    <span class="inline-block px-4 py-1.5 rounded-full text-[0.65rem] font-bold text-purple-400 uppercase tracking-widest bg-purple-500/[0.08] border border-purple-500/20 mb-4">Career Journey</span>
+    <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Adapts to Your Life Stage</h2>
+    <p class="text-gray-400 max-w-md mx-auto">Whether you're exploring, building, or job-hunting — CareerAssist evolves with you.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+    <!-- Pre-College -->
+    <div class="reveal card-3d glass rounded-2xl p-7 text-center group relative overflow-hidden">
+      <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-500 to-cyan-400 opacity-40 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-500/10 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+      <h3 class="font-display text-xl font-bold mb-2">Pre-College</h3>
+      <p class="text-sm text-gray-500 leading-relaxed mb-3">Discover passions. Explore domains like AI, Web Dev, Data Science. Build foundational curiosity.</p>
+      <div class="flex flex-wrap gap-1.5 justify-center">
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Explore</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Discover</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Learn Basics</span>
       </div>
-    </footer>
+    </div>
+    <!-- College -->
+    <div class="reveal reveal-delay-1 card-3d glass rounded-2xl p-7 text-center group relative overflow-hidden">
+      <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-purple-500 to-pink-500 opacity-40 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-purple-500/10 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <h3 class="font-display text-xl font-bold mb-2">College</h3>
+      <p class="text-sm text-gray-500 leading-relaxed mb-3">Master core skills. Build real projects. Land internships. Prepare your resume for industry.</p>
+      <div class="flex flex-wrap gap-1.5 justify-center">
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Build Skills</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Projects</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Internships</span>
+      </div>
+    </div>
+    <!-- Post-College -->
+    <div class="reveal reveal-delay-2 card-3d glass rounded-2xl p-7 text-center group relative overflow-hidden">
+      <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-green-400 to-yellow-400 opacity-40 group-hover:opacity-100 transition-opacity"></div>
+      <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-green-500/10 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+      <h3 class="font-display text-xl font-bold mb-2">Post-College</h3>
+      <p class="text-sm text-gray-500 leading-relaxed mb-3">Apply strategically. Ace interviews. Negotiate offers. Launch your career with confidence.</p>
+      <div class="flex flex-wrap gap-1.5 justify-center">
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Job Hunt</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Interviews</span>
+        <span class="text-[0.6rem] font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400">Career Launch</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script>
-      // Header scroll effect
-      const header = document.getElementById("header");
-      let lastScrollTop = 0;
+<!-- ═══════════ CTA ═══════════ -->
+<section class="py-20 px-6 relative z-10">
+  <div class="reveal max-w-2xl mx-auto text-center">
+    <div class="card-3d rounded-3xl p-10 sm:p-14 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.05));border:1px solid rgba(139,92,246,0.18);">
+      <!-- Decorative orb inside -->
+      <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-purple-500/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -left-16 w-32 h-32 rounded-full bg-blue-500/8 blur-3xl pointer-events-none"></div>
+      <h2 class="font-display text-2xl sm:text-3xl font-extrabold mb-3 relative z-10">Ready to Take Control of Your Career?</h2>
+      <p class="text-gray-400 mb-7 relative z-10">Join CareerAssist and get a personalized AI roadmap, daily tasks, and career mentorship — completely free.</p>
+      <a href="/auth/register" class="relative z-10 inline-flex items-center gap-2 px-8 py-3.5 text-base font-bold text-white bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 rounded-full shadow-glow-md hover:shadow-glow-lg hover:-translate-y-1 transition-all duration-300">
+        Get Started — It's Free
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
 
-      window.addEventListener("scroll", () => {
-        const scrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="text-center py-8 px-6 border-t border-white/[0.04] relative z-10">
+  <div class="flex gap-5 justify-center mb-3">
+    <a href="/" class="text-xs text-gray-500 hover:text-purple-400 transition-colors">Home</a>
+    <a href="#features" class="text-xs text-gray-500 hover:text-purple-400 transition-colors">Features</a>
+    <a href="/contact" class="text-xs text-gray-500 hover:text-purple-400 transition-colors">Contact</a>
+    <a href="/auth/login" class="text-xs text-gray-500 hover:text-purple-400 transition-colors">Sign In</a>
+  </div>
+  <p class="text-[0.6rem] text-gray-700">&copy; 2026 CareerAssist. From Confusion to Career Clarity. All rights reserved.</p>
+</footer>
 
-        if (scrollTop > 50) {
-          header.classList.add("scrolled");
-        } else {
-          header.classList.remove("scrolled");
-        }
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-      });
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('mainNav');
+  if (window.scrollY > 60) {
+    nav.style.background = 'rgba(10,10,26,0.95)';
+    nav.style.borderBottomColor = 'rgba(139,92,246,0.08)';
+  } else {
+    nav.style.background = 'rgba(10,10,26,0.7)';
+    nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
+  }
+});
 
-      // Dark mode toggle
-      (function () {
-        var btn = document.getElementById("dmBtnIdx");
-        if (!btn) return;
-        btn.addEventListener("click", function () {
-          var next =
-            document.documentElement.getAttribute("data-theme") === "dark"
-              ? "light"
-              : "dark";
-          document.documentElement.setAttribute("data-theme", next);
-          localStorage.setItem("careerassist-theme", next);
-        });
-      })();
-
-      // Mobile menu toggle
-      const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-      const mainNav = document.getElementById("mainNav");
-
-      mobileMenuToggle.addEventListener("click", () => {
-        const isExpanded =
-          mobileMenuToggle.getAttribute("aria-expanded") === "true";
-
-        mobileMenuToggle.setAttribute("aria-expanded", !isExpanded);
-        mobileMenuToggle.classList.toggle("active");
-        mainNav.classList.toggle("active");
-      });
-
-      // Close mobile menu when clicking nav links
-      const navLinks = mainNav.querySelectorAll("a");
-      navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-          if (mainNav.classList.contains("active")) {
-            mobileMenuToggle.click();
-          }
-        });
-      });
-
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          const href = this.getAttribute("href");
-
-          if (href !== "#" && href.length > 1) {
-            e.preventDefault();
-            const target = document.querySelector(href);
-
-            if (target) {
-              const headerOffset = 80;
-              const elementPosition = target.getBoundingClientRect().top;
-              const offsetPosition =
-                elementPosition + window.pageYOffset - headerOffset;
-
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth",
-              });
-            }
-          }
-        });
-      });
-
-      // ── Input mode toggle ──
-      const modeButtons = document.querySelectorAll(".mode-btn");
-      const inputViews = document.querySelectorAll(".input-view");
-      const analyzeBtn = document.getElementById("analyzeBtn");
-      const analyzeBtnLabel = document.getElementById("analyzeBtnLabel");
-
-      const LABELS = {
-        resume: "Analyze Now",
-        role: "Explore Career Path →",
-        both: "Go to Full Analysis →",
-      };
-
-      function switchMode(mode) {
-        modeButtons.forEach((b) =>
-          b.classList.toggle("active", b.dataset.mode === mode),
-        );
-        inputViews.forEach((v) =>
-          v.classList.toggle("active", v.dataset.view === mode),
-        );
-        analyzeBtnLabel.textContent = LABELS[mode] || "Analyze Now";
-      }
-
-      modeButtons.forEach((btn) =>
-        btn.addEventListener("click", () => switchMode(btn.dataset.mode)),
-      );
-      switchMode("resume"); // default
-
-      // Character counter
-      const resumeInput = document.getElementById("resumeInput");
-      const charCounter = document.querySelector(".char-counter");
-      if (resumeInput && charCounter) {
-        resumeInput.addEventListener("input", () => {
-          charCounter.textContent = resumeInput.value.length + " / 5000";
-        });
-      }
-
-      // ── Analyze button: pure redirects, no API ──
-      analyzeBtn.addEventListener("click", () => {
-        const mode = document.querySelector(".mode-btn.active").dataset.mode;
-
-        if (mode === "resume") {
-          // Just send them to the upload page — full analysis there
-          window.location.href = "/resume/upload";
-        } else if (mode === "role") {
-          const role = (
-            document.getElementById("roleInput").value || ""
-          ).trim();
-          const level = document.getElementById("expLevel").value || "";
-          const industry = document.getElementById("industryField").value || "";
-          if (!role) {
-            alert("Please enter a target role.");
-            return;
-          }
-          const params = new URLSearchParams();
-          if (role) params.set("role", role);
-          if (level) params.set("level", level);
-          if (industry) params.set("industry", industry);
-          window.location.href = "/features/target-role?" + params.toString();
-        } else if (mode === "both") {
-          const role = (
-            document.getElementById("roleInputBoth").value || ""
-          ).trim();
-          window.location.href =
-            "/resume/upload" +
-            (role ? "?role=" + encodeURIComponent(role) : "");
-        }
-      });
-
-      // Intersection Observer for scroll animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-          }
-        });
-      }, observerOptions);
-
-      // Observe step cards and feature items
-      document.querySelectorAll(".step-card, .feature-item").forEach((el) => {
-        el.style.opacity = "0";
-        el.style.transform = "translateY(20px)";
-        el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-        observer.observe(el);
-      });
-    </script>
-  </body>
+// 3D tilt on dashboard preview
+const card3d = document.querySelector('.perspective-container .card-3d');
+if (card3d) {
+  card3d.addEventListener('mousemove', (e) => {
+    const rect = card3d.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card3d.style.transform = `translateY(-8px) rotateX(${y * -8}deg) rotateY(${x * 8}deg)`;
+  });
+  card3d.addEventListener('mouseleave', () => {
+    card3d.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+  });
+}
+</script>
+</body>
 </html>

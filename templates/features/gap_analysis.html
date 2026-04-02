@@ -18,7 +18,7 @@
       name="description"
       content="Compare your resume against real job descriptions. Find the exact skills and keywords that are missing for your target role."
     />
-    <title>Role-Specific Gap Analysis — CareerAssist</title>
+    <title>What to Focus on Next — CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -616,7 +616,7 @@
           <span class="feature-eyebrow-dot"></span>
           Smart Matching
         </div>
-        <h1>Role-Specific Gap Analysis</h1>
+        <h1>What to Focus on Next</h1>
         <p class="lead">
           Generic resumes get generic results. We compare your experience
           directly against the job description to show you exactly what's
@@ -637,48 +637,112 @@
             <circle cx="12" cy="12" r="6" />
             <circle cx="12" cy="12" r="2" />
           </svg>
-          Targeted matching against real job descriptions
+          Understanding gaps is step two in the journey
         </div>
       </div>
     </section>
 
     <main class="main-content">
+
+      {% if user_data and user_data.has_data %}
+      <div class="content-card" style="border-left: 3px solid var(--accent-primary); margin-bottom: 2rem;">
+        <div class="card-label" style="color: var(--accent-primary);">Your Skill Map</div>
+        <h2 style="margin-bottom: 1.25rem;">
+          {% if user_data.target_role %}
+            Direction: <strong>{{ user_data.target_role }}</strong>
+          {% else %}
+            Here's what your resume shows right now
+          {% endif %}
+        </h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.skill_coverage }}%</div>
+            <div class="stat-label">Skill Coverage</div>
+          </div>
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.current_skills | length }}</div>
+            <div class="stat-label">Skills You Have</div>
+          </div>
+          <div class="stat-card" style="flex: 1; min-width: 140px;">
+            <div class="stat-value">{{ user_data.gap_count }}</div>
+            <div class="stat-label">Gaps to Explore</div>
+          </div>
+        </div>
+
+        {% if user_data.priority_gaps %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Where to focus next:</p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem;">
+          {% for gap in user_data.priority_gaps %}
+          <div class="gap-row">
+            <span class="gap-label">{{ gap }}</span>
+            <div class="gap-track">
+              <div class="gap-fill" style="width: 20%; background: var(--accent-primary); opacity: 0.5;"></div>
+            </div>
+            <span class="gap-pct">Building</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user_data.current_skills %}
+        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Skills already in your resume:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          {% for skill in user_data.current_skills %}
+          <span style="background: var(--surface-2); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem;">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user_data.estimated_weeks %}
+        <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+          Estimated time to close priority gaps: <strong>{{ user_data.estimated_weeks }} weeks</strong> at a steady pace.
+        </p>
+        {% endif %}
+      </div>
+      {% elif current_user.is_authenticated %}
+      <div class="content-card" style="border-left: 3px solid var(--border-subtle); margin-bottom: 2rem; opacity: 0.8;">
+        <div class="card-label">Your Skill Map</div>
+        <p>Upload your resume to see your actual skill coverage and which gaps are worth focusing on first. <a href="/resume/upload" style="color: var(--accent-primary);">Upload now →</a></p>
+      </div>
+      {% endif %}
+
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-value">72%</div>
+          <div class="stat-value">Clarity</div>
           <div class="stat-label">
-            Average keyword match rate for candidates who don't tailor their
-            resume
+            A clear view of which skills you already have vs. which are
+            worth prioritising
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">3×</div>
+          <div class="stat-value">Direction</div>
           <div class="stat-label">
-            More callbacks when resume language aligns with the job posting
+            Focus on areas that genuinely matter for your specific stage
+            and target
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">8–12</div>
+          <div class="stat-value">Growth</div>
           <div class="stat-label">
-            Key skills a typical job description requires; most resumes cover
-            6–7
+            Gaps aren't deficiencies — they're a learning roadmap waiting
+            to be followed
           </div>
         </div>
       </div>
 
       <div class="content-card">
-        <div class="card-label">How It Works</div>
-        <h2>We read the job the same way the ATS does</h2>
+        <div class="card-label">How This Works</div>
+        <h2>A map of where you are — not a list of failures</h2>
         <p>
-          When you apply for a role, both the ATS and the recruiter are mentally
-          scanning for specific terms. Not similar terms — the exact words used
-          in the posting. "Agile methodology" and "agile development" can mean
-          the same thing to you, but an ATS might only score one of them.
+          This tool compares your current skills against what a target role
+          typically requires. The result isn't a verdict — it's a map. You'll
+          see what you already have, what's partially covered, and what's worth
+          building next.
         </p>
         <p>
-          We extract the keywords, required skills, and experience signals from
-          the job description, then map them against your resume. You see what's
-          covered, what's partially there, and what's missing entirely.
+          The goal isn't to fill every gap before you apply. It's to understand
+          which gaps matter most for your direction — and which ones can wait.
         </p>
 
         <div style="margin-top: 1.75rem">
@@ -838,24 +902,24 @@
       </div>
 
       <div class="content-card">
-        <div class="card-label">Why Tailoring Matters</div>
-        <h2>One resume doesn't fit all roles</h2>
+        <div class="card-label">Why This Stage Matters</div>
+        <h2>You don't need to be perfect — you need to be aligned</h2>
         <p>
-          Hiring managers receive hundreds of applications. The ones that stand
-          out are the ones that speak directly to what the role actually needs.
-          When your resume uses the same language as the job posting, it signals
-          relevance — both to the ATS and to the person reviewing it.
+          Most students try to close every gap before they feel ready. That's
+          not how growth works. Understanding which gaps actually block your
+          path — versus which are nice-to-haves — lets you spend your learning
+          time on things that genuinely move you forward.
         </p>
         <p>
-          A 15-minute tailoring session for each application increases your
-          callback rate more than most other optimizations combined. This
-          feature helps you spend that time on the right things.
+          The skill map this tool produces isn't a checklist to complete. It's
+          a reference point to revisit as you grow. As you build new skills,
+          run it again and watch the picture change.
         </p>
       </div>
 
       <div class="content-card">
         <div class="card-label">How to Use This</div>
-        <h2>Close your gaps strategically</h2>
+        <h2>Work with what you have, build toward what's next</h2>
 
         <ul class="tip-list">
           <li>
@@ -932,12 +996,13 @@
       </div>
 
       <div class="cta-block">
-        <h2>See your real match score</h2>
+        <h2>See where you stand right now</h2>
         <p>
-          Paste your resume and a job description. We'll show you exactly which
-          keywords are missing and which experiences to highlight.
+          Upload your resume alongside a role you're interested in. You'll get
+          an honest picture of which skills are present, which are worth
+          developing, and where to focus your energy next.
         </p>
-        <a href="/resume/upload" class="cta-btn">Analyze My Resume</a>
+        <a href="/resume/upload" class="cta-btn">Explore My Skill Map →</a>
       </div>
     </main>
 

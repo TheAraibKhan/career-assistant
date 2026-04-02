@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Journey — CareerAssist</title>
+    <meta
+      name="description"
+      content="Your personalized career journey through Pre-College, College, and Post-College phases."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/career_ai.css') }}"
+    />
+    <style>
+      .journey-hero {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: var(--radius-xl);
+        position: relative;
+        overflow: hidden;
+      }
+      .journey-hero.pre-college {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.1),
+          rgba(6, 182, 212, 0.08)
+        );
+        border: 1px solid rgba(59, 130, 246, 0.2);
+      }
+      .journey-hero.college {
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.1),
+          rgba(236, 72, 153, 0.08)
+        );
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+      .journey-hero.post-college {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.1),
+          rgba(245, 158, 11, 0.08)
+        );
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .journey-hero-icon {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+      }
+      .journey-hero h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+      .journey-hero p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .phase-switcher {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+      .phase-switch-btn {
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-full);
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .phase-switch-btn:hover {
+        border-color: var(--neon-purple);
+        color: var(--text-primary);
+      }
+      .phase-switch-btn.active {
+        background: rgba(139, 92, 246, 0.15);
+        border-color: var(--neon-purple);
+        color: var(--neon-purple);
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+      }
+      .milestone-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .milestone-card {
+        background: var(--bg-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      .milestone-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--grad-primary);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .milestone-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--border-glow);
+        box-shadow: var(--shadow-glow-sm);
+      }
+      .milestone-card:hover::after {
+        opacity: 1;
+      }
+      .milestone-card.completed {
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .milestone-card.completed::after {
+        background: var(--grad-success);
+        opacity: 1;
+      }
+      .milestone-card.active {
+        border-color: rgba(139, 92, 246, 0.4);
+        box-shadow: var(--shadow-glow-sm);
+      }
+      .milestone-card.active::after {
+        background: var(--grad-primary);
+        opacity: 1;
+      }
+      .milestone-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .milestone-status {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+      .milestone-status.done {
+        background: var(--neon-green);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+      }
+      .milestone-status.current {
+        background: var(--neon-purple);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+        animation: pulse 2s infinite;
+      }
+      .milestone-status.locked {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-dim);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+      }
+      .milestone-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .milestone-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 0.65rem;
+      }
+      .milestone-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .milestone-xp {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--neon-gold);
+        background: rgba(245, 158, 11, 0.1);
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+      }
+      .milestone-weeks {
+        font-size: 0.65rem;
+        color: var(--text-dim);
+      }
+      .journey-phase-panel {
+        display: none;
+      }
+      .journey-phase-panel.active {
+        display: block;
+        animation: slideIn 0.4s var(--ease-smooth);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-shell">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a href="/app" class="sidebar-logo">
+            <div
+              class="logo-icon"
+              style="
+                font-size: 1.2rem;
+                font-weight: 700;
+                background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+            >
+              CA
+            </div>
+            <div>
+              <div class="logo-text">CareerAssist</div>
+              <div class="logo-tagline">From Confusion to Clarity</div>
+            </div>
+          </a>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a href="/app" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">D</span>
+            Dashboard</a
+          >
+          <a href="/app/journey" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">J</span>
+            Journey<span class="nav-badge">New</span></a
+          >
+          <a href="/app/roadmap" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">R</span> Roadmap</a
+          >
+          <a href="/app/projects" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">P</span>
+            Projects</a
+          >
+          <div class="nav-section-label" style="margin-top: 0.75rem">Tools</div>
+          <a href="/app/resume-lab" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">RL</span> Resume
+            Lab</a
+          >
+          <a href="/app/insights" class="nav-item"
+            ><span class="nav-icon" style="font-weight: 700">I</span>
+            Insights</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user" onclick="window.location = '/app/profile'">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <div class="user-name">{{ current_user.name or 'Profile' }}</div>
+              <div class="user-role">
+                {% if onboarding and onboarding.phase == 'pre-college'
+                %}Pre-College{% elif onboarding and onboarding.phase ==
+                'college' %}College{% elif onboarding and onboarding.phase ==
+                'post-college' %}Post-College{% else %}Member{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="top-bar">
+          <div class="greeting">
+            <h1>Your Career Journey 🗺️</h1>
+            <p>Explore your path through three career phases</p>
+          </div>
+        </div>
+
+        <!-- Phase Switcher -->
+        <div class="phase-switcher">
+          <button
+            class="phase-switch-btn active"
+            onclick="switchPhase('pre-college', this)"
+          >
+            🧒 Pre-College
+          </button>
+          <button
+            class="phase-switch-btn"
+            onclick="switchPhase('college', this)"
+          >
+            🎓 College
+          </button>
+          <button
+            class="phase-switch-btn"
+            onclick="switchPhase('post-college', this)"
+          >
+            💼 Post-College
+          </button>
+        </div>
+
+        <!-- Dynamic Journey Content -->
+        <div id="journeyContent">
+          <p
+            style="color: var(--text-muted); padding: 2rem; text-align: center"
+          >
+            Loading your career journey...
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let journeyData = {};
+      let currentPhase = "pre-college";
+
+      // Phase configurations
+      const phaseConfig = {
+        "pre-college": {
+          icon: "🧒",
+          title: "Exploration Phase",
+          description:
+            "Discover your passions, build foundational skills, and explore the world of technology.",
+        },
+        college: {
+          icon: "🎓",
+          title: "Skill Building Phase",
+          description:
+            "Master core skills, build real-world projects, land internships, and prepare your resume.",
+        },
+        "post-college": {
+          icon: "💼",
+          title: "Career Execution Phase",
+          description:
+            "Apply strategically, ace interviews, negotiate offers, and build your professional brand.",
+        },
+      };
+
+      async function loadPhaseData(phase) {
+        try {
+          const response = await fetch(`/api/journey?phase=${phase}`);
+          if (!response.ok)
+            throw new Error("Failed to fetch journey for phase: " + phase);
+
+          const data = await response.json();
+          return data.journey || [];
+        } catch (error) {
+          console.error("Error loading phase data:", error);
+          return [];
+        }
+      }
+
+      async function loadAllPhases() {
+        try {
+          // Load journey data for all phases
+          journeyData["pre-college"] = await loadPhaseData("pre-college");
+          journeyData["college"] = await loadPhaseData("college");
+          journeyData["post-college"] = await loadPhaseData("post-college");
+
+          // Render the first phase
+          renderPhase("pre-college");
+        } catch (error) {
+          console.error("Error loading journey:", error);
+          document.getElementById("journeyContent").innerHTML =
+            '<p style="color: red; padding: 2rem;">Error loading journey. Please refresh.</p>';
+        }
+      }
+
+      function renderPhase(phase) {
+        currentPhase = phase;
+        const container = document.getElementById("journeyContent");
+        const config = phaseConfig[phase];
+        const phaseData = journeyData[phase] || [];
+
+        if (!phaseData || phaseData.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); padding: 2rem;">No milestones available for this phase</p>';
+          return;
+        }
+
+        let html = `
+      <div class="journey-hero ${phase}">
+        <div class="journey-hero-icon">${config.icon}</div>
+        <h2>${config.title}</h2>
+        <p>${config.description}</p>
+      </div>
+      <div class="milestone-grid">
+    `;
+
+        phaseData.forEach((milestone, idx) => {
+          // Determine status and CSS class based on milestone.status
+          let statusClass = "locked";
+          let statusIcon = "🔒";
+          let cardClass = "";
+
+          if (milestone.status === "Completed") {
+            statusClass = "done";
+            statusIcon = "✓";
+            cardClass = "completed";
+          } else if (milestone.status === "In Progress") {
+            statusClass = "current";
+            statusIcon = "▶";
+            cardClass = "active";
+          } else if (milestone.status === "Upcoming") {
+            statusClass = "upcoming";
+            statusIcon = "⏳";
+            cardClass = "";
+          }
+
+          const xp = milestone.xp || 200 + idx * 100;
+
+          html += `
+        <div class="milestone-card ${cardClass}">
+          <div class="milestone-header">
+            <div class="milestone-status ${statusClass}">${statusIcon}</div>
+            <div class="milestone-title">${milestone.title}</div>
+          </div>
+          <div class="milestone-desc">${milestone.description}</div>
+          <div class="milestone-footer">
+            <span class="milestone-xp">+${xp} XP</span>
+            <span class="milestone-weeks">${milestone.status}</span>
+          </div>
+        </div>
+      `;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+      }
+
+      function switchPhase(phase, btn) {
+        document
+          .querySelectorAll(".phase-switch-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderPhase(phase);
+      }
+
+      // Load journey on page load
+      window.addEventListener("load", loadAllPhases);
+    </script>
+  </body>
+</html>

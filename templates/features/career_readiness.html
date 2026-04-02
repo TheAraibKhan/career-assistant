@@ -14,7 +14,7 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Career Readiness Score - CareerAssist</title>
+    <title>Progress Over Time - CareerAssist</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -631,45 +631,89 @@
           Track your resume readiness over time. Understand where you stand and
           what to improve for maximum impact.
         </p>
-        <span class="status-badge">Comprehensive career readiness metric</span>
+        <span class="status-badge">Ongoing Reflection</span>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-number">68</div>
-          <div class="stat-label">Average readiness score</div>
+          <div class="stat-number">Trend</div>
+          <div class="stat-label">The direction of your score over time matters more than any single result</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">28%</div>
-          <div class="stat-label">Avg improvement per month</div>
+          <div class="stat-number">Growth</div>
+          <div class="stat-label">Each version you submit becomes part of your long-term growth record</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">4.2x</div>
-          <div class="stat-label">Likelihood to get interview</div>
+          <div class="stat-number">Yours</div>
+          <div class="stat-label">Progress is tracked per user, across every version you submit — for as long as you use the platform</div>
         </div>
       </div>
 
       <div class="content-section">
-        <h2>What is Career Readiness?</h2>
+        <h2>What This Tracks</h2>
         <p>
-          Career Readiness is our comprehensive metric that scores how prepared
-          your resume is to land interviews. It combines all the factors we
-          check: ATS compatibility, content quality, impact, formatting,
-          relevance, and perceived fit for your target roles.
+          Every time you upload a new version of your resume, CareerAssist
+          records a snapshot. The score you see isn't meant to create pressure
+          — it's meant to give you a reference point. Revisit it after you've
+          made improvements and see where you've moved.
         </p>
         <p>
-          <strong>Your Career Readiness Score is not a judgment.</strong> It's a
-          roadmap showing exactly where to improve and what will have the
-          biggest impact.
+          <strong>The trend matters more than the number.</strong> A score that
+          consistently improves tells a more important story than a single
+          high-performing submission.
         </p>
 
-        <h3
-          style="
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-          "
-        >
+        {% if user_data and user_data.has_data %}
+        <h3 style="margin-top: 1.5rem; margin-bottom: 1.5rem; color: var(--text-primary);">
+          Your Progress — <span style="color: var(--accent-primary);">{{ user_data.version_count }} version{% if user_data.version_count != 1 %}s{% endif %} on record</span>
+        </h3>
+        <div class="score-breakdown">
+          <div class="score-card {% if user_data.current_score and user_data.current_score >= 70 %}high{% elif user_data.current_score and user_data.current_score < 50 %}low{% endif %}">
+            <div class="score-value {% if user_data.current_score and user_data.current_score >= 70 %}high{% elif user_data.current_score and user_data.current_score < 50 %}low{% endif %}">{{ user_data.current_score or '—' }}</div>
+            <div class="score-label">Current Score</div>
+            <div class="benchmark">{{ user_data.tier_label or 'No data yet' }}</div>
+          </div>
+          {% if user_data.resume_strength is not none %}
+          <div class="score-card">
+            <div class="score-value">{{ user_data.resume_strength }}</div>
+            <div class="score-label">Resume Strength</div>
+            <div class="benchmark">Content quality</div>
+          </div>
+          {% endif %}
+          {% if user_data.skill_readiness is not none %}
+          <div class="score-card">
+            <div class="score-value">{{ user_data.skill_readiness }}</div>
+            <div class="score-label">Skill Readiness</div>
+            <div class="benchmark">Skills on file</div>
+          </div>
+          {% endif %}
+          {% if user_data.improvement_total is not none %}
+          <div class="score-card {% if user_data.improvement_total > 0 %}high{% endif %}">
+            <div class="score-value {% if user_data.improvement_total > 0 %}high{% endif %}">
+              {% if user_data.improvement_total > 0 %}+{% endif %}{{ user_data.improvement_total }}
+            </div>
+            <div class="score-label">Total Change</div>
+            <div class="benchmark">Since first upload</div>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if user_data.next_step %}
+        <div style="margin-top: 1.25rem; padding: 1rem 1.25rem; background: var(--surface-2); border-radius: 8px; font-size: 0.875rem; color: var(--text-secondary);">
+          <strong style="color: var(--text-primary);">What to do next:</strong> {{ user_data.next_step }}
+        </div>
+        {% endif %}
+
+        <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+          <a href="/resume/upload" style="color: var(--accent-primary);">Upload a new version</a> to update your score.
+        </p>
+
+        {% elif current_user.is_authenticated %}
+        <div style="margin-top: 1.25rem; padding: 1rem 1.25rem; background: var(--surface-2); border-radius: 8px; font-size: 0.875rem; color: var(--text-secondary);">
+          You haven't uploaded a resume yet. <a href="/resume/upload" style="color: var(--accent-primary);">Upload your first version</a> to create your baseline score.
+        </div>
+        {% else %}
+        <h3 style="margin-top: 1.5rem; margin-bottom: 1.5rem; color: var(--text-primary);">
           Your Readiness Breakdown:
         </h3>
         <div class="score-breakdown">
@@ -694,6 +738,7 @@
             <div class="benchmark">Professional formatting</div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <div class="content-section">
@@ -701,14 +746,14 @@
 
         <ul class="readiness-level">
           <li class="level-item critical">
-            <h3>🔴 0-40: Critical</h3>
+            <h3>Early Stage (0–40)</h3>
             <p>
               Your resume needs significant work. Likely being rejected in early
               screens. Focus on ATS compatibility and content basics.
             </p>
           </li>
           <li class="level-item warning">
-            <h3>🟡 41-60: Developing</h3>
+            <h3>Building (41–60)</h3>
             <p>
               You're on the right track but have clear gaps. Recruiters might
               call, but you're missing opportunities. Prioritize missing skills
@@ -716,7 +761,7 @@
             </p>
           </li>
           <li class="level-item">
-            <h3>🟢 61-75: Solid</h3>
+            <h3>Solid (61–75)</h3>
             <p>
               Your resume is doing its job. You'll land interviews. Small
               improvements can push you higher. Focus on relevance to specific
@@ -724,7 +769,7 @@
             </p>
           </li>
           <li class="level-item ready">
-            <h3>✓ 76+: Interview Ready</h3>
+            <h3>Well-Developed (76+)</h3>
             <p>
               Your resume is competitive. You're likely to get interviews when
               you apply to aligned roles. Continue improving to stand out from
@@ -735,13 +780,13 @@
       </div>
 
       <div class="content-section">
-        <h2>Progress Framework: From Current to Ready</h2>
+        <h2>Your Growth Path</h2>
 
         <div class="progress-framework">
           <div class="progress-item">
             <div class="progress-label">
-              <span>Week 1-2: Fix ATS Issues</span>
-              <span>+8 points</span>
+              <span>Resume structure &amp; readability</span>
+              <span>Foundation</span>
             </div>
             <div class="progress-bar">
               <div class="progress-bar-fill" style="width: 30%"></div>
@@ -749,8 +794,8 @@
           </div>
           <div class="progress-item">
             <div class="progress-label">
-              <span>Week 3-4: Strengthen Bullets</span>
-              <span>+12 points</span>
+              <span>Skill alignment with target areas</span>
+              <span>Direction</span>
             </div>
             <div class="progress-bar">
               <div class="progress-bar-fill" style="width: 60%"></div>
@@ -767,8 +812,8 @@
           </div>
           <div class="progress-item">
             <div class="progress-label">
-              <span>Week 7-8: Target Role Alignment</span>
-              <span>+8 points</span>
+              <span>Consistent improvement across versions</span>
+              <span>Growth Record</span>
             </div>
             <div class="progress-bar">
               <div class="progress-bar-fill" style="width: 35%"></div>
@@ -783,48 +828,45 @@
             font-size: 0.875rem;
           "
         >
-          <strong>Timeline:</strong> Most users reach "Interview Ready" within
-          2-4 weeks of focused effort. Focus on high-impact improvements first.
+          <strong>This isn't a checklist.</strong> Each stage builds on the
+          previous one. Submit a new version whenever you've made meaningful
+          changes — the trend will tell its own story.
         </p>
       </div>
 
       <div class="content-section">
-        <h2>Immediate Actions to Improve</h2>
+        <h2>Ongoing Reflection</h2>
         <ul class="action-list">
           <li class="action-item">
-            <strong>Priority 1:</strong> Fix ATS blocking issues (remove tables,
-            images, odd formatting)
+            <strong>Step 1:</strong> Upload your current resume and get a
+            baseline score. Don't overthink it.
           </li>
           <li class="action-item">
-            <strong>Priority 2:</strong> Add metrics to 3 weakest bullets
-            (increase impact by ~25%)
+            <strong>Step 2:</strong> Make one focused improvement. Structure,
+            alignment, or a single bullet rewrite.
           </li>
           <li class="action-item">
-            <strong>Priority 3:</strong> Identify and highlight 5-10 keywords
-            matching your target role
+            <strong>Step 3:</strong> Upload the updated version. See if the
+            score moved. Understand what changed.
           </li>
           <li class="action-item">
-            <strong>Priority 4:</strong> Get a friend's feedback on the
-            recruiter's 6-second view
-          </li>
-          <li class="action-item">
-            <strong>Priority 5:</strong> Re-submit weekly and track improvements
-            (your score should go up 5-10 points per week)
+            <strong>Step 4:</strong> Repeat over time. Your history stays in
+            your account. The trend across versions is your actual story.
           </li>
         </ul>
       </div>
 
       <div class="content-section">
-        <h2>Tracking Your Progress</h2>
+        <h2>Your First Snapshot</h2>
         <p>
-          Each time you upload a new version of your resume, we score it and
-          show you exactly what improved and what still needs work. Watch your
-          score climb week by week.
+          Each time you upload a new version of your resume, we add it to your
+          timeline. Over time, you'll have a record of how your resume has
+          changed — and a clear sense of where you've grown.
         </p>
         <p>
-          <strong>Pro tip:</strong> Most users find that making one focused
-          improvement (like adding metrics to all bullets) creates a noticeable
-          jump in their score. Then they tackle the next improvement.
+          Most people find that consistent, small improvements build into
+          significant progress over a few months. The score is a reference —
+          not the destination.
         </p>
       </div>
 
@@ -868,7 +910,7 @@
       </div>
 
       <div class="cta-section">
-        <h3>Get Your Career Readiness Score</h3>
+        <h3>Start Your Growth Record</h3>
         <p>
           Upload your resume now and get a detailed breakdown of your readiness
           score, improvement priorities, and a personalized roadmap to reach
