@@ -142,7 +142,7 @@ def api_analyze_resume():
 
     ats_score = int(ats_result.get('ats_score', 0))
 
-    # ── Feedback generation ──────────────────────────────────────────────────
+    # Score and feedback
     word_count = len(resume_text.split()) if resume_text else 0
     has_metrics = bool(re.search(r'\d+[%$]|\d+\s*(percent|million|billion|k\b)', resume_text, re.I))
     has_action_verbs = any(v in text_lower for v in
@@ -173,7 +173,7 @@ def api_analyze_resume():
         'categories': ats_result.get('categories', {}),
     }
 
-    # ── Persist to DB ────────────────────────────────────────────────────────
+    # Save to DB
     try:
         db = get_db()
         now = datetime.utcnow().isoformat()

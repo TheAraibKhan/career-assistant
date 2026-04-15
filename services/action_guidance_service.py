@@ -4,6 +4,119 @@ from datetime import datetime, timedelta
 import json
 
 
+def generate_actions_for_user(user_id, profile):
+    """Create a list of suggested actions based on the user's profile and progress."""
+    profile_data = profile.get('profile', {})
+    stats = profile.get('stats', {})
+    skills_list = profile_data.get('skills', [])
+    goals = profile_data.get('goals', [])
+    daily_time = profile_data.get('daily_time', 1)
+    phase = profile_data.get('phase', 'college') if 'phase' in profile_data else profile.get('user', {}).get('phase', 'college')
+    readiness = stats.get('career_readiness', 0)
+    tasks_done = stats.get('tasks_completed', 0)
+    
+    primary_skill = skills_list[0] if skills_list else 'Python'
+    actions = []
+    
+    # --- Foundation actions for new users ---
+    if tasks_done < 3:
+        actions.append({
+            'category': 'getting_started',
+            'title': f'Complete a {primary_skill} tutorial',
+            'description': f'Find a beginner-friendly tutorial on {primary_skill} and complete the first chapter. Focus on understanding core concepts.',
+            'time_commitment': '45 min',
+            'xp_reward': 60,
+        })
+        actions.append({
+            'category': 'getting_started',
+            'title': 'Set up your development environment',
+            'description': 'Install required tools (IDE, runtime, package manager) for your primary skill and run a hello-world program.',
+            'time_commitment': '30 min',
+            'xp_reward': 40,
+        })
+    
+    # --- Skill-building actions ---
+    for i, skill in enumerate(skills_list[:3]):
+        if readiness < 50:
+            actions.append({
+                'category': 'learning',
+                'title': f'Practice {skill} fundamentals',
+                'description': f'Complete 3 practice exercises in {skill}. Focus on building muscle memory with core syntax and patterns.',
+                'time_commitment': f'{min(60, daily_time * 15)} min',
+                'xp_reward': 50 + (i * 10),
+            })
+        else:
+            actions.append({
+                'category': 'learning',
+                'title': f'Build a mini-project with {skill}',
+                'description': f'Create a small project using {skill}. Apply at least 3 concepts you have learned recently.',
+                'time_commitment': f'{min(90, daily_time * 20)} min',
+                'xp_reward': 80 + (i * 10),
+            })
+    
+    # --- Goal-based actions ---
+    goal_actions = {
+        'Get a job': {
+            'category': 'career',
+            'title': 'Update your resume with new skills',
+            'description': 'Add your latest learned skills and projects to your resume. Ensure each bullet point has measurable impact.',
+            'time_commitment': '30 min',
+            'xp_reward': 45,
+        },
+        'Build projects': {
+            'category': 'project',
+            'title': 'Work on your portfolio project',
+            'description': 'Dedicate focused time to your current project. Add a new feature or fix an existing issue.',
+            'time_commitment': '60 min',
+            'xp_reward': 75,
+        },
+        'Learn new skills': {
+            'category': 'learning',
+            'title': 'Explore a new technology',
+            'description': 'Read documentation or watch a video about a technology adjacent to your current skills.',
+            'time_commitment': '30 min',
+            'xp_reward': 40,
+        },
+        'Open source': {
+            'category': 'community',
+            'title': 'Find an open source project to contribute to',
+            'description': 'Browse GitHub for beginner-friendly issues in projects related to your skills. Fork and start working on one.',
+            'time_commitment': '45 min',
+            'xp_reward': 65,
+        },
+    }
+    
+    for goal in goals[:2]:
+        action = goal_actions.get(goal)
+        if action:
+            actions.append(action)
+    
+    # --- Consistency action ---
+    streak = stats.get('current_streak', 0)
+    if streak < 7:
+        actions.append({
+            'category': 'habit',
+            'title': 'Build your daily learning habit',
+            'description': f'You are on a {streak}-day streak. Complete any learning task today to keep it going. Consistency beats intensity.',
+            'time_commitment': '15 min',
+            'xp_reward': 30,
+        })
+    
+    # --- Resume action if readiness is moderate ---
+    if readiness > 30:
+        actions.append({
+            'category': 'career',
+            'title': 'Review your career readiness score',
+            'description': 'Check your insights dashboard and identify the top area that needs improvement. Take one step toward it.',
+            'time_commitment': '15 min',
+            'xp_reward': 25,
+        })
+    
+    # Limit to a reasonable number based on daily time
+    max_actions = max(3, min(8, daily_time * 2))
+    return actions[:max_actions]
+
+
 class ActionGuidanceService:
     """Provide clear daily, weekly, and monthly action guidance."""
     

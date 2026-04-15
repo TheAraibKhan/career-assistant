@@ -23,9 +23,8 @@ def login_required(f):
     return decorated_function
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # STEP 1: Student Profile Discovery
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/discover', methods=['GET', 'POST'])
 @login_required
@@ -69,9 +68,8 @@ def discover():
     return render_template('guidance/discover.html', profile=existing_profile)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # STEP 2: Skill Gap Analysis
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/gaps', methods=['GET'])
 @login_required
@@ -104,9 +102,8 @@ def analyze_gaps():
                          gaps=formatted_gaps)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # STEP 3: Learning Path
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/learning-path', methods=['GET'])
 @login_required
@@ -148,9 +145,8 @@ def learning_path():
                          profile=profile)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # STEP 4: Resume Evolution
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/resume-evolution', methods=['GET'])
 @login_required
@@ -180,9 +176,8 @@ def resume_evolution():
                          profile=profile)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # STEP 5: Action Plan
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/actions', methods=['GET'])
 @login_required
@@ -209,9 +204,8 @@ def actions():
                          profile=profile)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # Integrated Dashboard View
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/overview', methods=['GET'])
 @login_required
@@ -262,9 +256,8 @@ def overview():
                          next_steps=next_steps)
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # API Endpoints for AJAX/Real-time updates
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/api/profile', methods=['POST'])
 @login_required
@@ -338,9 +331,8 @@ def api_regenerate_path():
     })
 
 
-# ─────────────────────────────────────────────────────────────────────────
+
 # Navigation Helper
-# ─────────────────────────────────────────────────────────────────────────
 
 @guidance_bp.route('/')
 @login_required

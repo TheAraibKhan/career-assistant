@@ -308,16 +308,7 @@ def get_roadmap():
 @career_ai_bp.route('/api/roadmap/refresh', methods=['POST'])
 @login_required
 def refresh_roadmap():
-    """
-    ⭐ CRITICAL: Manual trigger to refresh roadmap and all dependent modules.
-    
-    Call this when:
-    - User updates profile
-    - User completes tasks
-    - You need to ensure all data is synced
-    
-    This calls the data_sync layer to recalculate roadmap, insights, actions.
-    """
+    """Recalculate roadmap and all dependent data."""
     from services.data_sync import refresh_user_data
     
     try:
@@ -490,7 +481,7 @@ def get_projects():
                 'description': 'Build an app to manage daily tasks with add, delete, and mark-complete features. Learn localStorage for data persistence.',
                 'level': 'beginner',
                 'category': 'web',
-                'icon': '✅',
+                'icon': 'task',
                 'xp': 150,
                 'duration': '1 week',
                 'tech': ['HTML', 'CSS', 'JavaScript', 'LocalStorage'],
@@ -800,46 +791,26 @@ def complete_task():
     
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
         user_id = session.get('user_id')
-        task_title = data.get('title', 'Unknown Task')
-        xp_earned = data.get('xp', 30)
+        task_title = str(data.get('title', 'Unknown Task'))[:200]  # sanitize
+        xp_earned = max(0, min(500, int(data.get('xp', 30))))  # clamp 0-500
         skill = data.get('skill', None)
         
         db = get_db()
         
-        # Create tables if they don't exist
-        db.execute('''
-            CREATE TABLE IF NOT EXISTS user_stats (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id TEXT UNIQUE NOT NULL,
-                total_xp INTEGER DEFAULT 0,
-                current_streak INTEGER DEFAULT 0,
-                tasks_completed INTEGER DEFAULT 0,
-                career_readiness INTEGER DEFAULT 0,
-                last_activity_date TEXT,
-                updated_at TEXT
-            )
-        ''')
-        
-        db.execute('''
-            CREATE TABLE IF NOT EXISTS activity_log (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id TEXT NOT NULL,
-                activity_type TEXT,
-                task_title TEXT,
-                xp_earned INTEGER,
-                created_at TEXT
-            )
-        ''')
+        # Tables are created at startup by models.py — no inline CREATE TABLE needed
         
         # Log the activity
         now = datetime.utcnow().isoformat()
         today = date.today().isoformat()
         
         db.execute('''
-            INSERT INTO activity_log (user_id, activity_type, task_title, xp_earned, created_at)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (user_id, 'task_complete', task_title, xp_earned, now))
+            INSERT INTO activity_log (user_id, activity_type, task_id, xp_earned, description, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (user_id, 'task_complete', skill, xp_earned, task_title, now))
         
         # Get or create user stats
         stats = db.execute(
@@ -855,39 +826,63 @@ def complete_task():
             # Calculate streak
             last_activity = stats['last_activity_date']
             if last_activity == today:
-                # Already did task today, streak doesn't change
                 new_streak = stats['current_streak']
             elif last_activity:
-                last_date = date.fromisoformat(last_activity)
-                today_date = date.today()
-                # Check if yesterday
-                if (today_date - last_date).days == 1:
-                    # Consecutive day
-                    new_streak = stats['current_streak'] + 1
-                else:
-                    # Streak broken
+                try:
+                    last_date = date.fromisoformat(last_activity)
+                    today_date = date.today()
+                    if (today_date - last_date).days == 1:
+                        new_streak = stats['current_streak'] + 1
+                    elif (today_date - last_date).days == 0:
+                        new_streak = stats['current_streak']
+                    else:
+                        new_streak = 1
+                except ValueError:
                     new_streak = 1
             else:
-                # First activity
                 new_streak = 1
             
-            # Career readiness formula: base + skills + tasks + streak
-            # Base 10% + (tasks_completed * 5%) capped at 95%
-            new_readiness = min(95, 10 + (new_tasks * 5))
+            # Track longest streak
+            longest_streak = max(stats.get('longest_streak', 0) or 0, new_streak)
+            
+            # Multi-dimensional career readiness formula:
+            #   Task contribution: sqrt(tasks) * 8, up to 35 points
+            #   Skill depth: skills_tracked * 5, up to 20 points  
+            #   XP milestone: log(xp) * 5, up to 25 points
+            #   Streak bonus: min(streak, 14) * 1, up to 14 points
+            #   Base: 5 points
+            import math
+            task_score = min(35, int(math.sqrt(new_tasks) * 8))
+            skills_count = stats.get('skills_tracked', 1) or 1
+            skill_score = min(20, skills_count * 5)
+            xp_score = min(25, int(math.log(max(1, new_xp)) * 3.5))
+            streak_score = min(14, new_streak)
+            new_readiness = min(95, 5 + task_score + skill_score + xp_score + streak_score)
             
             db.execute('''
                 UPDATE user_stats
                 SET total_xp = ?, tasks_completed = ?, career_readiness = ?, 
-                    current_streak = ?, last_activity_date = ?, updated_at = ?
+                    current_streak = ?, longest_streak = ?,
+                    last_activity_date = ?, updated_at = ?
                 WHERE user_id = ?
-            ''', (new_xp, new_tasks, new_readiness, new_streak, today, now, user_id))
+            ''', (new_xp, new_tasks, new_readiness, new_streak, longest_streak, today, now, user_id))
         else:
             # Create new stats entry
+            now_date = datetime.utcnow().isoformat()
             db.execute('''
-                INSERT INTO user_stats (user_id, total_xp, tasks_completed, career_readiness, 
-                                       current_streak, last_activity_date, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (user_id, xp_earned, 1, 15, 1, today, now))  # Start at 15% readiness
+                INSERT INTO user_stats (user_id, total_xp, current_streak, longest_streak,
+                                       tasks_completed, career_readiness, skills_tracked,
+                                       last_activity_date, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (user_id, xp_earned, 1, 1, 1, 12, 1, today, now_date, now_date))
+        
+        # Update skill progress if skill provided
+        if skill:
+            try:
+                from services.data_sync import sync_skill_update
+                sync_skill_update(user_id, skill, 1, tasks_completed=1, xp_earned=xp_earned)
+            except Exception as e:
+                print(f"Warning: skill sync failed: {e}")
         
         db.commit()
         

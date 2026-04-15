@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 features_bp = Blueprint("features", __name__, url_prefix="/features")
 
 
-# ─── helpers ────────────────────────────────────────────────────────────────
+# helpers 
 
 def _uid():
     return session.get("user_id")
@@ -115,7 +115,7 @@ def _get_quick_analysis(db, user_id):
         return None
 
 
-# ─── ATS Detection ──────────────────────────────────────────────────────────
+# ATS Detection 
 
 @features_bp.route("/ats-detection")
 def ats_detection():
@@ -185,7 +185,7 @@ def ats_detection():
     return render_template("features/ats_detection.html", user_data=user_data)
 
 
-# ─── Gap Analysis ───────────────────────────────────────────────────────────
+# Gap Analysis 
 
 @features_bp.route("/gap-analysis")
 def gap_analysis():
@@ -237,7 +237,7 @@ def gap_analysis():
     return render_template("features/gap_analysis.html", user_data=user_data)
 
 
-# ─── Recruiter Perspective ───────────────────────────────────────────────────
+# Recruiter Perspective 
 
 @features_bp.route("/recruiter-perspective")
 def recruiter_perspective():
@@ -312,7 +312,7 @@ def recruiter_perspective():
     return render_template("features/recruiter_perspective.html", user_data=user_data)
 
 
-# ─── Bullet Impact ──────────────────────────────────────────────────────────
+# Bullet Impact 
 
 @features_bp.route("/bullet-impact")
 def bullet_impact():
@@ -379,7 +379,7 @@ def bullet_impact():
     return render_template("features/bullet_impact.html", user_data=user_data)
 
 
-# ─── Formatting Guidance ─────────────────────────────────────────────────────
+# Formatting Guidance 
 
 @features_bp.route("/formatting-guidance")
 def formatting_guidance():
@@ -444,7 +444,7 @@ def formatting_guidance():
     return render_template("features/formatting_guidance.html", user_data=user_data)
 
 
-# ─── Career Readiness ────────────────────────────────────────────────────────
+# Career Readiness 
 
 @features_bp.route("/career-readiness")
 def career_readiness():
@@ -536,7 +536,7 @@ def career_readiness():
     return render_template("features/career_readiness.html", user_data=user_data)
 
 
-# ─── JSON API endpoints (for AJAX data refresh on feature pages) ─────────────
+# JSON API endpoints (for AJAX data refresh on feature pages) 
 
 @features_bp.route("/api/user-snapshot")
 def api_user_snapshot():

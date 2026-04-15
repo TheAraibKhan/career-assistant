@@ -1,18 +1,10 @@
-"""
-Profile Service - Single Source of Truth for all user data.
-Every module MUST consume user data through this service.
-No hardcoded values. No independent logic disconnected from user data.
-"""
+"""Handles reading and writing user profile data."""
 import json
 from datetime import datetime
 
 
 def get_user_profile(user_id):
-    """
-    Get the complete unified user profile.
-    This is THE single source of truth for all modules.
-    Returns dict with: user, profile, stats, skills, resume_data
-    """
+    """Build a complete profile dict for the given user."""
     from database.db import get_db
     from services.auth_service import get_user_by_id
 
@@ -55,13 +47,7 @@ def get_user_profile(user_id):
 
 
 def update_user_profile(user_id, profile_data):
-    """
-    Update user profile and trigger sync across modules.
-    This is the SINGLE point where profile data changes.
-    
-    ⚠️ IMPORTANT: This function now calls data_sync.py to recalculate
-    all dependent modules (roadmap, insights, actions) automatically.
-    """
+    """Save profile changes and refresh dependent modules."""
     from database.db import get_db
     
     db = get_db()
@@ -125,7 +111,7 @@ def update_user_profile(user_id, profile_data):
     
     db.commit()
     
-    # ⭐ CRITICAL: Trigger full sync across all modules
+    # Refresh dependent modules
     from services.data_sync import refresh_user_data
     return refresh_user_data(user_id)
 

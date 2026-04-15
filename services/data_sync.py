@@ -1,12 +1,4 @@
-"""
-Data Synchronization Layer - Central orchestration for all module updates.
-
-When user profile changes, this layer ensures ALL dependent modules
-(roadmap, insights, actions, resume suggestions) are updated consistently.
-
-This is the SINGLE point of coordination for all cross-module data flow.
-No module should update another directly - all go through this layer.
-"""
+"""Keeps dependent modules in sync when user data changes."""
 
 import json
 from datetime import datetime
@@ -14,25 +6,7 @@ from database.db import get_db
 
 
 def refresh_user_data(user_id):
-    """
-    Complete user data refresh.
-    
-    Call this whenever:
-    - User updates onboarding/profile
-    - User uploads a resume
-    - User completes an action or skill task
-    - User needs insights/roadmap recalculated
-    
-    This function:
-    1. Loads user profile (single source of truth)
-    2. Recalculates roadmap from profile
-    3. Recalculates insights from profile
-    4. Recalculates action items from profile
-    5. Stores all results in DB
-    6. Returns complete synchronized profile
-    
-    Returns: Complete user profile dict (from profile_service)
-    """
+    """Reload profile and regenerate roadmap, insights, and actions."""
     from services.profile_service import get_user_profile
     from services.roadmap_service import generate_roadmap
     from services.insight_service import generate_insights
@@ -41,23 +15,22 @@ def refresh_user_data(user_id):
     db = get_db()
     
     try:
-        # 1. Get current profile (single source of truth)
         profile = get_user_profile(user_id)
         profile_data = profile['profile']
         stats = profile['stats']
         
-        # 2. Generate dynamic roadmap from profile
+        # Regenerate roadmap
         roadmap_items = generate_roadmap(profile_data, stats)
         _save_roadmap(db, user_id, roadmap_items)
         
-        # 3. Generate insights from profile
+        # Regenerate insights
         insights_result = generate_insights(
             profile_data, 
             stats, 
             profile.get('skills', {}),
             resume_data=None
         )
-        # generate_insights returns a dict with metrics/recommendations/etc.
+
         # Convert recommendations to the list format _save_insights expects
         insight_items = []
         for rec in insights_result.get('recommendations', []):
@@ -88,7 +61,6 @@ def refresh_user_data(user_id):
         
         db.commit()
         
-        # 6. Return refreshed profile
         return get_user_profile(user_id)
         
     except Exception as e:
@@ -98,39 +70,13 @@ def refresh_user_data(user_id):
 
 
 def sync_profile_update(user_id, profile_data):
-    """
-    Sync when user updates their profile/onboarding.
-    
-    Args:
-        user_id: User ID
-        profile_data: {skills, interests, goals, daily_time, phase}
-    
-    Returns: Updated profile
-    """
+    """Update profile and refresh dependent modules."""
     from services.profile_service import update_user_profile
-    
-    # Update profile in DB
-    profile = update_user_profile(user_id, profile_data)
-    
-    # Refresh all dependent modules
-    return refresh_user_data(user_id)
+    return update_user_profile(user_id, profile_data)
 
 
 def sync_resume_analysis(user_id, analysis_result):
-    """
-    Sync when user uploads and analyzes a resume.
-    
-    This stores the analysis and may trigger:
-    - Resume health updates
-    - Skill gap recalculation
-    - Recommendation adjustments
-    
-    Args:
-        user_id: User ID
-        analysis_result: {ats_score, overall_score, skills_found, recommendations, ...}
-    
-    Returns: Updated profile
-    """
+    """Store resume analysis results and refresh dependent modules."""
     db = get_db()
     now = datetime.utcnow().isoformat()
     
@@ -154,13 +100,14 @@ def sync_resume_analysis(user_id, analysis_result):
             for section in analysis_result['section_analysis']:
                 db.execute('''
                     INSERT OR REPLACE INTO resume_sections 
-                    (user_id, section_name, status, improvement_suggestion, last_analyzed)
-                    VALUES (?, ?, ?, ?, ?)
+                    (user_id, section_name, section_status, improvement_suggestion, priority, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, 0, ?, ?)
                 ''', (
                     user_id,
                     section['name'],
                     section.get('status', 'needs_work'),
                     section.get('suggestion', ''),
+                    now,
                     now
                 ))
         
@@ -169,14 +116,16 @@ def sync_resume_analysis(user_id, analysis_result):
             metrics = analysis_result['health_metrics']
             db.execute('''
                 INSERT OR REPLACE INTO resume_health 
-                (user_id, ats_score, keyword_score, formatting_score, overall_health, last_analyzed)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (user_id, ats_score, keyword_score, formatting_score, overall_health, last_analyzed_at, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 user_id,
                 metrics.get('ats_score', 0),
                 metrics.get('keyword_score', 0),
                 metrics.get('formatting_score', 0),
                 metrics.get('overall_health', 0),
+                now,
+                now,
                 now
             ))
         
@@ -281,7 +230,7 @@ def sync_action_completion(user_id, action_id):
         # Mark action as completed
         db.execute('''
             UPDATE action_plans 
-            SET status = 'completed', completed_at = ?
+            SET status = 'completed', completed_date = ?
             WHERE id = ? AND user_id = ?
         ''', (now, action_id, user_id))
         

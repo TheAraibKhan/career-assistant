@@ -23,7 +23,7 @@ import re
 from datetime import datetime
 from typing import Any
 
-# ── helpers ────────────────────────────────────────────────────────────────────
+# helpers 
 
 def _now() -> str:
     return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -41,7 +41,7 @@ def _clamp(v, lo=0, hi=100):
     return max(lo, min(hi, int(v)))
 
 
-# ── scoring helpers ─────────────────────────────────────────────────────────────
+# scoring helpers 
 
 # Common resume sections that a good resume should have
 _SECTION_RE = re.compile(
@@ -257,7 +257,7 @@ _COMMON_REQUIRED_SKILLS = [
 ]
 
 
-# ── main pipeline entry point ──────────────────────────────────────────────────
+# main pipeline entry point 
 
 def run_full_pipeline(
     db,
@@ -281,7 +281,7 @@ def run_full_pipeline(
     skills: list = parse_result.get("skills", []) or []
     ats_score: int = _clamp(ats_result.get("ats_score", quality_score))
 
-    # ── 1. Derived scores ──────────────────────────────────────────────────────
+    # 1. Derived scores 
     formatting_score = _compute_formatting_score(parse_result, ats_result)
     keyword_score    = _compute_keyword_score(parse_result, ats_result)
     content_score    = _compute_content_completeness(parse_result, ats_result)
@@ -297,7 +297,7 @@ def run_full_pipeline(
     suggestions_raw = ats_result.get("recommendations", [])
     suggestions_json = _jdump(suggestions_raw[:6])
 
-    # ── 2. Persist resume_health ───────────────────────────────────────────────
+    # 2. Persist resume_health 
     existing_health = db.execute(
         "SELECT id FROM resume_health WHERE user_id = ?", (user_id,)
     ).fetchone()
@@ -340,7 +340,7 @@ def run_full_pipeline(
             ),
         )
 
-    # ── 3. Persist skill_gap_analysis ─────────────────────────────────────────
+    # 3. Persist skill_gap_analysis 
     priority_gaps    = _derive_priority_gaps(skills, ats_result, parse_result)
     current_skills_j = _jdump(skills)
     required_j       = _jdump(_COMMON_REQUIRED_SKILLS)
@@ -385,7 +385,7 @@ def run_full_pipeline(
             ),
         )
 
-    # ── 4. Persist confidence_index ───────────────────────────────────────────
+    # 4. Persist confidence_index 
     dims = _compute_confidence_dimensions(
         overall_health, formatting_score, keyword_score, content_score
     )
@@ -438,7 +438,7 @@ def run_full_pipeline(
             ),
         )
 
-    # ── 5. Upsert user_goals (first upload baseline) ──────────────────────────
+    # 5. Upsert user_goals (first upload baseline) 
     try:
         existing_goal = db.execute(
             "SELECT id FROM user_goals WHERE user_id = ?", (user_id,)

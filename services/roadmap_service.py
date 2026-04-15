@@ -1,8 +1,4 @@
-"""
-Roadmap Service - Generates personalized roadmaps from user profile data.
-All roadmap items derive from user's skills, goals, gaps, and phase.
-No hardcoded defaults disconnected from user data.
-"""
+"""Generates personalized learning roadmaps based on user profile data."""
 
 
 # Skill-to-roadmap mapping. Each key maps to a structured learning path
@@ -90,30 +86,7 @@ GOAL_CAPSTONES = {
 
 
 def generate_roadmap(profile_data, stats=None):
-    """
-    Generate a personalized roadmap based on user's profile.
-    
-    ⭐ KEY CHANGES:
-    - Now generates STRUCTURED PHASES, not flat lists
-    - Intelligently routes based on experience level + phase + skills
-    - Returns list of phase dictionaries with steps
-    
-    Args:
-        profile_data: dict with 'skills', 'goals', 'interests', 'daily_time', 'phase'
-        stats: optional dict with 'career_readiness', 'tasks_completed', etc.
-    
-    Returns:
-        list of phases, each with:
-        {
-            'phase': 'Foundation' | 'Growth' | 'Advanced' | 'Specialization',
-            'title': 'Full phase title',
-            'description': 'What this phase covers',
-            'duration': 'X weeks',
-            'steps': [
-                {'title': '...', 'description': '...', 'duration': '...', 'xp': ...}
-            ]
-        }
-    """
+    """Build a phased learning roadmap from the user's skills and goals."""
     skills = profile_data.get('skills', [])
     goals = profile_data.get('goals', [])
     interests = profile_data.get('interests', [])
@@ -205,11 +178,7 @@ def generate_roadmap(profile_data, stats=None):
 
 
 def _infer_experience_level(phase, stats):
-    """
-    Infer user's experience level from phase and stats.
-    
-    Returns: 'entry' | 'mid' | 'senior'
-    """
+    """Map phase + stats to entry/mid/senior."""
     if stats:
         xp = stats.get('total_xp', 0)
         tasks = stats.get('tasks_completed', 0)
@@ -229,11 +198,7 @@ def _infer_experience_level(phase, stats):
 
 
 def _build_foundation_phase(skills, experience_level, daily_time):
-    """
-    Build foundation phase - fundamentals of primary skill.
-    
-    Returns: list of step dicts
-    """
+    """First steps for the user's primary skill."""
     if not skills:
         return []
     
@@ -261,11 +226,7 @@ def _build_foundation_phase(skills, experience_level, daily_time):
 
 
 def _build_growth_phase(skills, goals, experience_level, daily_time):
-    """
-    Build growth phase - expand skills and apply them.
-    
-    Returns: list of step dicts
-    """
+    """Intermediate steps: apply skills and branch out."""
     steps = []
     
     # 1. Deep dive into primary skill (if not entry level)
@@ -301,11 +262,7 @@ def _build_growth_phase(skills, goals, experience_level, daily_time):
 
 
 def _build_advanced_phase(skills, goals, experience_level):
-    """
-    Build advanced phase - professional-level mastery.
-    
-    Returns: list of step dicts
-    """
+    """Production-level mastery and system design."""
     if experience_level not in ['mid', 'senior']:
         return []
     
@@ -338,11 +295,7 @@ def _build_advanced_phase(skills, goals, experience_level):
 
 
 def _build_specialization_phase(goal_list=None):
-    """
-    Build specialization phase - goal-specific preparation.
-    
-    Returns: list of step dicts
-    """
+    """Goal-specific capstone steps."""
     if not goal_list:
         return []
     
@@ -360,22 +313,10 @@ def _build_specialization_phase(goal_list=None):
     return []
 
 
-def _build_additional_sequences(skills, goals):
-    """
-    Build additional learning sequences based on goals.
-    (Used for generating more detailed steps within phases)
-    """
-    # Placeholder for future use if needed
-    pass
-
-    return roadmap
 
 
 def calculate_skill_gaps(profile_data, resume_data=None):
-    """
-    Calculate skill gaps based on user's current skills vs. goal requirements.
-    Returns list of missing/weak skills and recommended actions.
-    """
+    """Return skills the user is missing for their chosen goals."""
     skills = set(s.lower() for s in profile_data.get('skills', []))
     goals = profile_data.get('goals', [])
 
@@ -393,7 +334,6 @@ def calculate_skill_gaps(profile_data, resume_data=None):
     for goal in goals:
         required.update(goal_skill_requirements.get(goal, set()))
 
-    # Gaps = required skills not in user's current skills
     gaps = required - skills
 
     return list(gaps)
